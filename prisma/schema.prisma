@@ -7,8 +7,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Ping {
-  id        Int      @id @default(autoincrement())
-  message   String
-  createdAt DateTime @default(now())
+model Workout {
+  id               String            @id @default(cuid())
+  performedAt      DateTime
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  workoutExercises WorkoutExercise[]
+}
+
+model Exercise {
+  id               String            @id @default(cuid())
+  name             String            @unique
+  muscleGroup      String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  workoutExercises WorkoutExercise[]
+}
+
+model WorkoutExercise {
+  id         String   @id @default(cuid())
+  workoutId  String
+  exerciseId String
+  order      Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  workout  Workout  @relation(fields: [workoutId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
+  sets     Set[]
+
+  @@unique([workoutId, order])
+  @@index([workoutId])
+  @@index([exerciseId])
+}
+
+model Set {
+  id                String          @id @default(cuid())
+  workoutExerciseId String
+  setNumber         Int
+  weight            Float
+  reps              Int
+  rpe               Float?
+  notes             String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  workoutExercise WorkoutExercise @relation(fields: [workoutExerciseId], references: [id])
+
+  @@unique([workoutExerciseId, setNumber])
+  @@index([workoutExerciseId])
 }
