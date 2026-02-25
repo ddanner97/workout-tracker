@@ -1,69 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface Exercise {
-  id: string;
-  name: string;
-  muscleGroup: string | null;
-}
-
-interface SetRow {
-  weight: string;
-  reps: string;
-  rpe: string;
-}
-
-interface ExerciseRow {
-  exerciseId: string;
-  sets: SetRow[];
-}
-
-interface SavedSet {
-  id: string;
-  setNumber: number;
-  weight: number;
-  reps: number;
-  rpe: number | null;
-}
-
-interface SavedWorkoutExercise {
-  id: string;
-  order: number;
-  exercise: Exercise;
-  sets: SavedSet[];
-}
-
-interface SavedWorkout {
-  id: string;
-  performedAt: string;
-  notes: string | null;
-  workoutExercises: SavedWorkoutExercise[];
-}
-
-// ─── Utils ────────────────────────────────────────────────────────────────────
-
-function emptySet(): SetRow {
-  return { weight: "", reps: "", rpe: "" };
-}
-
-function emptyExercise(): ExerciseRow {
-  return { exerciseId: "", sets: [emptySet()] };
-}
-
-function displayReps(reps: number): string {
-  return reps === -1 ? "fail" : String(reps);
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
+import {
+  Exercise,
+  SavedWorkout,
+  ExerciseRow,
+  SetRow,
+} from "./types/types";
+import {
+  emptySet,
+  emptyExercise,
+  displayReps,
+  formatDate,
+} from "./utils/utils";
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
