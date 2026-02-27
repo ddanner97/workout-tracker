@@ -7,6 +7,17 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import {
   Exercise,
   ExerciseRow,
   SetRow,
@@ -16,6 +27,7 @@ import { emptyExercise, emptySet } from "../utils/utils";
 
 // ─── Components ───
 import { Button } from "../library";
+import ExerciseTable from "./ExerciseTable";
 
 async function fetchExercises(): Promise<Exercise[]> {
   const res = await fetch("/api/exercises");
@@ -140,166 +152,122 @@ export default function WorkoutForm() {
   }
 
   return (
-    <section>
-      <h2>Log a Workout</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="date">Date</label>
-          <input
+    <Box component="section">
+      <Typography variant="h5" gutterBottom>
+        Log a Workout
+      </Typography>
+      <Box component="form" onSubmit={handleSubmit}>
+        <Stack spacing={3}>
+          <TextField
             id="date"
+            label="Date"
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
             required
+            slotProps={{ inputLabel: { shrink: true } }}
+            sx={{ maxWidth: 220 }}
           />
-        </div>
 
-        <div>
-          <label htmlFor="notes">Notes (optional)</label>
-          <input
+          <TextField
             id="notes"
-            type="text"
+            label="Notes (optional)"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
+            fullWidth
           />
-        </div>
 
-        <div>
-          <h3>Exercises</h3>
-          {exercises.map((ex, ei) => (
-            <div
-              key={ei}
-              style={{
-                border: "1px solid #ccc",
-                padding: "8px",
-                marginBottom: "8px",
-              }}
-            >
-              <div>
-                <label>Exercise</label>
-                <select
-                  value={ex.exerciseId}
-                  onChange={(e) => updateExerciseId(ei, e.target.value)}
-                  required
-                >
-                  <option value="">-- select --</option>
-                  {availableExercises.map((opt) => (
-                    <option key={opt.id} value={opt.id}>
-                      {opt.name}
-                      {opt.muscleGroup ? ` (${opt.muscleGroup})` : ""}
-                    </option>
-                  ))}
-                </select>
-                {exercises.length > 1 && (
-                  <Button
-                    type="button"
-                    label="Remove Exercise"
-                    onClick={() => removeExercise(ei)}
-                    variant="outlined"
-                    color="error"
-                    size="small"
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Exercises
+            </Typography>
+            <Stack spacing={2}>
+              {exercises.map((ex, ei) => (
+                <Paper key={ei} variant="outlined" sx={{ p: 2 }}>
+                  <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    spacing={1}
+                    alignItems={{ sm: "center" }}
+                    mb={2}
+                  >
+                    <FormControl required sx={{ minWidth: 220, flex: 1 }}>
+                      <InputLabel id={`exercise-label-${ei}`}>
+                        Exercise
+                      </InputLabel>
+                      <Select
+                        labelId={`exercise-label-${ei}`}
+                        value={ex.exerciseId}
+                        label="Exercise"
+                        onChange={(e) =>
+                          updateExerciseId(ei, e.target.value)
+                        }
+                      >
+                        <MenuItem value="">
+                          <em>-- select --</em>
+                        </MenuItem>
+                        {availableExercises.map((opt) => (
+                          <MenuItem key={opt.id} value={opt.id}>
+                            {opt.name}
+                            {opt.muscleGroup
+                              ? ` (${opt.muscleGroup})`
+                              : ""}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    {exercises.length > 1 && (
+                      <Button
+                        type="button"
+                        label="Remove Exercise"
+                        onClick={() => removeExercise(ei)}
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                      />
+                    )}
+                  </Stack>
+
+                  <ExerciseTable
+                    sets={ex.sets}
+                    exerciseIndex={ei}
+                    onAddSet={() => addSet(ei)}
+                    onRemoveSet={(si) => removeSet(ei, si)}
+                    onUpdateSet={(si, field, val) =>
+                      updateSet(ei, si, field, val)
+                    }
                   />
-                )}
-              </div>
+                </Paper>
+              ))}
+              <Box>
+                <Button
+                  label="+ Add Exercise"
+                  type="button"
+                  onClick={addExercise}
+                  variant="outlined"
+                />
+              </Box>
+            </Stack>
+          </Box>
 
-              <table>
-                <thead>
-                  <tr>
-                    <th>Set</th>
-                    <th>Weight (kg)</th>
-                    <th>Reps</th>
-                    <th>RPE</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ex.sets.map((set, si) => (
-                    <tr key={si}>
-                      <td>{si + 1}</td>
-                      <td>
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.5"
-                          value={set.weight}
-                          onChange={(e) =>
-                            updateSet(ei, si, "weight", e.target.value)
-                          }
-                          required
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          placeholder="5 or fail"
-                          value={set.reps}
-                          onChange={(e) =>
-                            updateSet(ei, si, "reps", e.target.value)
-                          }
-                          required
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          min="1"
-                          max="10"
-                          step="0.5"
-                          placeholder="optional"
-                          value={set.rpe}
-                          onChange={(e) =>
-                            updateSet(ei, si, "rpe", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td>
-                        {ex.sets.length > 1 && (
-                          <Button
-                            type="button"
-                            onClick={() => removeSet(ei, si)}
-                            label="x"
-                            variant="contained"
-                            color="error"
-                            size="small"
-                          />
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <Button
-                label="+ Add Set"
-                type="button"
-                onClick={() => addSet(ei)}
-                variant="outlined"
-              />
-            </div>
-          ))}
-          <Button
-            label="+ Add Exercise"
-            type="button"
-            onClick={addExercise}
-            variant="outlined"
-          />
-        </div>
+          {formErrors.length > 0 && (
+            <Box component="ul" sx={{ color: "error.main", pl: 2, m: 0 }}>
+              {formErrors.map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+            </Box>
+          )}
 
-        {formErrors.length > 0 && (
-          <ul style={{ color: "red" }}>
-            {formErrors.map((err, i) => (
-              <li key={i}>{err}</li>
-            ))}
-          </ul>
-        )}
-
-        <Button
-          type="submit"
-          label={mutation.isPending ? "Saving..." : "Save Workout"}
-          disabled={mutation.isPending}
-          variant="contained"
-          color="primary"
-        />
-      </form>
-    </section>
+          <Box>
+            <Button
+              type="submit"
+              label={mutation.isPending ? "Saving..." : "Save Workout"}
+              disabled={mutation.isPending}
+              variant="contained"
+              color="primary"
+            />
+          </Box>
+        </Stack>
+      </Box>
+    </Box>
   );
 }
