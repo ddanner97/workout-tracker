@@ -1,12 +1,9 @@
-import WorkoutForm from "./components/WorkoutForm";
-import WorkoutList from "./components/WorkoutList";
+import { WorkoutForm } from "./components";
 
 export default function HomePage() {
   return (
     <div>
       <WorkoutForm />
-      <hr />
-      <WorkoutList />
     </div>
   );
 }

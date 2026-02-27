@@ -26,7 +26,7 @@ import {
 import { emptyExercise, emptySet } from "../utils/utils";
 
 // ─── Components ───
-import { Button } from "../library";
+import { Button } from "./index";
 import ExerciseTable from "./ExerciseTable";
 
 async function fetchExercises(): Promise<Exercise[]> {

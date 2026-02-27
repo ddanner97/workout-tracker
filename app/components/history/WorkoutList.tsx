@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { SavedWorkout } from "../types/types";
-import { displayReps, formatDate } from "../utils/utils";
+import { SavedWorkout } from "../../types/types";
+import { displayReps, formatDate } from "../../utils/utils";
 
 async function fetchWorkouts(): Promise<SavedWorkout[]> {
   const res = await fetch("/api/workouts");

@@ -15,7 +15,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { SetRow } from "../types/types";
-import { Button } from "../library";
+import { Button } from "./index";
 
 interface ExerciseTableProps {
   sets: SetRow[];
