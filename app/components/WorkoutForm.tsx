@@ -7,12 +7,14 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
+  Autocomplete,
   Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
+  createFilterOptions,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Paper,
-  Select,
   Stack,
   TextField,
   Typography,
@@ -28,6 +30,13 @@ import { emptyExercise, emptySet } from "../utils/utils";
 // ─── Components ───
 import { Button } from "./index";
 import ExerciseTable from "./ExerciseTable";
+
+// ─── Types ───
+interface ExerciseOption extends Exercise {
+  inputValue?: string;
+}
+
+const filter = createFilterOptions<ExerciseOption>();
 
 async function fetchExercises(): Promise<Exercise[]> {
   const res = await fetch("/api/exercises");
@@ -48,6 +57,19 @@ async function postWorkout(body: unknown): Promise<SavedWorkout> {
   return res.json();
 }
 
+async function postExercise(body: {
+  name: string;
+  muscleGroup: string;
+}): Promise<Exercise> {
+  const res = await fetch("/api/exercises", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error("Failed to create exercise");
+  return res.json();
+}
+
 export default function WorkoutForm() {
   const queryClient = useQueryClient();
 
@@ -58,12 +80,20 @@ export default function WorkoutForm() {
   ]);
   const [formErrors, setFormErrors] = useState<string[]>([]);
 
+  // ─── Add-exercise dialog state ───
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogExerciseName, setDialogExerciseName] = useState("");
+  const [dialogMuscleGroup, setDialogMuscleGroup] = useState("");
+  const [pendingExerciseIndex, setPendingExerciseIndex] = useState<
+    number | null
+  >(null);
+
   const { data: availableExercises = [] } = useQuery({
     queryKey: ["exercises"],
     queryFn: fetchExercises,
   });
 
-  const mutation = useMutation({
+  const workoutMutation = useMutation({
     mutationFn: postWorkout,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workouts"] });
@@ -74,6 +104,17 @@ export default function WorkoutForm() {
     },
     onError: (err: { errors?: string[] }) => {
       setFormErrors(err.errors ?? ["An unexpected error occurred."]);
+    },
+  });
+
+  const addExerciseMutation = useMutation({
+    mutationFn: postExercise,
+    onSuccess: (newExercise) => {
+      queryClient.invalidateQueries({ queryKey: ["exercises"] });
+      if (pendingExerciseIndex !== null) {
+        updateExerciseId(pendingExerciseIndex, newExercise.id);
+      }
+      handleDialogClose();
     },
   });
 
@@ -129,6 +170,20 @@ export default function WorkoutForm() {
     );
   }
 
+  function handleDialogClose() {
+    setDialogOpen(false);
+    setDialogExerciseName("");
+    setDialogMuscleGroup("");
+    setPendingExerciseIndex(null);
+  }
+
+  function handleDialogSave() {
+    addExerciseMutation.mutate({
+      name: dialogExerciseName,
+      muscleGroup: dialogMuscleGroup,
+    });
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormErrors([]);
@@ -148,7 +203,7 @@ export default function WorkoutForm() {
       })),
     };
 
-    mutation.mutate(body);
+    workoutMutation.mutate(body);
   }
 
   return (
@@ -190,31 +245,63 @@ export default function WorkoutForm() {
                     alignItems={{ sm: "center" }}
                     mb={2}
                   >
-                    <FormControl required sx={{ minWidth: 220, flex: 1 }}>
-                      <InputLabel id={`exercise-label-${ei}`}>
-                        Exercise
-                      </InputLabel>
-                      <Select
-                        labelId={`exercise-label-${ei}`}
-                        value={ex.exerciseId}
-                        label="Exercise"
-                        onChange={(e) =>
-                          updateExerciseId(ei, e.target.value)
+                    <Autocomplete
+                      options={availableExercises as ExerciseOption[]}
+                      value={
+                        (availableExercises as ExerciseOption[]).find(
+                          (e) => e.id === ex.exerciseId,
+                        ) ?? null
+                      }
+                      onChange={(_, option) => {
+                        if (!option) {
+                          updateExerciseId(ei, "");
+                          return;
                         }
-                      >
-                        <MenuItem value="">
-                          <em>-- select --</em>
-                        </MenuItem>
-                        {availableExercises.map((opt) => (
-                          <MenuItem key={opt.id} value={opt.id}>
-                            {opt.name}
-                            {opt.muscleGroup
-                              ? ` (${opt.muscleGroup})`
-                              : ""}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                        if (option.inputValue) {
+                          setPendingExerciseIndex(ei);
+                          setDialogExerciseName(option.inputValue);
+                          setDialogOpen(true);
+                        } else {
+                          updateExerciseId(ei, option.id);
+                        }
+                      }}
+                      filterOptions={(options, params) => {
+                        const filtered = filter(options, params);
+                        const { inputValue } = params;
+                        const alreadyExists = options.some(
+                          (o) =>
+                            o.name.toLowerCase() ===
+                            inputValue.toLowerCase(),
+                        );
+                        if (inputValue && !alreadyExists) {
+                          filtered.push({
+                            id: "",
+                            name: `Add "${inputValue}"`,
+                            muscleGroup: null,
+                            inputValue,
+                          });
+                        }
+                        return filtered;
+                      }}
+                      getOptionLabel={(option) => {
+                        if (typeof option === "string") return option;
+                        if (option.inputValue) return option.inputValue;
+                        return option.muscleGroup
+                          ? `${option.name} (${option.muscleGroup})`
+                          : option.name;
+                      }}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Exercise"
+                          required={!ex.exerciseId}
+                        />
+                      )}
+                      sx={{ minWidth: 220, flex: 1 }}
+                    />
                     {exercises.length > 1 && (
                       <Button
                         type="button"
@@ -260,14 +347,61 @@ export default function WorkoutForm() {
           <Box>
             <Button
               type="submit"
-              label={mutation.isPending ? "Saving..." : "Save Workout"}
-              disabled={mutation.isPending}
+              label={
+                workoutMutation.isPending ? "Saving..." : "Save Workout"
+              }
+              disabled={workoutMutation.isPending}
               variant="contained"
               color="primary"
             />
           </Box>
         </Stack>
       </Box>
+
+      {/* ─── Add New Exercise Dialog ─── */}
+      <Dialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Add New Exercise</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <TextField
+              label="Exercise Name"
+              value={dialogExerciseName}
+              onChange={(e) => setDialogExerciseName(e.target.value)}
+              required
+              autoFocus
+              fullWidth
+            />
+            <TextField
+              label="Muscle Group (optional)"
+              value={dialogMuscleGroup}
+              onChange={(e) => setDialogMuscleGroup(e.target.value)}
+              fullWidth
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            type="button"
+            label="Cancel"
+            onClick={handleDialogClose}
+            variant="outlined"
+          />
+          <Button
+            type="button"
+            label={addExerciseMutation.isPending ? "Saving..." : "Save"}
+            onClick={handleDialogSave}
+            disabled={
+              !dialogExerciseName.trim() || addExerciseMutation.isPending
+            }
+            variant="contained"
+          />
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

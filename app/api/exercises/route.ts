@@ -7,3 +7,11 @@ export async function GET() {
   });
   return NextResponse.json(exercises);
 }
+
+export async function POST(req: Request) {
+  const { name, muscleGroup } = await req.json();
+  const exercise = await prisma.exercise.create({
+    data: { name, muscleGroup: muscleGroup || null },
+  });
+  return NextResponse.json(exercise, { status: 201 });
+}
