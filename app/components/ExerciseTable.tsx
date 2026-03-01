@@ -10,12 +10,41 @@ import {
   TableHead,
   TableRow,
   TextField,
+  TextFieldProps,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { SetRow } from "../types/types";
 import { Button } from "./index";
+
+// ─── Constants ───
+const SET_FIELDS: TextFieldProps[] = [
+  {
+    label: "Weight (lbs)",
+    key: "weight",
+    type: "number",
+    size: "small",
+    inputProps: { min: 0, step: 0.5 },
+    required: true,
+  },
+  {
+    label: "Reps",
+    key: "reps",
+    size: "small",
+    placeholder: "5 or fail",
+    required: true,
+  },
+  {
+    label: "RPE (optional)",
+    key: "rpe",
+    type: "number",
+    size: "small",
+    inputProps: { min: 1, max: 10 },
+    placeholder: "optional",
+    required: false,
+  },
+];
 
 interface ExerciseTableProps {
   sets: SetRow[];
@@ -33,6 +62,11 @@ export default function ExerciseTable({
 }: ExerciseTableProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const handleFieldChange =
+    (si: number, field: keyof SetRow) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onUpdateSet(si, field, e.target.value);
 
   if (isMobile) {
     return (
@@ -59,35 +93,29 @@ export default function ExerciseTable({
                 />
               )}
             </Stack>
-            <Stack spacing={1}>
-              <TextField
-                label="Weight (kg)"
-                type="number"
-                size="small"
-                fullWidth
-                inputProps={{ min: 0, step: 0.5 }}
-                value={set.weight}
-                onChange={(e) => onUpdateSet(si, "weight", e.target.value)}
-                required
-              />
-              <TextField
-                label="Reps"
-                size="small"
-                fullWidth
-                placeholder="5 or fail"
-                value={set.reps}
-                onChange={(e) => onUpdateSet(si, "reps", e.target.value)}
-                required
-              />
-              <TextField
-                label="RPE (optional)"
-                type="number"
-                size="small"
-                fullWidth
-                inputProps={{ min: 1, max: 10, step: 0.5 }}
-                value={set.rpe}
-                onChange={(e) => onUpdateSet(si, "rpe", e.target.value)}
-              />
+            <Stack direction="row" spacing={2}>
+              {SET_FIELDS.map((field) => {
+                return (
+                  <TextField
+                    key={field.key}
+                    label={field.label}
+                    type={field.type}
+                    size={field.size}
+                    required={field.required}
+                    slotProps={{
+                      htmlInput: {
+                        ...field.inputProps,
+                      },
+                    }}
+                    value={set[field.key as keyof SetRow]}
+                    onChange={handleFieldChange(
+                      si,
+                      field.key as keyof SetRow,
+                    )}
+                    placeholder={field.placeholder}
+                  />
+                );
+              })}
             </Stack>
           </Paper>
         ))}
@@ -119,44 +147,29 @@ export default function ExerciseTable({
             {sets.map((set, si) => (
               <TableRow key={si}>
                 <TableCell>{si + 1}</TableCell>
-                <TableCell>
-                  <TextField
-                    type="number"
-                    size="small"
-                    inputProps={{ min: 0, step: 0.5 }}
-                    value={set.weight}
-                    onChange={(e) =>
-                      onUpdateSet(si, "weight", e.target.value)
-                    }
-                    required
-                    sx={{ width: 100 }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    size="small"
-                    placeholder="5 or fail"
-                    value={set.reps}
-                    onChange={(e) =>
-                      onUpdateSet(si, "reps", e.target.value)
-                    }
-                    required
-                    sx={{ width: 100 }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    type="number"
-                    size="small"
-                    inputProps={{ min: 1, max: 10, step: 0.5 }}
-                    placeholder="optional"
-                    value={set.rpe}
-                    onChange={(e) =>
-                      onUpdateSet(si, "rpe", e.target.value)
-                    }
-                    sx={{ width: 100 }}
-                  />
-                </TableCell>
+                {SET_FIELDS.map((field) => (
+                  <TableCell key={field.key}>
+                    <TextField
+                      key={field.key}
+                      label={field.label}
+                      type={field.type}
+                      size={field.size}
+                      required={field.required}
+                      slotProps={{
+                        htmlInput: {
+                          ...field.inputProps,
+                        },
+                      }}
+                      value={set[field.key as keyof SetRow]}
+                      onChange={handleFieldChange(
+                        si,
+                        field.key as keyof SetRow,
+                      )}
+                      placeholder={field.placeholder}
+                      sx={{ width: 100 }}
+                    />
+                  </TableCell>
+                ))}
                 <TableCell>
                   {sets.length > 1 && (
                     <Button
