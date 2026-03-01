@@ -1,13 +1,17 @@
 // library components
-import Button from "./library/Button";
-import Container from "./library/Container";
+import Button from "./component-library/Button";
+import Container from "./component-library/Container";
 
 export { Button, Container };
 
 // components
-import WorkoutForm from "./WorkoutForm";
-import WorkoutList from "./history/WorkoutList";
 import QueryProvider from "./QueryProvider";
+
+// home components
+import WorkoutForm from "./WorkoutForm";
 import ExerciseTable from "./ExerciseTable";
+
+// history components
+import WorkoutList from "./history/WorkoutList";
 
 export { WorkoutForm, WorkoutList, QueryProvider, ExerciseTable };
