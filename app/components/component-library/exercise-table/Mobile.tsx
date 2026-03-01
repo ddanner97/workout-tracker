@@ -40,14 +40,14 @@ export default function ExerciseTableMobile({
               <Button
                 type="button"
                 onClick={() => onRemoveSet(si)}
-                label="Remove"
+                label="-"
                 variant="outlined"
                 color="error"
                 size="small"
               />
             )}
           </Stack>
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={1}>
             {SET_FIELDS.map((field) => (
               <TextField
                 key={field.key}
@@ -63,6 +63,7 @@ export default function ExerciseTableMobile({
                 value={set[field.key as keyof SetRow]}
                 onChange={handleFieldChange(si, field.key as keyof SetRow)}
                 placeholder={field.placeholder}
+                sx={field.key === "rpe" ? { flex: 0.75 } : { flex: 1 }}
               />
             ))}
           </Stack>
