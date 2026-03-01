@@ -1,7 +1,6 @@
 // library components
 import Button from "./Button";
 import Container from "./Container";
-import ExerciseTableDesktop from "./exercise-table/Desktop";
-import ExerciseTableMobile from "./exercise-table/Mobile";
+import ExerciseTable from "./exercise-table/ExerciseTable";
 
-export { Button, Container, ExerciseTableDesktop, ExerciseTableMobile };
+export { Button, Container, ExerciseTable };

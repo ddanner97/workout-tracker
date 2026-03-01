@@ -1,11 +1,9 @@
 "use client";
 
 import { useMediaQuery, useTheme } from "@mui/material";
-import { SetRow } from "../types/types";
-import {
-  ExerciseTableDesktop,
-  ExerciseTableMobile,
-} from "./component-library";
+import { SetRow } from "../../../types/types";
+import ExerciseTableDesktop from "./Desktop";
+import ExerciseTableMobile from "./Mobile";
 
 interface ExerciseTableProps {
   sets: SetRow[];

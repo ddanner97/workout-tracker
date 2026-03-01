@@ -28,8 +28,7 @@ import {
 import { emptyExercise, emptySet } from "../utils/utils";
 
 // ─── Components ───
-import { Button } from "./component-library";
-import ExerciseTable from "./ExerciseTable";
+import { Button, ExerciseTable } from "./component-library";
 
 // ─── Types ───
 interface ExerciseOption extends Exercise {
