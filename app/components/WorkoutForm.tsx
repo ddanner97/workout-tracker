@@ -28,7 +28,7 @@ import {
 import { emptyExercise, emptySet } from "../utils/utils";
 
 // ─── Components ───
-import { Button } from "./index";
+import { Button } from "./component-library";
 import ExerciseTable from "./ExerciseTable";
 
 // ─── Types ───

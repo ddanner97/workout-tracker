@@ -1,9 +1,3 @@
-// library components
-import Button from "./component-library/Button";
-import Container from "./component-library/Container";
-
-export { Button, Container };
-
 // components
 import QueryProvider from "./QueryProvider";
 
