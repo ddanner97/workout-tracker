@@ -28,8 +28,7 @@ import {
 import { emptyExercise, emptySet } from "../utils/utils";
 
 // ─── Components ───
-import { Button } from "./index";
-import ExerciseTable from "./ExerciseTable";
+import { Button, ExerciseTable } from "./component-library";
 
 // ─── Types ───
 interface ExerciseOption extends Exercise {
@@ -316,7 +315,6 @@ export default function WorkoutForm() {
 
                   <ExerciseTable
                     sets={ex.sets}
-                    exerciseIndex={ei}
                     onAddSet={() => addSet(ei)}
                     onRemoveSet={(si) => removeSet(ei, si)}
                     onUpdateSet={(si, field, val) =>
