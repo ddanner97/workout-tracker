@@ -50,7 +50,7 @@ export default function ExerciseTableMobile({
           <Stack direction="row" spacing={1}>
             {SET_FIELDS.map((field) => (
               <TextField
-                key={field.key}
+                key={field.fieldName}
                 label={field.label}
                 type={field.type}
                 size={field.size}
@@ -60,10 +60,10 @@ export default function ExerciseTableMobile({
                     ...field.inputProps,
                   },
                 }}
-                value={set[field.key as keyof SetRow]}
-                onChange={handleFieldChange(si, field.key as keyof SetRow)}
+                value={set[field.fieldName]}
+                onChange={handleFieldChange(si, field.fieldName)}
                 placeholder={field.placeholder}
-                sx={field.key === "rpe" ? { flex: 0.75 } : { flex: 1 }}
+                sx={field.fieldName === "rpe" ? { flex: 0.75 } : { flex: 1 }}
               />
             ))}
           </Stack>

@@ -41,7 +41,7 @@ export default function ExerciseTableDesktop({
             <TableRow>
               <TableCell width={40}>Set</TableCell>
               {SET_FIELDS.map((field) => (
-                <TableCell key={field.key}>{field.label}</TableCell>
+                <TableCell key={field.fieldName}>{field.label}</TableCell>
               ))}
               <TableCell width={60} />
             </TableRow>
@@ -51,7 +51,7 @@ export default function ExerciseTableDesktop({
               <TableRow key={si}>
                 <TableCell>{si + 1}</TableCell>
                 {SET_FIELDS.map((field) => (
-                  <TableCell key={field.key}>
+                  <TableCell key={field.fieldName}>
                     <TextField
                       label={field.label}
                       type={field.type}
@@ -62,11 +62,8 @@ export default function ExerciseTableDesktop({
                           ...field.inputProps,
                         },
                       }}
-                      value={set[field.key as keyof SetRow]}
-                      onChange={handleFieldChange(
-                        si,
-                        field.key as keyof SetRow,
-                      )}
+                      value={set[field.fieldName]}
+                      onChange={handleFieldChange(si, field.fieldName)}
                       placeholder={field.placeholder}
                       sx={{ width: 100 }}
                     />

@@ -1,9 +1,15 @@
 import { TextFieldProps } from "@mui/material";
+import { SetRow } from "../../../types/types";
 
-export const SET_FIELDS: TextFieldProps[] = [
+export interface SetFieldConfig
+  extends Pick<TextFieldProps, "label" | "type" | "size" | "placeholder" | "required" | "inputProps"> {
+  fieldName: keyof SetRow;
+}
+
+export const SET_FIELDS: SetFieldConfig[] = [
   {
     label: "Weight (lbs)",
-    key: "weight",
+    fieldName: "weight",
     type: "number",
     size: "small",
     inputProps: { min: 0, step: 0.5 },
@@ -11,14 +17,14 @@ export const SET_FIELDS: TextFieldProps[] = [
   },
   {
     label: "Reps",
-    key: "reps",
+    fieldName: "reps",
     size: "small",
     placeholder: "5 or fail",
     required: true,
   },
   {
     label: "RPE (optional)",
-    key: "rpe",
+    fieldName: "rpe",
     type: "number",
     size: "small",
     inputProps: { min: 1, max: 10 },
