@@ -2,8 +2,9 @@ import { TextFieldProps } from "@mui/material";
 import { SetRow } from "../../../types/types";
 
 export interface SetFieldConfig
-  extends Pick<TextFieldProps, "label" | "type" | "size" | "placeholder" | "required" | "inputProps"> {
+  extends Pick<TextFieldProps, "label" | "type" | "size" | "placeholder" | "required"> {
   fieldName: keyof SetRow;
+  htmlInputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
 export const SET_FIELDS: SetFieldConfig[] = [
@@ -12,7 +13,7 @@ export const SET_FIELDS: SetFieldConfig[] = [
     fieldName: "weight",
     type: "number",
     size: "small",
-    inputProps: { min: 0, step: 0.5 },
+    htmlInputProps: { min: 0, step: 0.5 },
     required: true,
   },
   {
@@ -27,7 +28,7 @@ export const SET_FIELDS: SetFieldConfig[] = [
     fieldName: "rpe",
     type: "number",
     size: "small",
-    inputProps: { min: 1, max: 10 },
+    htmlInputProps: { min: 1, max: 10, step: 0.25 },
     placeholder: "optional",
     required: false,
   },

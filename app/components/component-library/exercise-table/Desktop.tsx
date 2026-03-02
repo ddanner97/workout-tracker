@@ -59,7 +59,7 @@ export default function ExerciseTableDesktop({
                       required={field.required}
                       slotProps={{
                         htmlInput: {
-                          ...field.inputProps,
+                          ...field.htmlInputProps,
                         },
                       }}
                       value={set[field.fieldName]}

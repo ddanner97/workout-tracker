@@ -57,7 +57,7 @@ export default function ExerciseTableMobile({
                 required={field.required}
                 slotProps={{
                   htmlInput: {
-                    ...field.inputProps,
+                    ...field.htmlInputProps,
                   },
                 }}
                 value={set[field.fieldName]}
