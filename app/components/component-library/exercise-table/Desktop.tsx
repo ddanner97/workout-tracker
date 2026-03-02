@@ -40,9 +40,9 @@ export default function ExerciseTableDesktop({
           <TableHead>
             <TableRow>
               <TableCell width={40}>Set</TableCell>
-              <TableCell>Weight (kg)</TableCell>
-              <TableCell>Reps</TableCell>
-              <TableCell>RPE</TableCell>
+              {SET_FIELDS.map((field) => (
+                <TableCell key={field.key}>{field.label}</TableCell>
+              ))}
               <TableCell width={60} />
             </TableRow>
           </TableHead>
