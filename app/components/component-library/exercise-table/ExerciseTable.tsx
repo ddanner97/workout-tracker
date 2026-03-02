@@ -7,7 +7,6 @@ import ExerciseTableMobile from "./Mobile";
 
 interface ExerciseTableProps {
   sets: SetRow[];
-  exerciseIndex: number;
   onAddSet: () => void;
   onRemoveSet: (si: number) => void;
   onUpdateSet: (si: number, field: keyof SetRow, value: string) => void;

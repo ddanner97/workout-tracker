@@ -315,7 +315,6 @@ export default function WorkoutForm() {
 
                   <ExerciseTable
                     sets={ex.sets}
-                    exerciseIndex={ei}
                     onAddSet={() => addSet(ei)}
                     onRemoveSet={(si) => removeSet(ei, si)}
                     onUpdateSet={(si, field, val) =>
