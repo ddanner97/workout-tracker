@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
   useCallback,
 } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
@@ -24,19 +25,18 @@ const ColorModeContext = createContext<ColorModeContextType>({
 export const useColorMode = () => useContext(ColorModeContext);
 
 export function ThemeRegistry({ children }: { children: React.ReactNode }) {
-  const [colorMode, setColorMode] = useState<ColorMode>(() => {
-    if (typeof window === "undefined") {
-      return "light";
-    }
+  const [colorMode, setColorMode] = useState<ColorMode>("light");
+
+  useEffect(() => {
     const stored = localStorage.getItem("colorMode") as ColorMode | null;
-    const initial: ColorMode =
+    const initial =
       stored ??
       (window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light");
+    setColorMode(initial);
     document.documentElement.classList.toggle("dark", initial === "dark");
-    return initial;
-  });
+  }, []);
 
   const toggleColorMode = useCallback(() => {
     setColorMode((prev) => {
