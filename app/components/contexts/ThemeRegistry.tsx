@@ -30,17 +30,25 @@ export function ThemeRegistry({
   children: React.ReactNode;
 }) {
   const [colorMode, setColorMode] = useState<ColorMode>(() => {
-    const stored = localStorage.getItem("colorMode") as ColorMode | null;
+    // localStorage is only available in the browser; guard against SSR
+    const stored =
+      typeof window !== "undefined"
+        ? (localStorage.getItem("colorMode") as ColorMode | null)
+        : null;
     return (
       stored ??
-      (window.matchMedia("(prefers-color-scheme: dark)").matches
+      (typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light")
     );
   });
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", colorMode === "dark");
+    document.documentElement.classList.toggle(
+      "dark",
+      colorMode === "dark",
+    );
   }, [colorMode]);
 
   const toggleColorMode = useCallback(() => {
