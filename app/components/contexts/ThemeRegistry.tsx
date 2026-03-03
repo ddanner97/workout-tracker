@@ -29,18 +29,19 @@ export function ThemeRegistry({
 }: {
   children: React.ReactNode;
 }) {
-  const [colorMode, setColorMode] = useState<ColorMode>("light");
-
-  useEffect(() => {
+  const [colorMode, setColorMode] = useState<ColorMode>(() => {
     const stored = localStorage.getItem("colorMode") as ColorMode | null;
-    const initial =
+    return (
       stored ??
       (window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
-        : "light");
-    setColorMode(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
-  }, []);
+        : "light")
+    );
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", colorMode === "dark");
+  }, [colorMode]);
 
   const toggleColorMode = useCallback(() => {
     setColorMode((prev) => {
