@@ -1,7 +1,7 @@
 // components
 import QueryProvider from "./QueryProvider";
 import { ThemeRegistry, useColorMode } from "./ThemeRegistry";
-import { ThemeToggle } from "./ThemeToggle";
+import { ThemeToggle } from "./component-library/ThemeToggle";
 
 // home components
 import WorkoutForm from "./WorkoutForm";
