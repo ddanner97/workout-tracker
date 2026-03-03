@@ -4,9 +4,21 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
-import { useColorMode } from "./ThemeRegistry";
+import { useColorMode } from "../contexts/ThemeRegistry";
 
-export function ThemeToggle() {
+/**
+ * ThemeToggle — a simple button for toggling between light and dark themes.
+ *
+ * Uses MUI's Tooltip, IconButton, and theme icons.
+ * Consumes color mode state/context from ThemeRegistry.
+ *
+ * Usage:
+ *   <ThemeToggle />
+ * Displays a sun icon in dark mode (to switch to light), or
+ * a moon icon in light mode (to switch to dark).
+ */
+
+export default function ThemeToggle() {
   const { colorMode, toggleColorMode } = useColorMode();
   const isDark = colorMode === "dark";
 

@@ -8,7 +8,7 @@ import {
   useCallback,
 } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
-import { lightTheme, darkTheme } from "../theme/themes";
+import { lightTheme, darkTheme } from "../../theme/themes";
 
 type ColorMode = "light" | "dark";
 
@@ -24,19 +24,32 @@ const ColorModeContext = createContext<ColorModeContextType>({
 
 export const useColorMode = () => useContext(ColorModeContext);
 
-export function ThemeRegistry({ children }: { children: React.ReactNode }) {
-  const [colorMode, setColorMode] = useState<ColorMode>("light");
+export function ThemeRegistry({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [colorMode, setColorMode] = useState<ColorMode>(() => {
+    // localStorage is only available in the browser; guard against SSR
+    const stored =
+      typeof window !== "undefined"
+        ? (localStorage.getItem("colorMode") as ColorMode | null)
+        : null;
+    return (
+      stored ??
+      (typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light")
+    );
+  });
 
   useEffect(() => {
-    const stored = localStorage.getItem("colorMode") as ColorMode | null;
-    const initial =
-      stored ??
-      (window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light");
-    setColorMode(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
-  }, []);
+    document.documentElement.classList.toggle(
+      "dark",
+      colorMode === "dark",
+    );
+  }, [colorMode]);
 
   const toggleColorMode = useCallback(() => {
     setColorMode((prev) => {

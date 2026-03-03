@@ -19,13 +19,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {
-  Exercise,
-  ExerciseRow,
-  SetRow,
-  SavedWorkout,
-} from "../types/types";
-import { emptyExercise, emptySet } from "../utils/utils";
+import { Exercise, ExerciseRow, SavedWorkout } from "../types/types";
+import { useWorkoutForm } from "./contexts/WorkoutFormContext";
 
 // ─── Components ───
 import { Button, ExerciseTable } from "./component-library";
@@ -72,14 +67,24 @@ async function postExercise(body: {
 export default function WorkoutForm() {
   const queryClient = useQueryClient();
 
-  const [date, setDate] = useState("");
-  const [notes, setNotes] = useState("");
-  const [exercises, setExercises] = useState<ExerciseRow[]>([
-    emptyExercise(),
-  ]);
-  const [formErrors, setFormErrors] = useState<string[]>([]);
+  const {
+    date,
+    setDate,
+    notes,
+    setNotes,
+    exercises,
+    formErrors,
+    setFormErrors,
+    addExercise,
+    removeExercise,
+    updateExerciseId,
+    addSet,
+    removeSet,
+    updateSet,
+    resetForm,
+  } = useWorkoutForm();
 
-  // ─── Add-exercise dialog state ───
+  // ─── Add-exercise dialog state (transient UI, no need to persist) ───
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogExerciseName, setDialogExerciseName] = useState("");
   const [dialogMuscleGroup, setDialogMuscleGroup] = useState("");
@@ -96,10 +101,7 @@ export default function WorkoutForm() {
     mutationFn: postWorkout,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workouts"] });
-      setDate("");
-      setNotes("");
-      setExercises([emptyExercise()]);
-      setFormErrors([]);
+      resetForm();
     },
     onError: (err: { errors?: string[] }) => {
       setFormErrors(err.errors ?? ["An unexpected error occurred."]);
@@ -116,58 +118,6 @@ export default function WorkoutForm() {
       handleDialogClose();
     },
   });
-
-  function addExercise() {
-    setExercises((prev) => [...prev, emptyExercise()]);
-  }
-
-  function removeExercise(ei: number) {
-    setExercises((prev) => prev.filter((_, i) => i !== ei));
-  }
-
-  function updateExerciseId(ei: number, exerciseId: string) {
-    setExercises((prev) =>
-      prev.map((ex, i) => (i === ei ? { ...ex, exerciseId } : ex)),
-    );
-  }
-
-  function addSet(ei: number) {
-    setExercises((prev) =>
-      prev.map((ex, i) =>
-        i === ei ? { ...ex, sets: [...ex.sets, emptySet()] } : ex,
-      ),
-    );
-  }
-
-  function removeSet(ei: number, si: number) {
-    setExercises((prev) =>
-      prev.map((ex, i) =>
-        i === ei
-          ? { ...ex, sets: ex.sets.filter((_, j) => j !== si) }
-          : ex,
-      ),
-    );
-  }
-
-  function updateSet(
-    ei: number,
-    si: number,
-    field: keyof SetRow,
-    value: string,
-  ) {
-    setExercises((prev) =>
-      prev.map((ex, i) =>
-        i === ei
-          ? {
-              ...ex,
-              sets: ex.sets.map((set, j) =>
-                j === si ? { ...set, [field]: value } : set,
-              ),
-            }
-          : ex,
-      ),
-    );
-  }
 
   function handleDialogClose() {
     setDialogOpen(false);
@@ -236,7 +186,7 @@ export default function WorkoutForm() {
               Exercises
             </Typography>
             <Stack spacing={2}>
-              {exercises.map((ex, ei) => (
+              {exercises.map((ex: ExerciseRow, ei: number) => (
                 <Paper key={ei} variant="outlined" sx={{ p: 2 }}>
                   <Stack
                     direction={{ xs: "column", sm: "row" }}

@@ -1,8 +1,50 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { SavedWorkout } from "../../types/types";
+import { SavedWorkout, SavedWorkoutExercise } from "../../types/types";
 import { displayReps, formatDate } from "../../utils/utils";
+
+// ─── Components ───
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+
+const ExerciseTable = ({
+  exercise,
+}: {
+  exercise: SavedWorkoutExercise;
+}) => {
+  return (
+    <TableContainer component={Paper} variant="outlined">
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell>Set</TableCell>
+            <TableCell>Weight</TableCell>
+            <TableCell>Reps</TableCell>
+            <TableCell>RPE</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {exercise.sets.map((set) => (
+            <TableRow key={set.id}>
+              <TableCell>{set.setNumber}</TableCell>
+              <TableCell>{set.weight}</TableCell>
+              <TableCell>{displayReps(set.reps)}</TableCell>
+              <TableCell>{set.rpe ?? "-"}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
 
 async function fetchWorkouts(): Promise<SavedWorkout[]> {
   const res = await fetch("/api/workouts");
@@ -34,32 +76,13 @@ export default function WorkoutList() {
         >
           <h3>{formatDate(workout.performedAt)}</h3>
           {workout.notes && <p>{workout.notes}</p>}
-          {workout.workoutExercises.map((we) => (
-            <div key={we.id} style={{ marginBottom: "6px" }}>
-              <strong>{we.exercise.name}</strong>
-              {we.exercise.muscleGroup && (
-                <span> - {we.exercise.muscleGroup}</span>
+          {workout.workoutExercises.map((exercise) => (
+            <div key={exercise.id} style={{ marginBottom: "6px" }}>
+              <strong>{exercise.exercise.name}</strong>
+              {exercise.exercise.muscleGroup && (
+                <span> - {exercise.exercise.muscleGroup}</span>
               )}
-              <table>
-                <thead>
-                  <tr>
-                    <th>Set</th>
-                    <th>Weight</th>
-                    <th>Reps</th>
-                    <th>RPE</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {we.sets.map((set) => (
-                    <tr key={set.id}>
-                      <td>{set.setNumber}</td>
-                      <td>{set.weight}</td>
-                      <td>{displayReps(set.reps)}</td>
-                      <td>{set.rpe ?? "-"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <ExerciseTable exercise={exercise} />
             </div>
           ))}
         </div>

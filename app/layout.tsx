@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { QueryProvider, ThemeRegistry, ThemeToggle } from "./components";
+
+// ─── Components ───
+import { ThemeToggle } from "./components/component-library";
+import {
+  QueryProvider,
+  ThemeRegistry,
+  WorkoutFormProvider,
+} from "./components";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,33 +38,35 @@ export default function RootLayout({
       >
         <ThemeRegistry>
           <QueryProvider>
-            <div className="min-h-screen bg-background text-foreground">
-              <header className="border-b border-black/10 dark:border-white/10">
-                <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
-                  <Link
-                    className="text-lg font-semibold tracking-tight"
-                    href="/"
-                  >
-                    Workout Logger
-                  </Link>
-                  <nav className="flex items-center gap-4 text-sm font-medium">
-                    <Link className="hover:underline" href="/history">
-                      History
-                    </Link>
+            <WorkoutFormProvider>
+              <div className="min-h-screen bg-background text-foreground">
+                <header className="border-b border-black/10 dark:border-white/10">
+                  <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
                     <Link
-                      className="rounded-md bg-foreground px-3 py-1.5 text-background hover:opacity-90"
+                      className="text-lg font-semibold tracking-tight"
                       href="/"
                     >
-                      New Workout
+                      Workout Logger
                     </Link>
-                    <ThemeToggle />
-                  </nav>
-                </div>
-              </header>
-              <main className="mx-auto w-full max-w-5xl px-6 py-8">
-                {children}
-              </main>
-            </div>
+                    <nav className="flex items-center gap-4 text-sm font-medium">
+                      <Link className="hover:underline" href="/history">
+                        History
+                      </Link>
+                      <Link
+                        className="rounded-md bg-foreground px-3 py-1.5 text-background hover:opacity-90"
+                        href="/"
+                      >
+                        New Workout
+                      </Link>
+                      <ThemeToggle />
+                    </nav>
+                  </div>
+                </header>
+                <main className="mx-auto w-full max-w-5xl px-6 py-8">
+                  {children}
+                </main>
+              </div>
+            </WorkoutFormProvider>
           </QueryProvider>
         </ThemeRegistry>
       </body>
