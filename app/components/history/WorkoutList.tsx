@@ -58,8 +58,6 @@ export default function WorkoutList() {
     queryFn: fetchWorkouts,
   });
 
-  console.log(workouts);
-
   return (
     <section>
       <h2>Saved Workouts</h2>

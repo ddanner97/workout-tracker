@@ -4,7 +4,7 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
-import { useColorMode } from "../ThemeRegistry";
+import { useColorMode } from "../contexts/ThemeRegistry";
 
 export default function ThemeToggle() {
   const { colorMode, toggleColorMode } = useColorMode();

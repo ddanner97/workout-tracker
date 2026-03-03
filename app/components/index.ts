@@ -1,7 +1,8 @@
 // components
 import QueryProvider from "./QueryProvider";
-import { ThemeRegistry, useColorMode } from "./ThemeRegistry";
-import { ThemeToggle } from "./component-library/ThemeToggle";
+import { ThemeRegistry, useColorMode } from "./contexts/ThemeRegistry";
+import { ThemeToggle } from "./component-library";
+import { WorkoutFormProvider, useWorkoutForm } from "./contexts/WorkoutFormContext";
 
 // home components
 import WorkoutForm from "./WorkoutForm";
@@ -18,4 +19,6 @@ export {
   ThemeRegistry,
   ThemeToggle,
   useColorMode,
+  WorkoutFormProvider,
+  useWorkoutForm,
 };
