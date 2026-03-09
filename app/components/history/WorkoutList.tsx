@@ -3,6 +3,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { SavedWorkout, SavedWorkoutExercise } from "../../types/types";
 import { displayReps, formatDate } from "../../utils/utils";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
 
 // ─── Components ───
 import {
@@ -66,26 +72,31 @@ export default function WorkoutList() {
         <p>No workouts logged yet.</p>
       )}
       {workouts.map((workout) => (
-        <div
-          key={workout.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "8px",
-            marginBottom: "8px",
-          }}
-        >
-          <h3>{formatDate(workout.performedAt)}</h3>
-          {workout.notes && <p>{workout.notes}</p>}
-          {workout.workoutExercises.map((exercise) => (
-            <div key={exercise.id} style={{ marginBottom: "6px" }}>
-              <strong>{exercise.exercise.name}</strong>
-              {exercise.exercise.muscleGroup && (
-                <span> - {exercise.exercise.muscleGroup}</span>
+        <Accordion key={workout.id}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <div>
+              {formatDate(workout.performedAt)}
+              {workout.notes && (
+                <>
+                  {" - "}
+                  {workout.notes.slice(0, 10)} ...
+                </>
               )}
-              <ExerciseTable exercise={exercise} />
             </div>
-          ))}
-        </div>
+          </AccordionSummary>
+          <AccordionDetails>
+            <p>{workout.notes}</p>
+            {workout.workoutExercises.map((exercise) => (
+              <div key={exercise.id} style={{ marginBottom: "6px" }}>
+                <strong>{exercise.exercise.name}</strong>
+                {exercise.exercise.muscleGroup && (
+                  <span> - {exercise.exercise.muscleGroup}</span>
+                )}
+                <ExerciseTable exercise={exercise} />
+              </div>
+            ))}
+          </AccordionDetails>
+        </Accordion>
       ))}
     </section>
   );
