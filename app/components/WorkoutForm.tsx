@@ -178,6 +178,7 @@ export default function WorkoutForm() {
             label="Notes (optional)"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
+            multiline
             fullWidth
           />
 
