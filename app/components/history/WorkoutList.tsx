@@ -65,39 +65,43 @@ export default function WorkoutList() {
   });
 
   return (
-    <section>
-      <h2>Saved Workouts</h2>
-      {isPending && <p>Loading...</p>}
-      {!isPending && workouts.length === 0 && (
-        <p>No workouts logged yet.</p>
-      )}
-      {workouts.map((workout) => (
-        <Accordion key={workout.id}>
-          <AccordionSummary expandIcon={<ExpandMore />}>
-            <div>
-              {formatDate(workout.performedAt)}
-              {workout.notes && (
-                <>
-                  {" - "}
-                  {workout.notes.slice(0, 10)} ...
-                </>
-              )}
-            </div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <p>{workout.notes}</p>
-            {workout.workoutExercises.map((exercise) => (
-              <div key={exercise.id} style={{ marginBottom: "6px" }}>
-                <strong>{exercise.exercise.name}</strong>
-                {exercise.exercise.muscleGroup && (
-                  <span> - {exercise.exercise.muscleGroup}</span>
+    <>
+      <h1 className="text-2xl font-bold text-center mb-4">
+        Saved Workouts
+      </h1>
+      <section>
+        {isPending && <p>Loading...</p>}
+        {!isPending && workouts.length === 0 && (
+          <p>No workouts logged yet.</p>
+        )}
+        {workouts.map((workout) => (
+          <Accordion key={workout.id}>
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <div>
+                {formatDate(workout.performedAt)}
+                {workout.notes && (
+                  <>
+                    {" - "}
+                    {workout.notes.slice(0, 10)} ...
+                  </>
                 )}
-                <ExerciseTable exercise={exercise} />
               </div>
-            ))}
-          </AccordionDetails>
-        </Accordion>
-      ))}
-    </section>
+            </AccordionSummary>
+            <AccordionDetails>
+              <p>{workout.notes}</p>
+              {workout.workoutExercises.map((exercise) => (
+                <div key={exercise.id} style={{ marginBottom: "6px" }}>
+                  <strong>{exercise.exercise.name}</strong>
+                  {exercise.exercise.muscleGroup && (
+                    <span> - {exercise.exercise.muscleGroup}</span>
+                  )}
+                  <ExerciseTable exercise={exercise} />
+                </div>
+              ))}
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </section>
+    </>
   );
 }
