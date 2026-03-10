@@ -20,11 +20,12 @@ import {
   Modal,
   Typography,
 } from "@mui/material";
-import { Exercise, ExerciseRow, SavedWorkout } from "../types/types";
-import { useWorkoutForm } from "./contexts/WorkoutFormContext";
+import { Exercise, ExerciseRow } from "../../types/types";
+import { useWorkoutForm } from "../contexts/WorkoutFormContext";
+import { fetchExercises, postWorkout, postExercise } from "./info";
 
 // ─── Components ───
-import { Button, ExerciseTable } from "./component-library";
+import { Button, ExerciseTable } from "../component-library";
 
 // ─── Types ───
 interface ExerciseOption extends Exercise {
@@ -50,38 +51,6 @@ const style = {
 
 const filter = createFilterOptions<ExerciseOption>();
 
-async function fetchExercises(): Promise<Exercise[]> {
-  const res = await fetch("/api/exercises");
-  if (!res.ok) throw new Error("Failed to fetch exercises");
-  return res.json();
-}
-
-async function postWorkout(body: unknown): Promise<SavedWorkout> {
-  const res = await fetch("/api/workouts", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const data = await res.json();
-    throw data;
-  }
-  return res.json();
-}
-
-async function postExercise(body: {
-  name: string;
-  muscleGroup: string;
-}): Promise<Exercise> {
-  const res = await fetch("/api/exercises", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error("Failed to create exercise");
-  return res.json();
-}
-
 export default function WorkoutForm() {
   const queryClient = useQueryClient();
 
@@ -104,6 +73,9 @@ export default function WorkoutForm() {
 
   const [removeExerciseModalOpen, setRemoveExerciseModalOpen] =
     useState<boolean>(false);
+  const [exerciseToRemove, setExerciseToRemove] = useState<number | null>(
+    null,
+  );
 
   // ─── Add-exercise dialog state (transient UI, no need to persist) ───
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -278,7 +250,10 @@ export default function WorkoutForm() {
                         <Button
                           type="button"
                           label="Remove Exercise"
-                          onClick={() => setRemoveExerciseModalOpen(true)}
+                          onClick={() => {
+                            setRemoveExerciseModalOpen(true);
+                            setExerciseToRemove(ei);
+                          }}
                           variant="outlined"
                           color="error"
                           size="small"
@@ -300,8 +275,11 @@ export default function WorkoutForm() {
                               type="button"
                               label="Remove Exercise"
                               onClick={() => {
-                                removeExercise(ei);
+                                if (exerciseToRemove !== null) {
+                                  removeExercise(exerciseToRemove);
+                                }
                                 setRemoveExerciseModalOpen(false);
+                                setExerciseToRemove(null);
                               }}
                               variant="contained"
                               size="small"

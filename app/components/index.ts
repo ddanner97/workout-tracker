@@ -5,7 +5,7 @@ import { ThemeToggle } from "./component-library";
 import { WorkoutFormProvider, useWorkoutForm } from "./contexts/WorkoutFormContext";
 
 // home components
-import WorkoutForm from "./WorkoutForm";
+import WorkoutForm from "./home-page/WorkoutForm";
 import ExerciseTable from "./component-library/exercise-table/ExerciseTable";
 
 // history components
