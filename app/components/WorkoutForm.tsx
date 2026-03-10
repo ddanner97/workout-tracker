@@ -17,6 +17,7 @@ import {
   Paper,
   Stack,
   TextField,
+  Modal,
   Typography,
 } from "@mui/material";
 import { Exercise, ExerciseRow, SavedWorkout } from "../types/types";
@@ -29,6 +30,23 @@ import { Button, ExerciseTable } from "./component-library";
 interface ExerciseOption extends Exercise {
   inputValue?: string;
 }
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid primary.main",
+  borderRadius: 2,
+  boxShadow: 24,
+  p: 4,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+};
 
 const filter = createFilterOptions<ExerciseOption>();
 
@@ -83,6 +101,9 @@ export default function WorkoutForm() {
     updateSet,
     resetForm,
   } = useWorkoutForm();
+
+  const [removeExerciseModalOpen, setRemoveExerciseModalOpen] =
+    useState<boolean>(false);
 
   // ─── Add-exercise dialog state (transient UI, no need to persist) ───
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -253,14 +274,41 @@ export default function WorkoutForm() {
                       sx={{ minWidth: 220, flex: 1 }}
                     />
                     {exercises.length > 1 && (
-                      <Button
-                        type="button"
-                        label="Remove Exercise"
-                        onClick={() => removeExercise(ei)}
-                        variant="outlined"
-                        color="error"
-                        size="small"
-                      />
+                      <>
+                        <Button
+                          type="button"
+                          label="Remove Exercise"
+                          onClick={() => setRemoveExerciseModalOpen(true)}
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                        />
+                        <Modal
+                          open={removeExerciseModalOpen}
+                          onClose={() => setRemoveExerciseModalOpen(false)}
+                        >
+                          <Box
+                            sx={{
+                              ...style,
+                            }}
+                          >
+                            <p className="text-center mb-4">
+                              Are you sure you want to remove this
+                              exercise?
+                            </p>
+                            <Button
+                              type="button"
+                              label="Remove Exercise"
+                              onClick={() => {
+                                removeExercise(ei);
+                                setRemoveExerciseModalOpen(false);
+                              }}
+                              variant="contained"
+                              size="small"
+                            />
+                          </Box>
+                        </Modal>
+                      </>
                     )}
                   </Stack>
 
@@ -301,7 +349,7 @@ export default function WorkoutForm() {
               }
               disabled={workoutMutation.isPending}
               variant="contained"
-              color="primary"
+              sx={{ backgroundColor: "primary.main" }}
             />
           </Box>
         </Stack>
