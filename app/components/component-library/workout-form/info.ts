@@ -12,3 +12,9 @@ export async function postExercise(body: {
   if (!res.ok) throw new Error("Failed to create exercise");
   return res.json();
 }
+
+export async function fetchExercises(): Promise<Exercise[]> {
+  const res = await fetch("/api/exercises");
+  if (!res.ok) throw new Error("Failed to fetch exercises");
+  return res.json();
+}

@@ -1,23 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import {
-  Autocomplete,
-  Box,
-  createFilterOptions,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { Exercise, ExerciseRow } from "../../types/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Box, Paper, Stack, TextField, Typography } from "@mui/material";
+import { ExerciseRow } from "../../types/types";
 import { useWorkoutForm } from "../contexts/WorkoutFormContext";
-import { fetchExercises, postWorkout } from "./info";
+import { postWorkout } from "./info";
 
 // ─── Components ───
 import { Button, ExerciseTable } from "../component-library";
@@ -25,13 +13,7 @@ import { Button, ExerciseTable } from "../component-library";
 // TODO: Adjust these imports
 import AddExerciseDialog from "../component-library/workout-form/AddExerciseDialog";
 import RemoveExerciseModal from "../component-library/workout-form/RemoveExerciseModal";
-
-// ─── Types ───
-interface ExerciseOption extends Exercise {
-  inputValue?: string;
-}
-
-const filter = createFilterOptions<ExerciseOption>();
+import ExercisePicker from "../component-library/workout-form/ExercisePicker";
 
 export default function WorkoutForm() {
   const queryClient = useQueryClient();
@@ -45,7 +27,6 @@ export default function WorkoutForm() {
     formErrors,
     setFormErrors,
     addExercise,
-    updateExerciseId,
     addSet,
     removeSet,
     updateSet,
@@ -59,11 +40,7 @@ export default function WorkoutForm() {
     number | null
   >(null);
 
-  // --- Queries & Mutations ───
-  const { data: availableExercises = [] } = useQuery({
-    queryKey: ["exercises"],
-    queryFn: fetchExercises,
-  });
+  // --- Mutations ───
 
   const workoutMutation = useMutation({
     mutationFn: postWorkout,
@@ -138,62 +115,12 @@ export default function WorkoutForm() {
                     alignItems={{ sm: "center" }}
                     mb={2}
                   >
-                    <Autocomplete
-                      options={availableExercises as ExerciseOption[]}
-                      value={
-                        (availableExercises as ExerciseOption[]).find(
-                          (e) => e.id === ex.exerciseId,
-                        ) ?? null
-                      }
-                      onChange={(_, option) => {
-                        if (!option) {
-                          updateExerciseId(ei, "");
-                          return;
-                        }
-                        if (option.inputValue) {
-                          setPendingExerciseIndex(ei);
-                          setDialogExerciseName(option.inputValue);
-                          setDialogOpen(true);
-                        } else {
-                          updateExerciseId(ei, option.id);
-                        }
-                      }}
-                      filterOptions={(options, params) => {
-                        const filtered = filter(options, params);
-                        const { inputValue } = params;
-                        const alreadyExists = options.some(
-                          (o) =>
-                            o.name.toLowerCase() ===
-                            inputValue.toLowerCase(),
-                        );
-                        if (inputValue && !alreadyExists) {
-                          filtered.push({
-                            id: "",
-                            name: `Add "${inputValue}"`,
-                            muscleGroup: null,
-                            inputValue,
-                          });
-                        }
-                        return filtered;
-                      }}
-                      getOptionLabel={(option) => {
-                        if (typeof option === "string") return option;
-                        if (option.inputValue) return option.inputValue;
-                        return option.muscleGroup
-                          ? `${option.name} (${option.muscleGroup})`
-                          : option.name;
-                      }}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id === value.id
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Exercise"
-                          required={!ex.exerciseId}
-                        />
-                      )}
-                      sx={{ minWidth: 220, flex: 1 }}
+                    <ExercisePicker
+                      setPendingExerciseIndex={setPendingExerciseIndex}
+                      setDialogExerciseName={setDialogExerciseName}
+                      setDialogOpen={setDialogOpen}
+                      exerciseIndex={ei}
+                      exercise={ex}
                     />
                     {exercises.length > 1 && (
                       <RemoveExerciseModal exerciseIndex={ei} />
