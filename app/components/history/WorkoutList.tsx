@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { SavedWorkoutExercise } from "../../types/types";
-import { displayReps, formatDate } from "../../utils/utils";
-import { fetchWorkouts } from "./info";
+import { useQuery } from '@tanstack/react-query';
+import { SavedWorkoutExercise } from '../../types/types';
+import { displayReps, formatDate } from '../../utils/utils';
+import { fetchWorkouts } from './info';
 import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Box,
-} from "@mui/material";
-import { ExpandMore } from "@mui/icons-material";
-import { Button } from "../component-library";
+} from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
+import { Button } from '../component-library';
 
 // ─── Components ───
 import {
@@ -22,14 +22,10 @@ import {
   TableHead,
   TableRow,
   Paper,
-} from "@mui/material";
+} from '@mui/material';
 
 // ─── ExerciseTable component ───
-const ExerciseTable = ({
-  exercise,
-}: {
-  exercise: SavedWorkoutExercise;
-}) => {
+const ExerciseTable = ({ exercise }: { exercise: SavedWorkoutExercise }) => {
   return (
     <TableContainer component={Paper} variant="outlined">
       <Table size="small">
@@ -47,7 +43,7 @@ const ExerciseTable = ({
               <TableCell>{set.setNumber}</TableCell>
               <TableCell>{set.weight}</TableCell>
               <TableCell>{displayReps(set.reps)}</TableCell>
-              <TableCell>{set.rpe ?? "-"}</TableCell>
+              <TableCell>{set.rpe ?? '-'}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -59,20 +55,16 @@ const ExerciseTable = ({
 // ─── WorkoutList component ───
 export default function WorkoutList() {
   const { data: workouts = [], isPending } = useQuery({
-    queryKey: ["workouts"],
+    queryKey: ['workouts'],
     queryFn: fetchWorkouts,
   });
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-center mb-4">
-        Saved Workouts
-      </h1>
+      <h1 className="mb-4 text-center text-2xl font-bold">Saved Workouts</h1>
       <section>
         {isPending && <p>Loading...</p>}
-        {!isPending && workouts.length === 0 && (
-          <p>No workouts logged yet.</p>
-        )}
+        {!isPending && workouts.length === 0 && <p>No workouts logged yet.</p>}
         {workouts.map((workout) => (
           <Accordion key={workout.id}>
             <AccordionSummary expandIcon={<ExpandMore />}>
@@ -80,8 +72,8 @@ export default function WorkoutList() {
                 {formatDate(workout.performedAt)}
                 {workout.notes && (
                   <>
-                    {" - "}
-                    {workout.notes.slice(0, 10)} ...
+                    {' - '}
+                    {workout.notes.slice(0, 20)} ...
                   </>
                 )}
               </div>
@@ -89,7 +81,7 @@ export default function WorkoutList() {
             <AccordionDetails>
               <p>{workout.notes}</p>
               {workout.workoutExercises.map((exercise) => (
-                <div key={exercise.id} style={{ marginBottom: "6px" }}>
+                <div key={exercise.id} style={{ marginBottom: '6px' }}>
                   <strong>{exercise.exercise.name}</strong>
                   {exercise.exercise.muscleGroup && (
                     <span> - {exercise.exercise.muscleGroup}</span>
