@@ -1,14 +1,17 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { SavedWorkout, SavedWorkoutExercise } from "../../types/types";
+import { SavedWorkoutExercise } from "../../types/types";
 import { displayReps, formatDate } from "../../utils/utils";
+import { fetchWorkouts } from "./info";
 import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Box,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
+import { Button } from "../component-library";
 
 // ─── Components ───
 import {
@@ -21,6 +24,7 @@ import {
   Paper,
 } from "@mui/material";
 
+// ─── ExerciseTable component ───
 const ExerciseTable = ({
   exercise,
 }: {
@@ -52,12 +56,7 @@ const ExerciseTable = ({
   );
 };
 
-async function fetchWorkouts(): Promise<SavedWorkout[]> {
-  const res = await fetch("/api/workouts");
-  if (!res.ok) throw new Error("Failed to fetch workouts");
-  return res.json();
-}
-
+// ─── WorkoutList component ───
 export default function WorkoutList() {
   const { data: workouts = [], isPending } = useQuery({
     queryKey: ["workouts"],
@@ -98,6 +97,14 @@ export default function WorkoutList() {
                   <ExerciseTable exercise={exercise} />
                 </div>
               ))}
+              <Box mt={2}>
+                <Button
+                  label="Edit"
+                  variant="outlined"
+                  size="small"
+                  href={`/workouts/${workout.id}/edit`}
+                />
+              </Box>
             </AccordionDetails>
           </Accordion>
         ))}

@@ -1,7 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import { ExerciseRow, SetRow } from "../../types/types";
+import {
+  ExerciseRow,
+  SetRow,
+  WorkoutFormInitialValues,
+} from "../../types/types";
 import { emptyExercise, emptySet } from "../../utils/utils";
 
 interface WorkoutFormContextType {
@@ -32,14 +36,16 @@ const WorkoutFormContext = createContext<WorkoutFormContextType | null>(
 
 export function WorkoutFormProvider({
   children,
+  initialValues,
 }: {
   children: React.ReactNode;
+  initialValues?: WorkoutFormInitialValues;
 }) {
-  const [date, setDate] = useState("");
-  const [notes, setNotes] = useState("");
-  const [exercises, setExercises] = useState<ExerciseRow[]>([
-    emptyExercise(),
-  ]);
+  const [date, setDate] = useState(initialValues?.date || "");
+  const [notes, setNotes] = useState(initialValues?.notes || "");
+  const [exercises, setExercises] = useState<ExerciseRow[]>(
+    initialValues?.exercises || [emptyExercise()],
+  );
   const [formErrors, setFormErrors] = useState<string[]>([]);
 
   function addExercise() {
