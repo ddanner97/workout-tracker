@@ -26,20 +26,28 @@ interface WorkoutFormContextType {
   resetForm: () => void;
 }
 
+interface InitialValues {
+  date: string;
+  notes: string;
+  exercises: ExerciseRow[];
+}
+
 const WorkoutFormContext = createContext<WorkoutFormContextType | null>(
   null,
 );
 
 export function WorkoutFormProvider({
   children,
+  initialValues,
 }: {
   children: React.ReactNode;
+  initialValues?: InitialValues;
 }) {
-  const [date, setDate] = useState("");
-  const [notes, setNotes] = useState("");
-  const [exercises, setExercises] = useState<ExerciseRow[]>([
-    emptyExercise(),
-  ]);
+  const [date, setDate] = useState(initialValues?.date || "");
+  const [notes, setNotes] = useState(initialValues?.notes || "");
+  const [exercises, setExercises] = useState<ExerciseRow[]>(
+    initialValues?.exercises || [emptyExercise()],
+  );
   const [formErrors, setFormErrors] = useState<string[]>([]);
 
   function addExercise() {
