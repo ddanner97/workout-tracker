@@ -4,9 +4,8 @@ import { ThemeRegistry, useColorMode } from "./contexts/ThemeRegistry";
 import { ThemeToggle } from "./component-library";
 import { WorkoutFormProvider, useWorkoutForm } from "./contexts/WorkoutFormContext";
 
-// home components
-import WorkoutForm from "./home-page/WorkoutForm";
-import ExerciseTable from "./component-library/exercise-table/ExerciseTable";
+// Main components
+import { ExerciseTable, WorkoutForm } from "./component-library";
 
 // history components
 import WorkoutList from "./history/WorkoutList";

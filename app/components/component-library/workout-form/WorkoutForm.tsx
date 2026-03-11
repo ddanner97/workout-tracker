@@ -3,17 +3,17 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Box, Paper, Stack, TextField, Typography } from "@mui/material";
-import { ExerciseRow } from "../../types/types";
-import { useWorkoutForm } from "../contexts/WorkoutFormContext";
+import { ExerciseRow } from "../../../types/types";
+import { useWorkoutForm } from "../../contexts/WorkoutFormContext";
 import { postWorkout } from "./info";
 
 // ─── Components ───
-import { Button, ExerciseTable } from "../component-library";
+import { Button, ExerciseTable } from "..";
 
 // TODO: Adjust these imports
-import AddExerciseDialog from "../component-library/workout-form/AddExerciseDialog";
-import RemoveExerciseModal from "../component-library/workout-form/RemoveExerciseModal";
-import ExercisePicker from "../component-library/workout-form/ExercisePicker";
+import AddExerciseDialog from "./AddExerciseDialog";
+import RemoveExerciseModal from "./RemoveExerciseModal";
+import ExercisePicker from "./ExercisePicker";
 
 export default function WorkoutForm() {
   const queryClient = useQueryClient();
