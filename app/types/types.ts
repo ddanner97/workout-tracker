@@ -1,4 +1,3 @@
-
 interface Exercise {
   id: string;
   name: string;
@@ -38,4 +37,10 @@ interface SavedWorkout {
   workoutExercises: SavedWorkoutExercise[];
 }
 
-export type { Exercise, SetRow, ExerciseRow, SavedSet, SavedWorkoutExercise, SavedWorkout };
+interface WorkoutFormInitialValues {
+  date: string;
+  notes: string;
+  exercises: ExerciseRow[];
+}
+
+export type { Exercise, SetRow, ExerciseRow, SavedSet, SavedWorkoutExercise, SavedWorkout, WorkoutFormInitialValues };

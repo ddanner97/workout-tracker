@@ -1,4 +1,4 @@
-import { ExerciseRow, SetRow } from "../types/types";
+import { ExerciseRow, SetRow, SavedWorkout, WorkoutFormInitialValues, SavedSet } from "../types/types";
 
 export function emptySet(): SetRow {
   return { weight: "", reps: "", rpe: "" };
@@ -18,4 +18,19 @@ export function formatDate(iso: string): string {
     month: "short",
     day: "numeric",
   });
+}
+
+export function savedWorkoutToFormValues(workout: SavedWorkout): WorkoutFormInitialValues {
+  return {
+    date: formatDate(workout.performedAt),
+    notes: workout.notes || "",
+    exercises: workout.workoutExercises.sort((a, b) => a.order - b.order).map((we) => ({
+      exerciseId: we.id,
+      sets: we.sets.map((s: SavedSet) => ({
+          weight: String(s.weight),
+          reps: s.reps === -1 ? "fail" : String(s.reps),
+          rpe: s.rpe != null ? String(s.rpe) : "",
+      })),
+    }))
+  }
 }
