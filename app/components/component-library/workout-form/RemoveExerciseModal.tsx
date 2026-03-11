@@ -24,22 +24,14 @@ const style = {
 };
 
 const RemoveExerciseModal = ({
-  openModal,
-  setOpenModal,
   exerciseIndex,
 }: {
-  openModal: boolean;
-  setOpenModal: (open: boolean) => void;
   exerciseIndex: number;
 }) => {
   const { removeExercise } = useWorkoutForm();
 
   // --- component-level state ───
-  const [exerciseToRemove, setExerciseToRemove] = useState<number | null>(
-    exerciseIndex,
-  );
-
-  console.log(exerciseToRemove);
+  const [openModal, setOpenModal] = useState<boolean>(false);
 
   return (
     <>
@@ -48,7 +40,6 @@ const RemoveExerciseModal = ({
         label="Remove Exercise"
         onClick={() => {
           setOpenModal(true);
-          setExerciseToRemove(exerciseToRemove);
         }}
         variant="outlined"
         color="error"
@@ -67,11 +58,8 @@ const RemoveExerciseModal = ({
             type="button"
             label="Remove Exercise"
             onClick={() => {
-              if (exerciseToRemove !== null) {
-                removeExercise(exerciseToRemove);
-              }
+              removeExercise(exerciseIndex);
               setOpenModal(false);
-              setExerciseToRemove(null);
             }}
             variant="contained"
             size="small"

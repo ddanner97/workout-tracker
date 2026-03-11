@@ -53,7 +53,6 @@ export default function WorkoutForm() {
   } = useWorkoutForm();
 
   // --- component-level state ───
-  const [openModal, setOpenModal] = useState<boolean>(false);
   const [dialogExerciseName, setDialogExerciseName] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pendingExerciseIndex, setPendingExerciseIndex] = useState<
@@ -197,11 +196,7 @@ export default function WorkoutForm() {
                       sx={{ minWidth: 220, flex: 1 }}
                     />
                     {exercises.length > 1 && (
-                      <RemoveExerciseModal
-                        openModal={openModal}
-                        setOpenModal={setOpenModal}
-                        exerciseIndex={ei}
-                      />
+                      <RemoveExerciseModal exerciseIndex={ei} />
                     )}
                   </Stack>
 
