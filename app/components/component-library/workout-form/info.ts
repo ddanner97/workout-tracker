@@ -31,3 +31,22 @@ export async function postWorkout(body: unknown): Promise<SavedWorkout> {
   }
   return res.json();
 }
+
+export async function fetchWorkout(id: string): Promise<SavedWorkout> {
+  const res = await fetch(`/api/workouts/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch workout");
+  return res.json();
+}
+
+export async function putWorkout(id: string, body: unknown): Promise<SavedWorkout> {
+  const res = await fetch(`/api/workouts/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const data = await res.json();
+    throw data;
+  }
+  return res.json();
+}

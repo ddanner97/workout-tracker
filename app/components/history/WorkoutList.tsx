@@ -8,8 +8,10 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Box,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
+import { Button } from "../component-library";
 
 // ─── Components ───
 import {
@@ -95,6 +97,14 @@ export default function WorkoutList() {
                   <ExerciseTable exercise={exercise} />
                 </div>
               ))}
+              <Box mt={2}>
+                <Button
+                  label="Edit"
+                  variant="outlined"
+                  size="small"
+                  href={`/workouts/${workout.id}/edit`}
+                />
+              </Box>
             </AccordionDetails>
           </Accordion>
         ))}

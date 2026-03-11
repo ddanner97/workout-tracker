@@ -22,15 +22,17 @@ export function formatDate(iso: string): string {
 
 export function savedWorkoutToFormValues(workout: SavedWorkout): WorkoutFormInitialValues {
   return {
-    date: formatDate(workout.performedAt),
-    notes: workout.notes || "",
-    exercises: workout.workoutExercises.sort((a, b) => a.order - b.order).map((we) => ({
-      exerciseId: we.id,
-      sets: we.sets.map((s: SavedSet) => ({
+    date: workout.performedAt.slice(0, 10),
+    notes: workout.notes ?? "",
+    exercises: workout.workoutExercises
+      .sort((a, b) => a.order - b.order)
+      .map((we) => ({
+        exerciseId: we.exercise.id,
+        sets: we.sets.map((s: SavedSet) => ({
           weight: String(s.weight),
           reps: s.reps === -1 ? "fail" : String(s.reps),
           rpe: s.rpe != null ? String(s.rpe) : "",
+        })),
       })),
-    }))
-  }
+  };
 }
