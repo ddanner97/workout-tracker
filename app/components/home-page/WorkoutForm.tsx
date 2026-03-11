@@ -10,10 +10,6 @@ import {
   Autocomplete,
   Box,
   createFilterOptions,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Paper,
   Stack,
   TextField,
@@ -22,10 +18,11 @@ import {
 } from "@mui/material";
 import { Exercise, ExerciseRow } from "../../types/types";
 import { useWorkoutForm } from "../contexts/WorkoutFormContext";
-import { fetchExercises, postWorkout, postExercise } from "./info";
+import { fetchExercises, postWorkout } from "./info";
 
 // ─── Components ───
 import { Button, ExerciseTable } from "../component-library";
+import AddExerciseDialog from "../component-library/workout-form/AddExerciseDialog";
 
 // ─── Types ───
 interface ExerciseOption extends Exercise {
@@ -73,14 +70,13 @@ export default function WorkoutForm() {
 
   const [removeExerciseModalOpen, setRemoveExerciseModalOpen] =
     useState<boolean>(false);
+  const [dialogExerciseName, setDialogExerciseName] = useState("");
   const [exerciseToRemove, setExerciseToRemove] = useState<number | null>(
     null,
   );
 
-  // ─── Add-exercise dialog state (transient UI, no need to persist) ───
+  // ─── Add-exercise dialog state ───
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogExerciseName, setDialogExerciseName] = useState("");
-  const [dialogMuscleGroup, setDialogMuscleGroup] = useState("");
   const [pendingExerciseIndex, setPendingExerciseIndex] = useState<
     number | null
   >(null);
@@ -100,31 +96,6 @@ export default function WorkoutForm() {
       setFormErrors(err.errors ?? ["An unexpected error occurred."]);
     },
   });
-
-  const addExerciseMutation = useMutation({
-    mutationFn: postExercise,
-    onSuccess: (newExercise) => {
-      queryClient.invalidateQueries({ queryKey: ["exercises"] });
-      if (pendingExerciseIndex !== null) {
-        updateExerciseId(pendingExerciseIndex, newExercise.id);
-      }
-      handleDialogClose();
-    },
-  });
-
-  function handleDialogClose() {
-    setDialogOpen(false);
-    setDialogExerciseName("");
-    setDialogMuscleGroup("");
-    setPendingExerciseIndex(null);
-  }
-
-  function handleDialogSave() {
-    addExerciseMutation.mutate({
-      name: dialogExerciseName,
-      muscleGroup: dialogMuscleGroup,
-    });
-  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -332,51 +303,14 @@ export default function WorkoutForm() {
           </Box>
         </Stack>
       </Box>
-
-      {/* ─── Add New Exercise Dialog ─── */}
-      <Dialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Add New Exercise</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} sx={{ mt: 1 }}>
-            <TextField
-              label="Exercise Name"
-              value={dialogExerciseName}
-              onChange={(e) => setDialogExerciseName(e.target.value)}
-              required
-              autoFocus
-              fullWidth
-            />
-            <TextField
-              label="Muscle Group (optional)"
-              value={dialogMuscleGroup}
-              onChange={(e) => setDialogMuscleGroup(e.target.value)}
-              fullWidth
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            type="button"
-            label="Cancel"
-            onClick={handleDialogClose}
-            variant="outlined"
-          />
-          <Button
-            type="button"
-            label={addExerciseMutation.isPending ? "Saving..." : "Save"}
-            onClick={handleDialogSave}
-            disabled={
-              !dialogExerciseName.trim() || addExerciseMutation.isPending
-            }
-            variant="contained"
-          />
-        </DialogActions>
-      </Dialog>
+      <AddExerciseDialog
+        dialogOpen={dialogOpen}
+        setDialogOpen={setDialogOpen}
+        dialogExerciseName={dialogExerciseName}
+        setDialogExerciseName={setDialogExerciseName}
+        pendingExerciseIndex={pendingExerciseIndex}
+        setPendingExerciseIndex={setPendingExerciseIndex}
+      />
     </Box>
   );
 }

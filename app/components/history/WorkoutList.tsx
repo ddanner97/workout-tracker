@@ -1,8 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { SavedWorkout, SavedWorkoutExercise } from "../../types/types";
+import { SavedWorkoutExercise } from "../../types/types";
 import { displayReps, formatDate } from "../../utils/utils";
+import { fetchWorkouts } from "./info";
 import {
   Accordion,
   AccordionSummary,
@@ -21,6 +22,7 @@ import {
   Paper,
 } from "@mui/material";
 
+// ─── ExerciseTable component ───
 const ExerciseTable = ({
   exercise,
 }: {
@@ -52,12 +54,7 @@ const ExerciseTable = ({
   );
 };
 
-async function fetchWorkouts(): Promise<SavedWorkout[]> {
-  const res = await fetch("/api/workouts");
-  if (!res.ok) throw new Error("Failed to fetch workouts");
-  return res.json();
-}
-
+// ─── WorkoutList component ───
 export default function WorkoutList() {
   const { data: workouts = [], isPending } = useQuery({
     queryKey: ["workouts"],
