@@ -47,6 +47,7 @@ const AddExerciseDialog = ({
     },
   });
 
+  // --- Event Handlers ───
   function handleDialogClose() {
     setDialogOpen(false);
     setDialogExerciseName("");

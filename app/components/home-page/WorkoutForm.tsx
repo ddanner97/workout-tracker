@@ -13,7 +13,6 @@ import {
   Paper,
   Stack,
   TextField,
-  Modal,
   Typography,
 } from "@mui/material";
 import { Exercise, ExerciseRow } from "../../types/types";
@@ -22,29 +21,15 @@ import { fetchExercises, postWorkout } from "./info";
 
 // ─── Components ───
 import { Button, ExerciseTable } from "../component-library";
+
+// TODO: Adjust these imports
 import AddExerciseDialog from "../component-library/workout-form/AddExerciseDialog";
+import RemoveExerciseModal from "../component-library/workout-form/RemoveExerciseModal";
 
 // ─── Types ───
 interface ExerciseOption extends Exercise {
   inputValue?: string;
 }
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid primary.main",
-  borderRadius: 2,
-  boxShadow: 24,
-  p: 4,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-};
 
 const filter = createFilterOptions<ExerciseOption>();
 
@@ -60,7 +45,6 @@ export default function WorkoutForm() {
     formErrors,
     setFormErrors,
     addExercise,
-    removeExercise,
     updateExerciseId,
     addSet,
     removeSet,
@@ -68,19 +52,15 @@ export default function WorkoutForm() {
     resetForm,
   } = useWorkoutForm();
 
-  const [removeExerciseModalOpen, setRemoveExerciseModalOpen] =
-    useState<boolean>(false);
+  // --- component-level state ───
+  const [openModal, setOpenModal] = useState<boolean>(false);
   const [dialogExerciseName, setDialogExerciseName] = useState("");
-  const [exerciseToRemove, setExerciseToRemove] = useState<number | null>(
-    null,
-  );
-
-  // ─── Add-exercise dialog state ───
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pendingExerciseIndex, setPendingExerciseIndex] = useState<
     number | null
   >(null);
 
+  // --- Queries & Mutations ───
   const { data: availableExercises = [] } = useQuery({
     queryKey: ["exercises"],
     queryFn: fetchExercises,
@@ -217,47 +197,11 @@ export default function WorkoutForm() {
                       sx={{ minWidth: 220, flex: 1 }}
                     />
                     {exercises.length > 1 && (
-                      <>
-                        <Button
-                          type="button"
-                          label="Remove Exercise"
-                          onClick={() => {
-                            setRemoveExerciseModalOpen(true);
-                            setExerciseToRemove(ei);
-                          }}
-                          variant="outlined"
-                          color="error"
-                          size="small"
-                        />
-                        <Modal
-                          open={removeExerciseModalOpen}
-                          onClose={() => setRemoveExerciseModalOpen(false)}
-                        >
-                          <Box
-                            sx={{
-                              ...style,
-                            }}
-                          >
-                            <p className="text-center mb-4">
-                              Are you sure you want to remove this
-                              exercise?
-                            </p>
-                            <Button
-                              type="button"
-                              label="Remove Exercise"
-                              onClick={() => {
-                                if (exerciseToRemove !== null) {
-                                  removeExercise(exerciseToRemove);
-                                }
-                                setRemoveExerciseModalOpen(false);
-                                setExerciseToRemove(null);
-                              }}
-                              variant="contained"
-                              size="small"
-                            />
-                          </Box>
-                        </Modal>
-                      </>
+                      <RemoveExerciseModal
+                        openModal={openModal}
+                        setOpenModal={setOpenModal}
+                        exerciseIndex={ei}
+                      />
                     )}
                   </Stack>
 
