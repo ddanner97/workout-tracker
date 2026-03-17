@@ -8,7 +8,9 @@ import {
   validateBody,
 } from "./shared";
 
-// ─── Route handlers ───────────────────────────────────────────────────────────
+/**
+ * API route handlers for retrieving and creating multiple workouts.
+**/
 
 export async function GET() {
   const workouts = await prisma.workout.findMany({
@@ -43,7 +45,14 @@ export async function POST(req: NextRequest) {
   const exercises = body.exercises as ExerciseInput[];
 
   const tagNames = Array.isArray(body.tags)
-    ? (body.tags as unknown[]).filter((t) => typeof t === "string").map((t) => (t as string).replace(/^#/, "").trim()).filter(Boolean)
+    ? [
+        ...new Set(
+          (body.tags as unknown[])
+            .filter((t) => typeof t === "string")
+            .map((t) => (t as string).replace(/^#/, "").trim().toLowerCase())
+            .filter(Boolean)
+        ),
+      ]
     : [];
 
   const workout = await prisma.workout.create({

@@ -8,7 +8,10 @@ import {
   validateBody,
 } from "../shared";
 
-// ─── Route handlers ───────────────────────────────────────────────────────────
+/**
+ * API route handlers for retrieving, updating, and deleting 
+ * a single workout by its ID.
+**/
 
 export async function GET(
   _req: NextRequest,
@@ -63,7 +66,14 @@ export async function PUT(
   const exercises = body.exercises as ExerciseInput[];
 
   const tagNames = Array.isArray(body.tags)
-    ? (body.tags as unknown[]).filter((t) => typeof t === "string").map((t) => (t as string).replace(/^#/, "").trim()).filter(Boolean)
+    ? [
+        ...new Set(
+          (body.tags as unknown[])
+            .filter((t) => typeof t === "string")
+            .map((t) => (t as string).replace(/^#/, "").trim().toLowerCase())
+            .filter(Boolean)
+        ),
+      ]
     : [];
 
   const workout = await prisma.$transaction(async (tx) => {
