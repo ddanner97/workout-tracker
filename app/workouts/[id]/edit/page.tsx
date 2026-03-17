@@ -4,7 +4,7 @@ import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CircularProgress, Box, Typography } from "@mui/material";
 import { WorkoutFormProvider } from "../../../components/contexts/WorkoutFormContext";
-import EditWorkoutForm from "../../../components/component-library/workout-form/EditWorkoutForm";
+import WorkoutForm from "../../../components/component-library/workout-form/WorkoutForm";
 import { fetchWorkout } from "../../../components/component-library/workout-form/info";
 import { savedWorkoutToFormValues } from "../../../utils/utils";
 
@@ -40,7 +40,7 @@ export default function EditWorkoutPage({
 
   return (
     <WorkoutFormProvider initialValues={initialValues}>
-      <EditWorkoutForm workoutId={id} />
+      <WorkoutForm workoutId={id} />
     </WorkoutFormProvider>
   );
 }

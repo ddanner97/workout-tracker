@@ -2,21 +2,21 @@
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { Box, Paper, Stack, TextField, Typography } from "@mui/material";
 import { ExerciseRow } from "../../../types/types";
 import { useWorkoutForm } from "../../contexts/WorkoutFormContext";
-import { postWorkout } from "./info";
+import { postWorkout, putWorkout } from "./info";
 
-// ─── Components ───
 import { Button, ExerciseTable } from "..";
-
-// TODO: Adjust these imports
 import AddExerciseDialog from "./AddExerciseDialog";
 import RemoveExerciseModal from "./RemoveExerciseModal";
 import ExercisePicker from "./ExercisePicker";
 import TagInput from "./TagInput";
 
-export default function WorkoutForm() {
+export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) {
+  const isEditMode = !!workoutId;
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const {
@@ -36,21 +36,23 @@ export default function WorkoutForm() {
     resetForm,
   } = useWorkoutForm();
 
-  // --- component-level state ───
   const [dialogExerciseName, setDialogExerciseName] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pendingExerciseIndex, setPendingExerciseIndex] = useState<
     number | null
   >(null);
 
-  // --- Mutations ───
-
   const workoutMutation = useMutation({
-    mutationFn: postWorkout,
+    mutationFn: (body: unknown) =>
+      isEditMode ? putWorkout(workoutId!, body) : postWorkout(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workouts"] });
       queryClient.invalidateQueries({ queryKey: ["tags"] });
-      resetForm();
+      if (isEditMode) {
+        router.push("/history");
+      } else {
+        resetForm();
+      }
     },
     onError: (err: { errors?: string[] }) => {
       setFormErrors(err.errors ?? ["An unexpected error occurred."]);
@@ -83,7 +85,7 @@ export default function WorkoutForm() {
   return (
     <Box component="section">
       <Typography variant="h5" gutterBottom>
-        Log a Workout
+        {isEditMode ? "Edit Workout" : "Log a Workout"}
       </Typography>
       <Box component="form" onSubmit={handleSubmit}>
         <Stack spacing={3}>
@@ -167,7 +169,11 @@ export default function WorkoutForm() {
             <Button
               type="submit"
               label={
-                workoutMutation.isPending ? "Saving..." : "Save Workout"
+                workoutMutation.isPending
+                  ? "Saving..."
+                  : isEditMode
+                  ? "Update Workout"
+                  : "Save Workout"
               }
               disabled={workoutMutation.isPending}
               variant="contained"
