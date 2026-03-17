@@ -3,13 +3,7 @@
 import { SyntheticEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Autocomplete, Chip, TextField } from '@mui/material';
-import { Tag } from '../../../types/types';
-
-async function fetchTags(): Promise<Tag[]> {
-  const res = await fetch('/api/tags');
-  if (!res.ok) throw new Error('Failed to fetch tags');
-  return res.json();
-}
+import { fetchTags } from './info';
 
 interface TagInputProps {
   value: string[];

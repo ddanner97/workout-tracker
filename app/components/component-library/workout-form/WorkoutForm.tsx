@@ -1,20 +1,22 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { Box, Paper, Stack, TextField, Typography } from "@mui/material";
-import { ExerciseRow } from "../../../types/types";
-import { useWorkoutForm } from "../../contexts/WorkoutFormContext";
-import { postWorkout, putWorkout } from "./info";
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { ExerciseRow } from '../../../types/types';
+import { useWorkoutForm } from '../../contexts/WorkoutFormContext';
+import { postWorkout, putWorkout } from './info';
 
-import { Button, ExerciseTable } from "..";
-import AddExerciseDialog from "./AddExerciseDialog";
-import RemoveExerciseModal from "./RemoveExerciseModal";
-import ExercisePicker from "./ExercisePicker";
-import TagInput from "./TagInput";
+import { Button, ExerciseTable, Container } from '..';
+import AddExerciseDialog from './AddExerciseDialog';
+import RemoveExerciseModal from './RemoveExerciseModal';
+import ExercisePicker from './ExercisePicker';
+import { Box, Paper, Stack, TextField, Typography } from '@mui/material';
+import TagInput from './TagInput';
 
-export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) {
+export default function WorkoutForm({
+  workoutId,
+}: { workoutId?: string } = {}) {
   const isEditMode = !!workoutId;
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -36,7 +38,7 @@ export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) 
     resetForm,
   } = useWorkoutForm();
 
-  const [dialogExerciseName, setDialogExerciseName] = useState("");
+  const [dialogExerciseName, setDialogExerciseName] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pendingExerciseIndex, setPendingExerciseIndex] = useState<
     number | null
@@ -46,16 +48,16 @@ export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) 
     mutationFn: (body: unknown) =>
       isEditMode ? putWorkout(workoutId!, body) : postWorkout(body),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workouts"] });
-      queryClient.invalidateQueries({ queryKey: ["tags"] });
+      queryClient.invalidateQueries({ queryKey: ['workouts'] });
+      queryClient.invalidateQueries({ queryKey: ['tags'] });
       if (isEditMode) {
-        router.push("/history");
+        router.push('/history');
       } else {
         resetForm();
       }
     },
     onError: (err: { errors?: string[] }) => {
-      setFormErrors(err.errors ?? ["An unexpected error occurred."]);
+      setFormErrors(err.errors ?? ['An unexpected error occurred.']);
     },
   });
 
@@ -73,8 +75,8 @@ export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) 
         sets: ex.sets.map((set, si) => ({
           setNumber: si + 1,
           weight: Number(set.weight),
-          reps: set.reps === "fail" ? "fail" : Number(set.reps),
-          rpe: set.rpe !== "" ? Number(set.rpe) : undefined,
+          reps: set.reps === 'fail' ? 'fail' : Number(set.reps),
+          rpe: set.rpe !== '' ? Number(set.rpe) : undefined,
         })),
       })),
     };
@@ -85,7 +87,7 @@ export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) 
   return (
     <Box component="section">
       <Typography variant="h5" gutterBottom>
-        {isEditMode ? "Edit Workout" : "Log a Workout"}
+        {isEditMode ? 'Edit Workout' : 'Log a Workout'}
       </Typography>
       <Box component="form" onSubmit={handleSubmit}>
         <Stack spacing={3}>
@@ -100,6 +102,8 @@ export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) 
             sx={{ maxWidth: 220 }}
           />
 
+          <TagInput value={tags} onChange={setTags} />
+
           <TextField
             id="notes"
             label="Notes (optional)"
@@ -109,8 +113,6 @@ export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) 
             fullWidth
           />
 
-          <TagInput value={tags} onChange={setTags} />
-
           <Box>
             <Typography variant="h6" gutterBottom>
               Exercises
@@ -119,9 +121,9 @@ export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) 
               {exercises.map((ex: ExerciseRow, ei: number) => (
                 <Paper key={ei} variant="outlined" sx={{ p: 2 }}>
                   <Stack
-                    direction={{ xs: "column", sm: "row" }}
+                    direction={{ xs: 'column', sm: 'row' }}
                     spacing={1}
-                    alignItems={{ sm: "center" }}
+                    alignItems={{ sm: 'center' }}
                     mb={2}
                   >
                     <ExercisePicker
@@ -158,7 +160,7 @@ export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) 
           </Box>
 
           {formErrors.length > 0 && (
-            <Box component="ul" sx={{ color: "error.main", pl: 2, m: 0 }}>
+            <Box component="ul" sx={{ color: 'error.main', pl: 2, m: 0 }}>
               {formErrors.map((err, i) => (
                 <li key={i}>{err}</li>
               ))}
@@ -170,14 +172,14 @@ export default function WorkoutForm({ workoutId }: { workoutId?: string } = {}) 
               type="submit"
               label={
                 workoutMutation.isPending
-                  ? "Saving..."
+                  ? 'Saving...'
                   : isEditMode
-                  ? "Update Workout"
-                  : "Save Workout"
+                    ? 'Update Workout'
+                    : 'Save Workout'
               }
               disabled={workoutMutation.isPending}
               variant="contained"
-              sx={{ backgroundColor: "primary.main" }}
+              sx={{ backgroundColor: 'primary.main' }}
             />
           </Box>
         </Stack>

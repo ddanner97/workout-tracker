@@ -1,4 +1,10 @@
-import { SavedWorkout } from "../../types/types";
+import { SavedWorkout, Tag } from "../../types/types";
+
+export async function fetchTags(): Promise<Tag[]> {
+  const res = await fetch('/api/tags');
+  if (!res.ok) throw new Error('Failed to fetch tags');
+  return res.json();
+}
 
 export async function fetchWorkouts(): Promise<SavedWorkout[]> {
   const res = await fetch("/api/workouts");

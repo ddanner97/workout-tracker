@@ -2,10 +2,9 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { SavedWorkoutExercise, Tag } from '../../types/types';
+import { SavedWorkoutExercise } from '../../types/types';
 import { displayReps, formatDate } from '../../utils/utils';
-import { fetchWorkouts } from './info';
-import { ExpandMore } from '@mui/icons-material';
+import { fetchTags, fetchWorkouts } from './info';
 
 // ─── Components ───
 import { Button, Container } from '../component-library';
@@ -25,12 +24,7 @@ import {
   TableRow,
   Paper,
 } from '@mui/material';
-
-async function fetchTags(): Promise<Tag[]> {
-  const res = await fetch('/api/tags');
-  if (!res.ok) throw new Error('Failed to fetch tags');
-  return res.json();
-}
+import { ExpandMore } from '@mui/icons-material';
 
 // ─── ExerciseTable component ───
 const ExerciseTable = ({ exercise }: { exercise: SavedWorkoutExercise }) => {
