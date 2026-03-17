@@ -80,9 +80,7 @@ export default function WorkoutList() {
     selectedTags.length === 0
       ? workouts
       : workouts.filter((w) =>
-          selectedTags.every((tag) =>
-            w.tags.some((t) => t.name === tag),
-          ),
+          selectedTags.every((tag) => w.tags.some((t) => t.name === tag))
         );
 
   return (
@@ -100,7 +98,12 @@ export default function WorkoutList() {
               tagValues.map((option, index) => {
                 const { key, ...tagProps } = getTagProps({ index });
                 return (
-                  <Chip key={key} label={`#${option}`} size="small" {...tagProps} />
+                  <Chip
+                    key={key}
+                    label={`#${option}`}
+                    size="small"
+                    {...tagProps}
+                  />
                 );
               })
             }
@@ -118,20 +121,40 @@ export default function WorkoutList() {
       <section>
         {isPending && <p>Loading...</p>}
         {!isPending && filteredWorkouts.length === 0 && (
-          <p>{selectedTags.length > 0 ? 'No workouts match the selected tags.' : 'No workouts logged yet.'}</p>
+          <p>
+            {selectedTags.length > 0
+              ? 'No workouts match the selected tags.'
+              : 'No workouts logged yet.'}
+          </p>
         )}
         {filteredWorkouts.map((workout) => (
           <Accordion key={workout.id}>
             <AccordionSummary expandIcon={<ExpandMore />}>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 0.75 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  gap: 0.75,
+                }}
+              >
                 <span>
                   {formatDate(workout.performedAt)}
                   {workout.notes && (
-                    <> - {workout.notes.slice(0, 20)}{workout.notes.length > 20 ? ' ...' : ''}</>
+                    <>
+                      {' '}
+                      - {workout.notes.slice(0, 20)}
+                      {workout.notes.length > 20 ? ' ...' : ''}
+                    </>
                   )}
                 </span>
                 {workout.tags.map((tag) => (
-                  <Chip key={tag.id} label={`#${tag.name}`} size="small" variant="outlined" />
+                  <Chip
+                    key={tag.id}
+                    label={`#${tag.name}`}
+                    size="small"
+                    variant="outlined"
+                  />
                 ))}
               </Box>
             </AccordionSummary>

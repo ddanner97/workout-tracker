@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { SyntheticEvent } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Autocomplete, Chip, TextField } from "@mui/material";
-import { Tag } from "../../../types/types";
+import { SyntheticEvent } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Autocomplete, Chip, TextField } from '@mui/material';
+import { Tag } from '../../../types/types';
 
 async function fetchTags(): Promise<Tag[]> {
-  const res = await fetch("/api/tags");
-  if (!res.ok) throw new Error("Failed to fetch tags");
+  const res = await fetch('/api/tags');
+  if (!res.ok) throw new Error('Failed to fetch tags');
   return res.json();
 }
 
@@ -18,7 +18,7 @@ interface TagInputProps {
 
 export default function TagInput({ value, onChange }: TagInputProps) {
   const { data: existingTags = [] } = useQuery({
-    queryKey: ["tags"],
+    queryKey: ['tags'],
     queryFn: fetchTags,
   });
 
@@ -26,7 +26,7 @@ export default function TagInput({ value, onChange }: TagInputProps) {
 
   function handleChange(_e: SyntheticEvent, newValue: string[]) {
     const normalized = newValue
-      .map((t) => t.replace(/^#/, "").trim().toLowerCase())
+      .map((t) => t.replace(/^#/, '').trim().toLowerCase())
       .filter(Boolean);
     onChange(normalized);
   }
@@ -47,6 +47,7 @@ export default function TagInput({ value, onChange }: TagInputProps) {
               label={`#${option}`}
               size="small"
               {...tagProps}
+              color="primary"
             />
           );
         })
