@@ -5,6 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import { SavedWorkoutExercise, Tag } from '../../types/types';
 import { displayReps, formatDate } from '../../utils/utils';
 import { fetchWorkouts } from './info';
+import { ExpandMore } from '@mui/icons-material';
+
+// ─── Components ───
+import { Button, Container } from '../component-library';
 import {
   Accordion,
   AccordionSummary,
@@ -13,12 +17,6 @@ import {
   Box,
   Chip,
   TextField,
-} from '@mui/material';
-import { ExpandMore } from '@mui/icons-material';
-import { Button } from '../component-library';
-
-// ─── Components ───
-import {
   Table,
   TableBody,
   TableCell,
@@ -132,30 +130,24 @@ export default function WorkoutList() {
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Box
                 sx={{
+                  width: '100%',
                   display: 'flex',
+                  justifyContent: 'space-between',
                   flexWrap: 'wrap',
-                  alignItems: 'center',
                   gap: 0.75,
                 }}
               >
-                <span>
-                  {formatDate(workout.performedAt)}
-                  {workout.notes && (
-                    <>
-                      {' '}
-                      - {workout.notes.slice(0, 20)}
-                      {workout.notes.length > 20 ? ' ...' : ''}
-                    </>
-                  )}
-                </span>
-                {workout.tags.map((tag) => (
-                  <Chip
-                    key={tag.id}
-                    label={`#${tag.name}`}
-                    size="small"
-                    variant="outlined"
-                  />
-                ))}
+                <span>{formatDate(workout.performedAt)}</span>
+                <Container>
+                  {workout.tags.slice(0, 2).map((tag) => (
+                    <Chip
+                      key={tag.id}
+                      label={`#${tag.name}`}
+                      size="small"
+                      variant="outlined"
+                    />
+                  ))}
+                </Container>
               </Box>
             </AccordionSummary>
             <AccordionDetails>
