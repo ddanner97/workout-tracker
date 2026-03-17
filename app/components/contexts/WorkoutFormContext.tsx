@@ -13,6 +13,8 @@ interface WorkoutFormContextType {
   setDate: (date: string) => void;
   notes: string;
   setNotes: (notes: string) => void;
+  tags: string[];
+  setTags: (tags: string[]) => void;
   exercises: ExerciseRow[];
   formErrors: string[];
   setFormErrors: (errors: string[]) => void;
@@ -43,6 +45,7 @@ export function WorkoutFormProvider({
 }) {
   const [date, setDate] = useState(initialValues?.date || "");
   const [notes, setNotes] = useState(initialValues?.notes || "");
+  const [tags, setTags] = useState<string[]>(initialValues?.tags || []);
   const [exercises, setExercises] = useState<ExerciseRow[]>(
     initialValues?.exercises || [emptyExercise()],
   );
@@ -104,6 +107,7 @@ export function WorkoutFormProvider({
   function resetForm() {
     setDate("");
     setNotes("");
+    setTags([]);
     setExercises([emptyExercise()]);
     setFormErrors([]);
   }
@@ -115,6 +119,8 @@ export function WorkoutFormProvider({
         setDate,
         notes,
         setNotes,
+        tags,
+        setTags,
         exercises,
         formErrors,
         setFormErrors,
