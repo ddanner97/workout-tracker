@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SavedWorkoutExercise } from '../../types/types';
 import { displayReps, formatDate } from '../../utils/utils';
-import { fetchTags, fetchWorkouts } from './info';
+import { fetchTags, fetchWorkouts, deleteWorkout } from './info';
 
 // ─── Components ───
 import { Button, Container } from '../component-library';
+import DeleteWorkoutDialog from './DeleteWorkoutDialog';
 import {
   Accordion,
   AccordionSummary,
@@ -57,6 +58,17 @@ const ExerciseTable = ({ exercise }: { exercise: SavedWorkoutExercise }) => {
 // ─── WorkoutList component ───
 export default function WorkoutList() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
+
+  const { mutate: handleDelete, isPending: isDeleting } = useMutation({
+    mutationFn: deleteWorkout,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workouts'] });
+      setDeleteTargetId(null);
+    },
+  });
 
   const { data: workouts = [], isPending } = useQuery({
     queryKey: ['workouts'],
@@ -155,18 +167,32 @@ export default function WorkoutList() {
                   <ExerciseTable exercise={exercise} />
                 </div>
               ))}
-              <Box mt={2}>
+              <Box mt={2} sx={{ display: 'flex', gap: 1 }}>
                 <Button
                   label="Edit"
                   variant="outlined"
                   size="small"
                   href={`/workouts/${workout.id}/edit`}
                 />
+                <Button
+                  label="Delete"
+                  variant="outlined"
+                  size="small"
+                  color="error"
+                  onClick={() => setDeleteTargetId(workout.id)}
+                />
               </Box>
             </AccordionDetails>
           </Accordion>
         ))}
       </section>
+
+      <DeleteWorkoutDialog
+        open={deleteTargetId !== null}
+        isDeleting={isDeleting}
+        onConfirm={() => deleteTargetId && handleDelete(deleteTargetId)}
+        onClose={() => setDeleteTargetId(null)}
+      />
     </>
   );
 }
