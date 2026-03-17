@@ -21,6 +21,7 @@ interface WorkoutInput {
   performedAt: unknown;
   notes?: unknown;
   exercises: unknown;
+  tags?: unknown;
 }
 
 // ─── Utils ────────────────────────────────────────────────────────────────────
@@ -72,6 +73,7 @@ export async function GET() {
   const workouts = await prisma.workout.findMany({
     orderBy: { performedAt: "desc" },
     include: {
+      tags: { orderBy: { name: "asc" } },
       workoutExercises: {
         orderBy: { order: "asc" },
         include: {
@@ -99,10 +101,20 @@ export async function POST(req: NextRequest) {
 
   const exercises = body.exercises as ExerciseInput[];
 
+  const tagNames = Array.isArray(body.tags)
+    ? (body.tags as unknown[]).filter((t) => typeof t === "string").map((t) => (t as string).replace(/^#/, "").trim()).filter(Boolean)
+    : [];
+
   const workout = await prisma.workout.create({
     data: {
       performedAt: new Date(String(body.performedAt)),
       notes: body.notes ? String(body.notes) : null,
+      tags: {
+        connectOrCreate: tagNames.map((name) => ({
+          where: { name },
+          create: { name },
+        })),
+      },
       workoutExercises: {
         create: exercises.map((ex, idx) => ({
           exerciseId: String(ex.exerciseId),
@@ -120,6 +132,7 @@ export async function POST(req: NextRequest) {
       },
     },
     include: {
+      tags: { orderBy: { name: "asc" } },
       workoutExercises: {
         orderBy: { order: "asc" },
         include: {

@@ -25,6 +25,7 @@ export function savedWorkoutToFormValues(workout: SavedWorkout): WorkoutFormInit
   return {
     date: workout.performedAt.slice(0, 10),
     notes: workout.notes ?? "",
+    tags: workout.tags.map((t) => t.name),
     exercises: workout.workoutExercises
       .sort((a, b) => a.order - b.order)
       .map((we) => ({

@@ -1,3 +1,8 @@
+interface Tag {
+  id: string;
+  name: string;
+}
+
 interface Exercise {
   id: string;
   name: string;
@@ -35,12 +40,14 @@ interface SavedWorkout {
   performedAt: string;
   notes: string | null;
   workoutExercises: SavedWorkoutExercise[];
+  tags: Tag[];
 }
 
 interface WorkoutFormInitialValues {
   date: string;
   notes: string;
   exercises: ExerciseRow[];
+  tags: string[];
 }
 
-export type { Exercise, SetRow, ExerciseRow, SavedSet, SavedWorkoutExercise, SavedWorkout, WorkoutFormInitialValues };
+export type { Tag, Exercise, SetRow, ExerciseRow, SavedSet, SavedWorkoutExercise, SavedWorkout, WorkoutFormInitialValues };

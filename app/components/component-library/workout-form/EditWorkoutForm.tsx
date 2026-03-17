@@ -12,6 +12,7 @@ import { Button, ExerciseTable } from "..";
 import AddExerciseDialog from "./AddExerciseDialog";
 import RemoveExerciseModal from "./RemoveExerciseModal";
 import ExercisePicker from "./ExercisePicker";
+import TagInput from "./TagInput";
 
 export default function EditWorkoutForm({ workoutId }: { workoutId: string }) {
   const router = useRouter();
@@ -22,6 +23,8 @@ export default function EditWorkoutForm({ workoutId }: { workoutId: string }) {
     setDate,
     notes,
     setNotes,
+    tags,
+    setTags,
     exercises,
     formErrors,
     setFormErrors,
@@ -39,6 +42,7 @@ export default function EditWorkoutForm({ workoutId }: { workoutId: string }) {
     mutationFn: (body: unknown) => putWorkout(workoutId, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workouts"] });
+      queryClient.invalidateQueries({ queryKey: ["tags"] });
       router.push("/history");
     },
     onError: (err: { errors?: string[] }) => {
@@ -53,6 +57,7 @@ export default function EditWorkoutForm({ workoutId }: { workoutId: string }) {
     const body = {
       performedAt: date,
       notes: notes || undefined,
+      tags,
       exercises: exercises.map((ex, idx) => ({
         exerciseId: ex.exerciseId,
         order: idx,
@@ -94,6 +99,8 @@ export default function EditWorkoutForm({ workoutId }: { workoutId: string }) {
             multiline
             fullWidth
           />
+
+          <TagInput value={tags} onChange={setTags} />
 
           <Box>
             <Typography variant="h6" gutterBottom>

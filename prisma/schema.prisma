@@ -14,6 +14,13 @@ model Workout {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   workoutExercises WorkoutExercise[]
+  tags             Tag[]
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  workouts Workout[]
 }
 
 model Exercise {

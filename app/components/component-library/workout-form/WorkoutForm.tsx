@@ -14,6 +14,7 @@ import { Button, ExerciseTable } from "..";
 import AddExerciseDialog from "./AddExerciseDialog";
 import RemoveExerciseModal from "./RemoveExerciseModal";
 import ExercisePicker from "./ExercisePicker";
+import TagInput from "./TagInput";
 
 export default function WorkoutForm() {
   const queryClient = useQueryClient();
@@ -23,6 +24,8 @@ export default function WorkoutForm() {
     setDate,
     notes,
     setNotes,
+    tags,
+    setTags,
     exercises,
     formErrors,
     setFormErrors,
@@ -46,6 +49,7 @@ export default function WorkoutForm() {
     mutationFn: postWorkout,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workouts"] });
+      queryClient.invalidateQueries({ queryKey: ["tags"] });
       resetForm();
     },
     onError: (err: { errors?: string[] }) => {
@@ -60,6 +64,7 @@ export default function WorkoutForm() {
     const body = {
       performedAt: date,
       notes: notes || undefined,
+      tags,
       exercises: exercises.map((ex, idx) => ({
         exerciseId: ex.exerciseId,
         order: idx,
@@ -101,6 +106,8 @@ export default function WorkoutForm() {
             multiline
             fullWidth
           />
+
+          <TagInput value={tags} onChange={setTags} />
 
           <Box>
             <Typography variant="h6" gutterBottom>
