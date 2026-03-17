@@ -22,7 +22,8 @@ export default function TagInput({ value, onChange }: TagInputProps) {
     const normalized = newValue
       .map((t) => t.replace(/^#/, '').trim().toLowerCase())
       .filter(Boolean);
-    onChange(normalized);
+    const uniqueNormalized = Array.from(new Set(normalized));
+    onChange(uniqueNormalized);
   }
 
   return (
