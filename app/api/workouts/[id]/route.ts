@@ -127,3 +127,25 @@ export async function PUT(
 
   return NextResponse.json(workout);
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
+  const existing = await prisma.workout.findUnique({ where: { id } });
+  if (!existing) {
+    return NextResponse.json({ error: "Workout not found" }, { status: 404 });
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.set.deleteMany({
+      where: { workoutExercise: { workoutId: id } },
+    });
+    await tx.workoutExercise.deleteMany({ where: { workoutId: id } });
+    await tx.workout.delete({ where: { id } });
+  });
+
+  return new NextResponse(null, { status: 204 });
+}
