@@ -50,4 +50,38 @@ interface WorkoutFormInitialValues {
   tags: string[];
 }
 
-export type { Tag, Exercise, SetRow, ExerciseRow, SavedSet, SavedWorkoutExercise, SavedWorkout, WorkoutFormInitialValues };
+type HistoryGraphRange = "all" | "30" | "90" | "180";
+
+interface WorkoutVolumePoint {
+  workoutId: string;
+  performedAt: string;
+  volume: number;
+  tags: string[];
+}
+
+interface ExerciseMaxWeightPoint {
+  workoutId: string;
+  performedAt: string;
+  weight: number;
+  reps: number;
+}
+
+interface WorkoutMetricsResponse {
+  volumeSeries: WorkoutVolumePoint[];
+  exerciseMaxWeightSeries: ExerciseMaxWeightPoint[];
+}
+
+export type {
+  Tag,
+  Exercise,
+  SetRow,
+  ExerciseRow,
+  SavedSet,
+  SavedWorkoutExercise,
+  SavedWorkout,
+  WorkoutFormInitialValues,
+  HistoryGraphRange,
+  WorkoutVolumePoint,
+  ExerciseMaxWeightPoint,
+  WorkoutMetricsResponse,
+};
