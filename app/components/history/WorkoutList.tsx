@@ -79,21 +79,10 @@ export default function WorkoutList() {
 
   return (
     <>
-      <Box
-        mb={3}
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: { xs: 'flex-start', sm: 'center' },
-          gap: 2,
-          flexDirection: { xs: 'column', sm: 'row' },
-        }}
-      >
-        <h1 className="text-center text-2xl font-bold">Saved Workouts</h1>
-      </Box>
+      <h1 className="mb-5 text-center text-2xl font-bold">Saved Workouts</h1>
 
       {allTags.length > 0 && (
-        <Container gap={5}>
+        <Container gap={8} className="mb-5">
           <Autocomplete
             className="flex-grow"
             multiple

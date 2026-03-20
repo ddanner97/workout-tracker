@@ -1,8 +1,13 @@
-"use client";
+'use client';
 
-import { Box, Typography } from "@mui/material";
-import { ChartsTooltipContainer, type ChartsTooltipProps, LineChart, useItemTooltip } from "@mui/x-charts";
-import GraphTooltipContent, { GraphTooltipRow } from "./GraphTooltipContent";
+import { Box, Typography } from '@mui/material';
+import {
+  ChartsTooltipContainer,
+  type ChartsTooltipProps,
+  LineChart,
+  useItemTooltip,
+} from '@mui/x-charts';
+import GraphTooltipContent, { GraphTooltipRow } from './GraphTooltipContent';
 
 interface LineGraphPoint {
   workoutId: string;
@@ -22,17 +27,17 @@ interface LineGraphProps<TPoint extends LineGraphPoint> {
 }
 
 const axisDateFormatter = new Intl.DateTimeFormat(undefined, {
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
 });
 
 function tooltipDateLabel(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
   });
 }
 
@@ -54,19 +59,21 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
   getPointValue,
   getTooltipRows,
   lineColor,
-}: LineGraphProps<TPoint>) {
+  filters,
+}: LineGraphProps<TPoint> & { filters?: React.ReactNode }) {
   if (points.length === 0) {
     return (
       <Box
         sx={{
           border: 1,
-          borderColor: "divider",
+          borderColor: 'divider',
           borderRadius: 1,
           p: 3,
         }}
       >
         <Typography variant="h6" gutterBottom>
           {title}
+          {filters}
         </Typography>
         {subtitle && (
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -79,7 +86,7 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
   }
 
   const Tooltip = (props: ChartsTooltipProps) => {
-    const tooltipData = useItemTooltip<"line">();
+    const tooltipData = useItemTooltip<'line'>();
     const dataIndex = tooltipData?.identifier.dataIndex;
 
     if (dataIndex == null) {
@@ -105,14 +112,24 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
     <Box
       sx={{
         border: 1,
-        borderColor: "divider",
+        borderColor: 'divider',
         borderRadius: 1,
         p: { xs: 2, md: 3 },
       }}
     >
-      <Typography variant="h6" gutterBottom>
-        {title}
-      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 2,
+          mb: 1,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Typography variant="h6">{title}</Typography>
+        {filters}
+      </Box>
       {subtitle && (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {subtitle}
@@ -122,20 +139,20 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
         height={320}
         grid={{ horizontal: true }}
         hideLegend
-        axisHighlight={{ x: "line", y: "none" }}
+        axisHighlight={{ x: 'line', y: 'none' }}
         xAxis={[
           {
             data: points.map((point) => new Date(point.performedAt)),
-            scaleType: "time",
+            scaleType: 'time',
             valueFormatter: (value: Date) =>
-              value instanceof Date ? axisDateFormatter.format(value) : "",
+              value instanceof Date ? axisDateFormatter.format(value) : '',
           },
         ]}
         yAxis={[
           {
             label: yAxisLabel,
             valueFormatter: (value: number) =>
-              typeof value === "number" ? axisValueFormatter(value) : "",
+              typeof value === 'number' ? axisValueFormatter(value) : '',
           },
         ]}
         series={[
@@ -143,14 +160,14 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
             data: points.map((point) => getPointValue(point)),
             label: title,
             color: lineColor,
-            curve: "monotoneX",
+            curve: 'monotoneX',
             showMark: true,
             valueFormatter: (value) =>
-              typeof value === "number" ? formatValue(value) : "",
+              typeof value === 'number' ? formatValue(value) : '',
           },
         ]}
         slots={{ tooltip: Tooltip }}
-        slotProps={{ tooltip: { trigger: "item" } }}
+        slotProps={{ tooltip: { trigger: 'item' } }}
         margin={{ top: 16, right: 24, bottom: 24, left: 48 }}
       />
     </Box>

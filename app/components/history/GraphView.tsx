@@ -23,8 +23,6 @@ const GraphView = ({
   return (
     <>
       <Box sx={{ display: 'grid', gap: 3 }}>
-        <GraphFilters range={range} onRangeChange={setRange} />
-
         <LineGraph<WorkoutVolumePoint>
           title="Workout Volume Over Time"
           subtitle="Tracks total successful volume for each workout in the filtered range."
@@ -48,6 +46,7 @@ const GraphView = ({
                   : 'None',
             },
           ]}
+          filters={<GraphFilters range={range} onRangeChange={setRange} />}
           lineColor="#2563eb"
         />
       </Box>
