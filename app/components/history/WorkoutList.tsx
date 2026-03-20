@@ -2,11 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  HistoryGraphRange,
-  SavedWorkoutExercise,
-  WorkoutVolumePoint,
-} from '../../types/types';
+import { HistoryGraphRange, SavedWorkoutExercise } from '../../types/types';
 import { displayReps, formatDate } from '../../utils/utils';
 import {
   fetchTags,
@@ -16,13 +12,8 @@ import {
 } from './info';
 
 // ─── Components ───
-import {
-  Button,
-  Container,
-  GraphFilters,
-  LineGraph,
-  ViewToggle,
-} from '../component-library';
+import GraphView from './GraphView';
+import { Button, Container, ViewToggle } from '../component-library';
 import DeleteWorkoutDialog from './DeleteWorkoutDialog';
 import {
   Accordion,
@@ -76,12 +67,13 @@ const ExerciseTable = ({ exercise }: { exercise: SavedWorkoutExercise }) => {
 export default function WorkoutList() {
   const [viewMode, setViewMode] = useState<HistoryViewMode>('list');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [range, setRange] = useState<HistoryGraphRange>('all');
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [range, setRange] = useState<HistoryGraphRange>('all');
 
   const queryClient = useQueryClient();
   const sortedSelectedTags = [...selectedTags].sort();
 
+  // Mutations and Queries
   const { mutate: handleDelete, isPending: isDeleting } = useMutation({
     mutationFn: deleteWorkout,
     onSuccess: () => {
@@ -117,47 +109,6 @@ export default function WorkoutList() {
       : workouts.filter((w) =>
           selectedTags.every((tag) => w.tags.some((t) => t.name === tag))
         );
-
-  const volumeSeries = metrics?.volumeSeries ?? [];
-
-  function renderGraphView() {
-    if (isLoadingMetrics) {
-      return <p>Loading graphs...</p>;
-    }
-
-    return (
-      <Box sx={{ display: 'grid', gap: 3 }}>
-        <GraphFilters
-          range={range}
-          onRangeChange={setRange}
-        />
-
-        <LineGraph<WorkoutVolumePoint>
-          title="Workout Volume Over Time"
-          subtitle="Tracks total successful volume for each workout in the filtered range."
-          points={volumeSeries}
-          emptyMessage="No workouts match the current graph filters."
-          yAxisLabel="Volume"
-          formatValue={(value) => `${Math.round(value).toLocaleString()} lb-reps`}
-          getPointValue={(point) => point.volume}
-          getTooltipRows={(point) => [
-            {
-              label: 'Volume',
-              value: `${Math.round(point.volume).toLocaleString()} lb-reps`,
-            },
-            {
-              label: 'Tags',
-              value:
-                point.tags.length > 0
-                  ? point.tags.map((tag) => `#${tag}`).join(', ')
-                  : 'None',
-            },
-          ]}
-          lineColor="#2563eb"
-        />
-      </Box>
-    );
-  }
 
   return (
     <>
@@ -215,7 +166,12 @@ export default function WorkoutList() {
       )}
 
       {viewMode === 'graphs' ? (
-        <section>{renderGraphView()}</section>
+        // TODO: Add loading state
+        <GraphView
+          metrics={metrics ?? { volumeSeries: [], exerciseMaxWeightSeries: [] }}
+          range={range}
+          setRange={setRange}
+        />
       ) : (
         <section>
           {isLoadingWorkouts && <p>Loading...</p>}
