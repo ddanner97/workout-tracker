@@ -1,6 +1,13 @@
 'use client';
 
-import { Box, Typography } from '@mui/material';
+import {
+  Box,
+  Tooltip as MuiTooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {
   ChartsTooltipContainer,
   type ChartsTooltipProps,
@@ -61,6 +68,9 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
   lineColor,
   filters,
 }: LineGraphProps<TPoint> & { filters?: React.ReactNode }) {
+  const theme = useTheme();
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+
   if (points.length === 0) {
     return (
       <Box
@@ -71,11 +81,27 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
           p: 3,
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          {title}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 2,
+            mb: 1,
+            flexWrap: 'wrap',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography variant="h6">{title}</Typography>
+            {isSmall && subtitle && (
+              <MuiTooltip title={subtitle} arrow>
+                <InfoOutlinedIcon fontSize="small" color="action" />
+              </MuiTooltip>
+            )}
+          </Box>
           {filters}
-        </Typography>
-        {subtitle && (
+        </Box>
+        {!isSmall && subtitle && (
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {subtitle}
           </Typography>
@@ -127,10 +153,32 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
           flexWrap: 'wrap',
         }}
       >
-        <Typography variant="h6">{title}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Typography variant="h6">{title}</Typography>
+          {isSmall && subtitle && (
+            <MuiTooltip
+              title={subtitle}
+              arrow
+              enterTouchDelay={0}
+              enterDelay={0}
+            >
+              <span
+                tabIndex={0}
+                role="button"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <InfoOutlinedIcon fontSize="small" color="action" />
+              </span>
+            </MuiTooltip>
+          )}
+        </Box>
         {filters}
       </Box>
-      {subtitle && (
+      {!isSmall && subtitle && (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {subtitle}
         </Typography>
