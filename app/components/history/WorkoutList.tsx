@@ -2,12 +2,19 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { SavedWorkoutExercise } from '../../types/types';
-import { displayReps, formatDate } from '../../utils/utils';
-import { fetchTags, fetchWorkouts, deleteWorkout } from './info';
+import { HistoryGraphRange } from '../../types/types';
+import { formatDate } from '../../utils/utils';
+import {
+  fetchTags,
+  fetchWorkoutMetrics,
+  fetchWorkouts,
+  deleteWorkout,
+} from './info';
 
 // ─── Components ───
-import { Button, Container } from '../component-library';
+import GraphView from './GraphView';
+import ExerciseTable from './ExerciseTable';
+import { Button, Container, ViewToggle } from '../component-library';
 import DeleteWorkoutDialog from './DeleteWorkoutDialog';
 import {
   Accordion,
@@ -17,60 +24,33 @@ import {
   Box,
   Chip,
   TextField,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
 } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 
-// ─── ExerciseTable component ───
-const ExerciseTable = ({ exercise }: { exercise: SavedWorkoutExercise }) => {
-  return (
-    <TableContainer component={Paper} variant="outlined">
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Set</TableCell>
-            <TableCell>Weight</TableCell>
-            <TableCell>Reps</TableCell>
-            <TableCell>RPE</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {exercise.sets.map((set) => (
-            <TableRow key={set.id}>
-              <TableCell>{set.setNumber}</TableCell>
-              <TableCell>{set.weight}</TableCell>
-              <TableCell>{displayReps(set.reps)}</TableCell>
-              <TableCell>{set.rpe ?? '-'}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-};
+type HistoryViewMode = 'list' | 'graphs';
 
 // ─── WorkoutList component ───
 export default function WorkoutList() {
+  // State
+  const [viewMode, setViewMode] = useState<HistoryViewMode>('list');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [range, setRange] = useState<HistoryGraphRange>('all');
 
   const queryClient = useQueryClient();
+  const sortedSelectedTags = [...selectedTags].sort();
 
+  // Mutations and Queries
   const { mutate: handleDelete, isPending: isDeleting } = useMutation({
     mutationFn: deleteWorkout,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
+      queryClient.invalidateQueries({ queryKey: ['workoutMetrics'] });
       setDeleteTargetId(null);
     },
   });
 
-  const { data: workouts = [], isPending } = useQuery({
+  const { data: workouts = [], isPending: isLoadingWorkouts } = useQuery({
     queryKey: ['workouts'],
     queryFn: fetchWorkouts,
   });
@@ -78,6 +58,16 @@ export default function WorkoutList() {
   const { data: allTags = [] } = useQuery({
     queryKey: ['tags'],
     queryFn: fetchTags,
+  });
+
+  const { data: metrics, isPending: isLoadingMetrics } = useQuery({
+    queryKey: ['workoutMetrics', sortedSelectedTags, range],
+    queryFn: () =>
+      fetchWorkoutMetrics({
+        tags: sortedSelectedTags,
+        range,
+      }),
+    enabled: viewMode === 'graphs',
   });
 
   const filteredWorkouts =
@@ -89,11 +79,12 @@ export default function WorkoutList() {
 
   return (
     <>
-      <h1 className="mb-4 text-center text-2xl font-bold">Saved Workouts</h1>
+      <h1 className="mb-5 text-center text-2xl font-bold">Saved Workouts</h1>
 
       {allTags.length > 0 && (
-        <Box mb={3}>
+        <Container gap={8} className="mb-5">
           <Autocomplete
+            className="flex-grow"
             multiple
             options={allTags.map((t) => t.name)}
             value={selectedTags}
@@ -119,73 +110,91 @@ export default function WorkoutList() {
               />
             )}
           />
-        </Box>
+          <ViewToggle
+            value={viewMode}
+            onChange={setViewMode}
+            ariaLabel="Switch history view"
+            options={[
+              { value: 'list', label: 'List' },
+              { value: 'graphs', label: 'Graphs' },
+            ]}
+          />
+        </Container>
       )}
 
-      <section>
-        {isPending && <p>Loading...</p>}
-        {!isPending && filteredWorkouts.length === 0 && (
-          <p>
-            {selectedTags.length > 0
-              ? 'No workouts match the selected tags.'
-              : 'No workouts logged yet.'}
-          </p>
-        )}
-        {filteredWorkouts.map((workout) => (
-          <Accordion key={workout.id}>
-            <AccordionSummary expandIcon={<ExpandMore />}>
-              <Box
-                sx={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: 0.75,
-                }}
-              >
-                <span>{formatDate(workout.performedAt)}</span>
-                <Container>
-                  {workout.tags.slice(0, 2).map((tag) => (
-                    <Chip
-                      key={tag.id}
-                      label={`#${tag.name}`}
-                      size="small"
-                      variant="outlined"
-                    />
-                  ))}
-                </Container>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <p>{workout.notes}</p>
-              {workout.workoutExercises.map((exercise) => (
-                <div key={exercise.id} style={{ marginBottom: '6px' }}>
-                  <strong>{exercise.exercise.name}</strong>
-                  {exercise.exercise.muscleGroup && (
-                    <span> - {exercise.exercise.muscleGroup}</span>
-                  )}
-                  <ExerciseTable exercise={exercise} />
-                </div>
-              ))}
-              <Box mt={2} sx={{ display: 'flex', gap: 1 }}>
-                <Button
-                  label="Edit"
-                  variant="outlined"
-                  size="small"
-                  href={`/workouts/${workout.id}/edit`}
-                />
-                <Button
-                  label="Delete"
-                  variant="outlined"
-                  size="small"
-                  color="error"
-                  onClick={() => setDeleteTargetId(workout.id)}
-                />
-              </Box>
-            </AccordionDetails>
-          </Accordion>
-        ))}
-      </section>
+      {viewMode === 'graphs' ? (
+        // TODO: Add loading state using isLoadingMetrics
+        <GraphView
+          metrics={metrics ?? { volumeSeries: [], exerciseMaxWeightSeries: [] }}
+          range={range}
+          setRange={setRange}
+        />
+      ) : (
+        <section>
+          {isLoadingWorkouts && <p>Loading...</p>}
+          {!isLoadingWorkouts && filteredWorkouts.length === 0 && (
+            <p>
+              {selectedTags.length > 0
+                ? 'No workouts match the selected tags.'
+                : 'No workouts logged yet.'}
+            </p>
+          )}
+          {filteredWorkouts.map((workout) => (
+            <Accordion key={workout.id}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 0.75,
+                  }}
+                >
+                  <span>{formatDate(workout.performedAt)}</span>
+                  <Container>
+                    {workout.tags.slice(0, 2).map((tag) => (
+                      <Chip
+                        key={tag.id}
+                        label={`#${tag.name}`}
+                        size="small"
+                        variant="outlined"
+                      />
+                    ))}
+                  </Container>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <p>{workout.notes}</p>
+                {workout.workoutExercises.map((exercise) => (
+                  <div key={exercise.id} style={{ marginBottom: '6px' }}>
+                    <strong>{exercise.exercise.name}</strong>
+                    {exercise.exercise.muscleGroup && (
+                      <span> - {exercise.exercise.muscleGroup}</span>
+                    )}
+                    <ExerciseTable exercise={exercise} />
+                  </div>
+                ))}
+                <Box mt={2} sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    label="Edit"
+                    variant="outlined"
+                    size="small"
+                    href={`/workouts/${workout.id}/edit`}
+                  />
+                  <Button
+                    label="Delete"
+                    variant="outlined"
+                    size="small"
+                    color="error"
+                    onClick={() => setDeleteTargetId(workout.id)}
+                  />
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+          ))}
+        </section>
+      )}
 
       <DeleteWorkoutDialog
         open={deleteTargetId !== null}

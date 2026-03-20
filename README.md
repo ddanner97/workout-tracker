@@ -10,7 +10,8 @@
 6. [Database & Data Model](#database--data-model)
 7. [Types & Utilities](#types--utilities)
 8. [Theming](#theming)
-9. [Notable Patterns & Conventions](#notable-patterns--conventions)
+9. [History Graph Workflow](#history-graph-workflow)
+10. [Notable Patterns & Conventions](#notable-patterns--conventions)
 
 ---
 
@@ -39,6 +40,7 @@ workout-tracker/
 │   │   ├── exercises/route.ts        # GET all / POST create exercise
 │   │   ├── tags/route.ts             # GET all tags
 │   │   └── workouts/
+│   │       ├── metrics/route.ts      # GET analytics series for history graphs
 │   │       ├── route.ts              # GET all (nested) / POST create workout
 │   │       ├── shared.ts             # Shared input types + validation utils
 │   │       └── [id]/route.ts         # GET / PUT / DELETE a single workout
@@ -47,6 +49,11 @@ workout-tracker/
 │   │   │   ├── Button.tsx            # MUI Button wrapper
 │   │   │   ├── Container.tsx         # Flex container (row/column)
 │   │   │   ├── ThemeToggle.tsx       # Dark/light mode toggle button
+│   │   │   ├── ViewToggle.tsx        # Reusable segmented toggle control
+│   │   │   ├── charts/
+│   │   │   │   ├── GraphFilters.tsx  # Reusable graph filter controls
+│   │   │   │   ├── GraphTooltipContent.tsx # Shared chart tooltip layout
+│   │   │   │   └── LineGraph.tsx     # Reusable line-chart wrapper
 │   │   │   ├── exercise-table/
 │   │   │   │   ├── ExerciseTable.tsx # Responsive router (Desktop vs Mobile)
 │   │   │   │   ├── Desktop.tsx       # MUI Table layout for sets
@@ -112,6 +119,7 @@ workout-tracker/
 | `/api/exercises`       | `app/api/exercises/route.ts`      | `GET` all exercises, `POST` create exercise                    |
 | `/api/tags`            | `app/api/tags/route.ts`           | `GET` all tags ordered by name                                 |
 | `/api/workouts`        | `app/api/workouts/route.ts`       | `GET` all workouts with nested data, `POST` create workout     |
+| `/api/workouts/metrics`| `app/api/workouts/metrics/route.ts` | `GET` analytics series for history graphs                   |
 | `/api/workouts/[id]`   | `app/api/workouts/[id]/route.ts`  | `GET` single workout, `PUT` full update, `DELETE` workout      |
 
 ---
@@ -160,13 +168,13 @@ MUI `Autocomplete` (free-solo, multiple) for adding workout tags. Fetches existi
 Client-side fetch/mutate helpers for the workout form: `fetchExercises`, `fetchTags`, `postExercise`, `postWorkout`, `fetchWorkout`, `putWorkout`.
 
 **`WorkoutList.tsx`** (`"use client"`)
-History page component. Fetches all workouts via `useQuery` → `GET /api/workouts`. Renders each workout with its date, tags, optional notes, and a plain HTML table showing set number, weight, reps, and RPE per exercise. Includes a delete button that opens `<DeleteWorkoutDialog>`.
+History page component. Owns the shared tag filter plus a page-level `List / Graphs` toggle. In list mode it renders the saved workout accordions and exercise tables. In graph mode it fetches analytics via `GET /api/workouts/metrics`, applies graph-only date/exercise filters, and renders reusable line-chart components.
 
 **`history/DeleteWorkoutDialog.tsx`**
 Confirmation dialog for deleting a workout. Receives `open`, `isDeleting`, `onConfirm`, and `onClose` props. On confirm, calls `DELETE /api/workouts/[id]` and invalidates the workouts cache.
 
 **`history/info.ts`**
-Client-side fetch/mutate helpers for the history page: `fetchWorkouts`, `fetchTags`, `deleteWorkout`.
+Client-side fetch/mutate helpers for the history page: `fetchWorkouts`, `fetchTags`, `fetchExercises`, `fetchWorkoutMetrics`, `deleteWorkout`.
 
 ---
 
@@ -180,6 +188,18 @@ Emotion-styled `div` that renders as either `flex-direction: row` or `flex-direc
 
 **`ThemeToggle.tsx`**
 An MUI `IconButton` that calls `toggleColorMode()` from `useColorMode`. Shows `LightModeIcon` in dark mode and `DarkModeIcon` in light mode.
+
+**`ViewToggle.tsx`**
+Reusable segmented toggle built with MUI `ToggleButtonGroup`. Used by the History page to switch between `List` and `Graphs` mode without coupling the control to a specific feature.
+
+**`charts/GraphFilters.tsx`**
+Reusable graph filter bar for line-chart views. Provides date-range selection (`All`, `30d`, `90d`, `180d`) and an exercise autocomplete.
+
+**`charts/GraphTooltipContent.tsx`**
+Shared tooltip card layout used by graph tooltips to render a date title and key/value detail rows.
+
+**`charts/LineGraph.tsx`**
+Reusable wrapper around MUI X `LineChart`. Handles chart framing, empty states, item-triggered tooltips, and injected tooltip row formatting.
 
 **`ExerciseTable.tsx`**
 Responsive router component. Uses MUI `useMediaQuery` to render either `ExerciseTableDesktop` or `ExerciseTableMobile`. Both receive the same props.
@@ -212,6 +232,10 @@ Returns all tags ordered by name.
 ### `GET /api/workouts`
 
 Returns all workouts in descending date order, with fully nested `workoutExercises → exercise + sets` and `tags`.
+
+### `GET /api/workouts/metrics`
+
+Returns precomputed analytics series for the History page graph mode. Supports tag filtering, date-range filtering, and an optional `exerciseId` for the heaviest-set trend line.
 
 ### `POST /api/workouts`
 
@@ -335,6 +359,43 @@ The project uses a **dual theming** approach to keep MUI and Tailwind CSS in syn
 - **`app/theme/themes.ts`** — Defines MUI `lightTheme` and `darkTheme` objects with matching color palettes.
 - **`app/globals.css`** — Defines `--background` and `--foreground` CSS custom properties for both `:root` (light) and `.dark` (dark). Tailwind utilities consume these variables.
 - **`contexts/ThemeRegistry.tsx`** — Bridges the two: toggles the `html.dark` class (for Tailwind) and swaps the MUI `ThemeProvider` theme simultaneously. Persists preference to `localStorage`.
+
+---
+
+## History Graph Workflow
+
+The History page now has a page-level `List / Graphs` toggle. `List` preserves the original saved-workout accordion view. `Graphs` switches the page into analytics mode without changing routes.
+
+The tag filter at the top of History is shared across both modes. It keeps the existing AND semantics, so selecting multiple tags only includes workouts that contain every selected tag. In graph mode, two additional controls appear:
+
+- Date range: `All`, `30d`, `90d`, `180d`
+- Exercise selector: used by the exercise-specific trend chart
+
+Graph mode renders two reusable line charts from the component library:
+
+- `Workout Volume Over Time`
+- `Heaviest Set Over Time`
+
+`Workout Volume Over Time` is calculated on the server as the sum of `weight * reps` for every successful set in each filtered workout. Failed sets (`reps = -1`, shown as `fail` in the UI) are excluded from the volume total. Each tooltip shows:
+
+- Workout date
+- Total volume for that workout
+- All tags attached to that workout
+
+`Heaviest Set Over Time` uses the selected exercise and finds the heaviest successful set from each filtered workout that contains that exercise. If multiple successful sets share the same top weight, the set with the highest `setNumber` wins. Each tooltip shows:
+
+- Workout date
+- Heaviest-set weight in lbs
+- Reps completed on that heaviest set
+
+The graph UI is built from reusable component-library pieces:
+
+- `ViewToggle` for switching History modes
+- `charts/GraphFilters` for graph-only controls
+- `charts/LineGraph` for the line-chart shell
+- `charts/GraphTooltipContent` for chart tooltip layout
+
+The History feature owns the filter/query orchestration and fetches analytics from `GET /api/workouts/metrics` via `app/components/history/info.ts`.
 
 ---
 

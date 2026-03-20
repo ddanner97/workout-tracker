@@ -7,7 +7,7 @@ import { ExerciseRow } from '../../../types/types';
 import { useWorkoutForm } from '../../contexts/WorkoutFormContext';
 import { postWorkout, putWorkout } from './info';
 
-import { Button, ExerciseTable, Container } from '..';
+import { Button, ExerciseTable } from '..';
 import AddExerciseDialog from './AddExerciseDialog';
 import RemoveExerciseModal from './RemoveExerciseModal';
 import ExercisePicker from './ExercisePicker';
@@ -49,6 +49,7 @@ export default function WorkoutForm({
       isEditMode ? putWorkout(workoutId!, body) : postWorkout(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] });
+      queryClient.invalidateQueries({ queryKey: ['workoutMetrics'] });
       queryClient.invalidateQueries({ queryKey: ['tags'] });
       if (isEditMode) {
         router.push('/history');
