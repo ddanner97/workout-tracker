@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import styled from "@emotion/styled";
+import styled from '@emotion/styled';
 
 /**
  * Container component — a flexbox layout wrapper.
@@ -16,11 +16,13 @@ import styled from "@emotion/styled";
 
 type ContainerProps = {
   column?: boolean;
+  gap?: number;
 };
 
-const Container = styled("div")<ContainerProps>(({ column }) => ({
-  display: "flex",
-  flexDirection: column ? "column" : "row",
+const Container = styled('div')<ContainerProps>(({ column, gap }) => ({
+  display: 'flex',
+  flexDirection: column ? 'column' : 'row',
+  gap: gap ? `${gap}px` : '0',
 }));
 
 export default Container;

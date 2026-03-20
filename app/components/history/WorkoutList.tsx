@@ -31,6 +31,7 @@ type HistoryViewMode = 'list' | 'graphs';
 
 // ─── WorkoutList component ───
 export default function WorkoutList() {
+  // State
   const [viewMode, setViewMode] = useState<HistoryViewMode>('list');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
@@ -89,20 +90,12 @@ export default function WorkoutList() {
         }}
       >
         <h1 className="text-center text-2xl font-bold">Saved Workouts</h1>
-        <ViewToggle
-          value={viewMode}
-          onChange={setViewMode}
-          ariaLabel="Switch history view"
-          options={[
-            { value: 'list', label: 'List' },
-            { value: 'graphs', label: 'Graphs' },
-          ]}
-        />
       </Box>
 
       {allTags.length > 0 && (
-        <Box mb={3}>
+        <Container gap={5}>
           <Autocomplete
+            className="flex-grow"
             multiple
             options={allTags.map((t) => t.name)}
             value={selectedTags}
@@ -128,7 +121,16 @@ export default function WorkoutList() {
               />
             )}
           />
-        </Box>
+          <ViewToggle
+            value={viewMode}
+            onChange={setViewMode}
+            ariaLabel="Switch history view"
+            options={[
+              { value: 'list', label: 'List' },
+              { value: 'graphs', label: 'Graphs' },
+            ]}
+          />
+        </Container>
       )}
 
       {viewMode === 'graphs' ? (
