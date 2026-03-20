@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { HistoryGraphRange, SavedWorkoutExercise } from '../../types/types';
-import { displayReps, formatDate } from '../../utils/utils';
+import { HistoryGraphRange } from '../../types/types';
+import { formatDate } from '../../utils/utils';
 import {
   fetchTags,
   fetchWorkoutMetrics,
@@ -13,6 +13,7 @@ import {
 
 // ─── Components ───
 import GraphView from './GraphView';
+import ExerciseTable from './ExerciseTable';
 import { Button, Container, ViewToggle } from '../component-library';
 import DeleteWorkoutDialog from './DeleteWorkoutDialog';
 import {
@@ -23,45 +24,10 @@ import {
   Box,
   Chip,
   TextField,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
 } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 
 type HistoryViewMode = 'list' | 'graphs';
-
-// ─── ExerciseTable component ───
-const ExerciseTable = ({ exercise }: { exercise: SavedWorkoutExercise }) => {
-  return (
-    <TableContainer component={Paper} variant="outlined">
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Set</TableCell>
-            <TableCell>Weight</TableCell>
-            <TableCell>Reps</TableCell>
-            <TableCell>RPE</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {exercise.sets.map((set) => (
-            <TableRow key={set.id}>
-              <TableCell>{set.setNumber}</TableCell>
-              <TableCell>{set.weight}</TableCell>
-              <TableCell>{displayReps(set.reps)}</TableCell>
-              <TableCell>{set.rpe ?? '-'}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-};
 
 // ─── WorkoutList component ───
 export default function WorkoutList() {
@@ -166,7 +132,7 @@ export default function WorkoutList() {
       )}
 
       {viewMode === 'graphs' ? (
-        // TODO: Add loading state
+        // TODO: Add loading state using isLoadingMetrics
         <GraphView
           metrics={metrics ?? { volumeSeries: [], exerciseMaxWeightSeries: [] }}
           range={range}
