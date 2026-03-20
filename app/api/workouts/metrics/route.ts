@@ -37,7 +37,7 @@ function getRangeStart(range: RangeParam): Date | undefined {
 export async function GET(req: NextRequest) {
   const tags = parseTags(req.nextUrl.searchParams);
   const range = parseRange(req.nextUrl.searchParams.get("range"));
-  const exerciseId = req.nextUrl.searchParams.get("exerciseId")?.trim() || undefined;
+  // const exerciseId = req.nextUrl.searchParams.get("exerciseId")?.trim() || undefined;
   const rangeStart = getRangeStart(range);
 
   const andFilters: Prisma.WorkoutWhereInput[] = tags.map((name) => ({
@@ -89,46 +89,46 @@ export async function GET(req: NextRequest) {
     };
   });
 
-  const exerciseMaxWeightSeries =
-    exerciseId == null
-      ? []
-      : workouts.flatMap((workout) => {
-          const successfulSets = workout.workoutExercises
-            .filter((workoutExercise) => workoutExercise.exerciseId === exerciseId)
-            .flatMap((workoutExercise) =>
-              workoutExercise.sets
-                .filter((set) => set.reps > 0)
-                .map((set) => ({
-                  weight: set.weight,
-                  reps: set.reps,
-                  setNumber: set.setNumber,
-                }))
-            )
-            .sort((left, right) => {
-              if (right.weight !== left.weight) {
-                return right.weight - left.weight;
-              }
-
-              return right.setNumber - left.setNumber;
-            });
-
-          const heaviestSet = successfulSets[0];
-          if (!heaviestSet) {
-            return [];
-          }
-
-          return [
-            {
-              workoutId: workout.id,
-              performedAt: workout.performedAt.toISOString(),
-              weight: heaviestSet.weight,
-              reps: heaviestSet.reps,
-            },
-          ];
-        });
+  // const exerciseMaxWeightSeries =
+  //   exerciseId == null
+  //     ? []
+  //     : workouts.flatMap((workout) => {
+  //         const successfulSets = workout.workoutExercises
+  //           .filter((workoutExercise) => workoutExercise.exerciseId === exerciseId)
+  //           .flatMap((workoutExercise) =>
+  //             workoutExercise.sets
+  //               .filter((set) => set.reps > 0)
+  //               .map((set) => ({
+  //                 weight: set.weight,
+  //                 reps: set.reps,
+  //                 setNumber: set.setNumber,
+  //               }))
+  //           )
+  //           .sort((left, right) => {
+  //             if (right.weight !== left.weight) {
+  //               return right.weight - left.weight;
+  //             }
+  //
+  //             return right.setNumber - left.setNumber;
+  //           });
+  //
+  //         const heaviestSet = successfulSets[0];
+  //         if (!heaviestSet) {
+  //           return [];
+  //         }
+  //
+  //         return [
+  //           {
+  //             workoutId: workout.id,
+  //             performedAt: workout.performedAt.toISOString(),
+  //             weight: heaviestSet.weight,
+  //             reps: heaviestSet.reps,
+  //           },
+  //         ];
+  //       });
 
   return NextResponse.json({
     volumeSeries,
-    exerciseMaxWeightSeries,
+    exerciseMaxWeightSeries: [],
   });
 }

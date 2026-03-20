@@ -1,5 +1,4 @@
 import {
-  Exercise,
   HistoryGraphRange,
   SavedWorkout,
   Tag,
@@ -18,20 +17,18 @@ export async function fetchWorkouts(): Promise<SavedWorkout[]> {
   return res.json();
 }
 
-export async function fetchExercises(): Promise<Exercise[]> {
-  const res = await fetch("/api/exercises");
-  if (!res.ok) throw new Error("Failed to fetch exercises");
-  return res.json();
-}
+// export async function fetchExercises(): Promise<Exercise[]> {
+//   const res = await fetch("/api/exercises");
+//   if (!res.ok) throw new Error("Failed to fetch exercises");
+//   return res.json();
+// }
 
 export async function fetchWorkoutMetrics({
   tags,
   range,
-  exerciseId,
 }: {
   tags: string[];
   range: HistoryGraphRange;
-  exerciseId?: string;
 }): Promise<WorkoutMetricsResponse> {
   const params = new URLSearchParams();
 
@@ -40,10 +37,6 @@ export async function fetchWorkoutMetrics({
   }
 
   params.set("range", range);
-
-  if (exerciseId) {
-    params.set("exerciseId", exerciseId);
-  }
 
   const queryString = params.toString();
   const res = await fetch(`/api/workouts/metrics${queryString ? `?${queryString}` : ""}`);

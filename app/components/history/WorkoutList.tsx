@@ -3,14 +3,12 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  ExerciseMaxWeightPoint,
   HistoryGraphRange,
   SavedWorkoutExercise,
   WorkoutVolumePoint,
 } from '../../types/types';
 import { displayReps, formatDate } from '../../utils/utils';
 import {
-  fetchExercises,
   fetchTags,
   fetchWorkoutMetrics,
   fetchWorkouts,
@@ -79,7 +77,6 @@ export default function WorkoutList() {
   const [viewMode, setViewMode] = useState<HistoryViewMode>('list');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [range, setRange] = useState<HistoryGraphRange>('all');
-  const [selectedExerciseId, setSelectedExerciseId] = useState('');
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
@@ -104,19 +101,12 @@ export default function WorkoutList() {
     queryFn: fetchTags,
   });
 
-  const { data: exercises = [], isPending: isLoadingExercises } = useQuery({
-    queryKey: ['exercises'],
-    queryFn: fetchExercises,
-    enabled: viewMode === 'graphs',
-  });
-
   const { data: metrics, isPending: isLoadingMetrics } = useQuery({
-    queryKey: ['workoutMetrics', sortedSelectedTags, range, selectedExerciseId],
+    queryKey: ['workoutMetrics', sortedSelectedTags, range],
     queryFn: () =>
       fetchWorkoutMetrics({
         tags: sortedSelectedTags,
         range,
-        exerciseId: selectedExerciseId || undefined,
       }),
     enabled: viewMode === 'graphs',
   });
@@ -129,10 +119,9 @@ export default function WorkoutList() {
         );
 
   const volumeSeries = metrics?.volumeSeries ?? [];
-  const exerciseSeries = metrics?.exerciseMaxWeightSeries ?? [];
 
   function renderGraphView() {
-    if (isLoadingMetrics || isLoadingExercises) {
+    if (isLoadingMetrics) {
       return <p>Loading graphs...</p>;
     }
 
@@ -141,9 +130,6 @@ export default function WorkoutList() {
         <GraphFilters
           range={range}
           onRangeChange={setRange}
-          exerciseId={selectedExerciseId}
-          exercises={exercises}
-          onExerciseChange={setSelectedExerciseId}
         />
 
         <LineGraph<WorkoutVolumePoint>
@@ -168,31 +154,6 @@ export default function WorkoutList() {
             },
           ]}
           lineColor="#2563eb"
-        />
-
-        <LineGraph<ExerciseMaxWeightPoint>
-          title="Heaviest Set Over Time"
-          subtitle="Shows the heaviest successful set for the selected exercise in each workout."
-          points={selectedExerciseId ? exerciseSeries : []}
-          emptyMessage={
-            selectedExerciseId
-              ? 'No matching exercise data was found for the current filters.'
-              : 'Select an exercise to see its heaviest set over time.'
-          }
-          yAxisLabel="Weight (lbs)"
-          formatValue={(value) => `${value.toLocaleString()} lbs`}
-          getPointValue={(point) => point.weight}
-          getTooltipRows={(point) => [
-            {
-              label: 'Weight',
-              value: `${point.weight.toLocaleString()} lbs`,
-            },
-            {
-              label: 'Reps',
-              value: String(point.reps),
-            },
-          ]}
-          lineColor="#0f766e"
         />
       </Box>
     );

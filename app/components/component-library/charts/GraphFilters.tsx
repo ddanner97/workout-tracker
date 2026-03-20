@@ -1,7 +1,9 @@
 "use client";
 
-import { Autocomplete, Paper, Stack, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { Exercise, HistoryGraphRange } from "../../../types/types";
+import { useState } from "react";
+import { Box, IconButton, Popover, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { FilterList } from "@mui/icons-material";
+import { HistoryGraphRange } from "../../../types/types";
 
 const RANGE_OPTIONS: { value: HistoryGraphRange; label: string }[] = [
   { value: "all", label: "All" },
@@ -13,58 +15,63 @@ const RANGE_OPTIONS: { value: HistoryGraphRange; label: string }[] = [
 interface GraphFiltersProps {
   range: HistoryGraphRange;
   onRangeChange: (range: HistoryGraphRange) => void;
-  exerciseId: string;
-  exercises: Exercise[];
-  onExerciseChange: (exerciseId: string) => void;
 }
 
 export default function GraphFilters({
   range,
   onRangeChange,
-  exerciseId,
-  exercises,
-  onExerciseChange,
 }: GraphFiltersProps) {
-  const selectedExercise =
-    exercises.find((exercise) => exercise.id === exerciseId) ?? null;
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const toggleGroup = (
+    <ToggleButtonGroup
+      exclusive
+      size="small"
+      value={range}
+      onChange={(_event, nextRange: HistoryGraphRange | null) => {
+        if (nextRange) {
+          onRangeChange(nextRange);
+          setAnchorEl(null);
+        }
+      }}
+      aria-label="Select graph time range"
+    >
+      {RANGE_OPTIONS.map((option) => (
+        <ToggleButton key={option.value} value={option.value}>
+          {option.label}
+        </ToggleButton>
+      ))}
+    </ToggleButtonGroup>
+  );
 
   return (
-    <Paper variant="outlined" sx={{ p: 2 }}>
-      <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          value={range}
-          onChange={(_event, nextRange: HistoryGraphRange | null) => {
-            if (nextRange) {
-              onRangeChange(nextRange);
-            }
-          }}
-          aria-label="Select graph time range"
-        >
-          {RANGE_OPTIONS.map((option) => (
-            <ToggleButton key={option.value} value={option.value}>
-              {option.label}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
+    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+      {/* Desktop: inline toggle buttons */}
+      <Box sx={{ display: { xs: "none", md: "flex" } }}>
+        {toggleGroup}
+      </Box>
 
-        <Autocomplete
-          fullWidth
-          options={exercises}
-          value={selectedExercise}
-          onChange={(_event, exercise) => onExerciseChange(exercise?.id ?? "")}
-          getOptionLabel={(option) => option.name}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Exercise"
-              placeholder="Select exercise..."
-            />
-          )}
-        />
-      </Stack>
-    </Paper>
+      {/* Mobile: filter icon + popover */}
+      <Box sx={{ display: { xs: "flex", md: "none" } }}>
+        <IconButton
+          size="small"
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+          aria-label="Open range filter"
+        >
+          <FilterList />
+        </IconButton>
+        <Popover
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          onClose={() => setAnchorEl(null)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Box sx={{ p: 1 }}>
+            {toggleGroup}
+          </Box>
+        </Popover>
+      </Box>
+    </Box>
   );
 }
