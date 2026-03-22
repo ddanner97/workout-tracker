@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { Prisma } from "@prisma/client";
-
-type RangeParam = "all" | "30" | "90" | "180";
+import { HistoryGraphRange } from "@/app/types/types";
 
 function normalizeTags(values: string[]): string[] {
   return [...new Set(values.map((tag) => tag.replace(/^#/, "").trim().toLowerCase()).filter(Boolean))];
@@ -14,31 +13,44 @@ function parseTags(searchParams: URLSearchParams): string[] {
   return normalizeTags(splitTags);
 }
 
-function parseRange(rangeParam: string | null): RangeParam {
-  if (rangeParam === "30" || rangeParam === "90" || rangeParam === "180") {
+function parseRange(rangeParam: string | null): HistoryGraphRange {
+  if (rangeParam === "30" || rangeParam === "90" || rangeParam === "180" || rangeParam === "365" || rangeParam === "custom") {
     return rangeParam;
   }
 
   return "all";
 }
 
-function getRangeStart(range: RangeParam): Date | undefined {
-  if (range === "all") {
-    return undefined;
+function getDateFilter(
+  range: HistoryGraphRange,
+  searchParams: URLSearchParams
+): { gte?: Date; lte?: Date } | undefined {
+  if (range === "custom") {
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+    if (!startDate || !endDate) return undefined;
+
+    const gte = new Date(startDate);
+    const lte = new Date(endDate);
+    lte.setUTCHours(23, 59, 59, 999);
+
+    if (isNaN(gte.getTime()) || isNaN(lte.getTime())) return undefined;
+    return { gte, lte };
   }
+
+  if (range === "all") return undefined;
 
   const days = Number(range);
   const startDate = new Date();
   startDate.setUTCHours(0, 0, 0, 0);
   startDate.setUTCDate(startDate.getUTCDate() - (days - 1));
-  return startDate;
+  return { gte: startDate };
 }
 
 export async function GET(req: NextRequest) {
   const tags = parseTags(req.nextUrl.searchParams);
   const range = parseRange(req.nextUrl.searchParams.get("range"));
-  // const exerciseId = req.nextUrl.searchParams.get("exerciseId")?.trim() || undefined;
-  const rangeStart = getRangeStart(range);
+  const dateFilter = getDateFilter(range, req.nextUrl.searchParams);
 
   const andFilters: Prisma.WorkoutWhereInput[] = tags.map((name) => ({
     tags: {
@@ -46,12 +58,8 @@ export async function GET(req: NextRequest) {
     },
   }));
 
-  if (rangeStart) {
-    andFilters.push({
-      performedAt: {
-        gte: rangeStart,
-      },
-    });
+  if (dateFilter) {
+    andFilters.push({ performedAt: dateFilter });
   }
 
   const workouts = await prisma.workout.findMany({

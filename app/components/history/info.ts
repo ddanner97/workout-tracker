@@ -26,9 +26,13 @@ export async function fetchWorkouts(): Promise<SavedWorkout[]> {
 export async function fetchWorkoutMetrics({
   tags,
   range,
+  startDate,
+  endDate,
 }: {
   tags: string[];
   range: HistoryGraphRange;
+  startDate?: string;
+  endDate?: string;
 }): Promise<WorkoutMetricsResponse> {
   const params = new URLSearchParams();
 
@@ -37,6 +41,11 @@ export async function fetchWorkoutMetrics({
   }
 
   params.set("range", range);
+
+  if (range === "custom" && startDate && endDate) {
+    params.set("startDate", startDate);
+    params.set("endDate", endDate);
+  }
 
   const queryString = params.toString();
   const res = await fetch(`/api/workouts/metrics${queryString ? `?${queryString}` : ""}`);
