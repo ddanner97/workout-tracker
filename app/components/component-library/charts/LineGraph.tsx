@@ -214,7 +214,7 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
         ]}
         yAxis={[
           {
-            label: yAxisLabel,
+            label: isSmall ? undefined : yAxisLabel,
             valueFormatter: (value: number) =>
               typeof value === 'number' ? axisValueFormatter(value) : '',
           },
@@ -232,7 +232,12 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
         ]}
         slots={{ tooltip: Tooltip }}
         slotProps={{ tooltip: { trigger: 'item' } }}
-        margin={{ top: 16, right: 24, bottom: 24, left: 48 }}
+        margin={{
+          top: 16,
+          right: isSmall ? 8 : 24,
+          bottom: 24,
+          left: isSmall ? 36 : 48,
+        }}
       />
     </Box>
   );
