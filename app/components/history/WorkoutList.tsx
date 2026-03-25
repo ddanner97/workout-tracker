@@ -2,7 +2,11 @@
 
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { GraphViewMode, CustomDateRange, HistoryGraphRange } from '../../types/types';
+import type {
+  GraphViewMode,
+  CustomDateRange,
+  HistoryGraphRange,
+} from '../../types/types';
 import { formatDate } from '../../utils/utils';
 import {
   fetchTags,
@@ -31,19 +35,23 @@ type HistoryViewMode = 'list' | 'graphs';
 
 // ─── WorkoutList component ───
 export default function WorkoutList() {
+  const queryClient = useQueryClient();
+
+  //state
   const [viewMode, setViewMode] = useState<HistoryViewMode>('list');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [graphViewMode, setGraphViewMode] = useState<GraphViewMode>('workout');
   const [customRange, setCustomRange] = useState<CustomDateRange | null>(null);
-
-  const queryClient = useQueryClient();
   const sortedSelectedTags = [...selectedTags].sort();
+  const isCustomReady =
+    graphViewMode !== 'custom' ||
+    (customRange?.start != null && customRange?.end != null);
 
   const apiRange: HistoryGraphRange = useMemo(() => {
     if (graphViewMode === 'year') return '365';
     if (graphViewMode === 'custom') return 'custom';
-    return 'all';
+    return '365';
   }, [graphViewMode]);
 
   // Mutations and Queries
@@ -66,11 +74,17 @@ export default function WorkoutList() {
     queryFn: fetchTags,
   });
 
-  const isCustomReady =
-    graphViewMode !== 'custom' || (customRange?.start != null && customRange?.end != null);
-
   const { data: metrics, isPending: isLoadingMetrics } = useQuery({
-    queryKey: ['workoutMetrics', sortedSelectedTags, apiRange, customRange?.start, customRange?.end],
+    queryKey:
+      apiRange === 'custom'
+        ? [
+            'workoutMetrics',
+            sortedSelectedTags,
+            apiRange,
+            customRange?.start,
+            customRange?.end,
+          ]
+        : ['workoutMetrics', sortedSelectedTags, apiRange],
     queryFn: () =>
       fetchWorkoutMetrics({
         tags: sortedSelectedTags,
