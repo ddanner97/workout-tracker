@@ -21,23 +21,32 @@ function parseRange(rangeParam: string | null): HistoryGraphRange {
   return "all";
 }
 
-function getDateFilter(
-  range: HistoryGraphRange,
+function validateCustomRange(
   searchParams: URLSearchParams
-): { gte?: Date; lte?: Date } | undefined {
-  if (range === "custom") {
-    const startDate = searchParams.get("startDate");
-    const endDate = searchParams.get("endDate");
-    if (!startDate || !endDate) return undefined;
+): { error: string } | { gte: Date; lte: Date } {
+  const startDate = searchParams.get("startDate");
+  const endDate = searchParams.get("endDate");
 
-    const gte = new Date(startDate);
-    const lte = new Date(endDate);
-    lte.setUTCHours(23, 59, 59, 999);
-
-    if (isNaN(gte.getTime()) || isNaN(lte.getTime())) return undefined;
-    return { gte, lte };
+  if (!startDate || !endDate) {
+    return { error: "range=custom requires both startDate and endDate parameters" };
   }
 
+  const gte = new Date(startDate);
+  const lte = new Date(endDate);
+
+  if (isNaN(gte.getTime()) || isNaN(lte.getTime())) {
+    return { error: "startDate and endDate must be valid date strings" };
+  }
+
+  lte.setUTCHours(23, 59, 59, 999);
+  return { gte, lte };
+}
+
+function getDateFilter(
+  range: HistoryGraphRange,
+  customRange?: { gte: Date; lte: Date }
+): { gte?: Date; lte?: Date } | undefined {
+  if (range === "custom") return customRange;
   if (range === "all") return undefined;
 
   const days = Number(range);
@@ -50,7 +59,17 @@ function getDateFilter(
 export async function GET(req: NextRequest) {
   const tags = parseTags(req.nextUrl.searchParams);
   const range = parseRange(req.nextUrl.searchParams.get("range"));
-  const dateFilter = getDateFilter(range, req.nextUrl.searchParams);
+
+  let customRange: { gte: Date; lte: Date } | undefined;
+  if (range === "custom") {
+    const result = validateCustomRange(req.nextUrl.searchParams);
+    if ("error" in result) {
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+    customRange = result;
+  }
+
+  const dateFilter = getDateFilter(range, customRange);
 
   const andFilters: Prisma.WorkoutWhereInput[] = tags.map((name) => ({
     tags: {
