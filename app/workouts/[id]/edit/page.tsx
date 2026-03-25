@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { use } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { CircularProgress, Box, Typography } from "@mui/material";
-import { WorkoutFormProvider } from "../../../components/contexts/WorkoutFormContext";
-import WorkoutForm from "../../../components/component-library/workout-form/WorkoutForm";
-import { fetchWorkout } from "../../../components/component-library/workout-form/info";
-import { savedWorkoutToFormValues } from "../../../utils/utils";
+import { use } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { CircularProgress, Box, Typography } from '@mui/material';
+import { WorkoutFormProvider } from '../../../components/contexts/WorkoutFormContext';
+import WorkoutForm from '../../../components/component-library/workout-form/WorkoutForm';
+import { fetchWorkout } from '../../../components/component-library/workout-form/info';
+import { savedWorkoutToFormValues } from '../../../utils/utils';
 
 export default function EditWorkoutPage({
   params,
@@ -15,8 +15,12 @@ export default function EditWorkoutPage({
 }) {
   const { id } = use(params);
 
-  const { data: workout, isPending, isError } = useQuery({
-    queryKey: ["workout", id],
+  const {
+    data: workout,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ['workout', id],
     queryFn: () => fetchWorkout(id),
   });
 

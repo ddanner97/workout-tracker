@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import LightModeIcon from "@mui/icons-material/LightMode";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import { useColorMode } from "../contexts/ThemeRegistry";
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { useColorMode } from '../contexts/ThemeRegistry';
 
 /**
  * ThemeToggle — a simple button for toggling between light and dark themes.
@@ -20,18 +20,14 @@ import { useColorMode } from "../contexts/ThemeRegistry";
 
 export default function ThemeToggle() {
   const { colorMode, toggleColorMode } = useColorMode();
-  const isDark = colorMode === "dark";
+  const isDark = colorMode === 'dark';
 
   return (
-    <Tooltip
-      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-    >
+    <Tooltip title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
       <IconButton
         onClick={toggleColorMode}
         size="small"
-        aria-label={
-          isDark ? "Switch to light mode" : "Switch to dark mode"
-        }
+        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
         color="inherit"
       >
         {isDark ? (

@@ -1,29 +1,29 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
 
 // ─── Components ───
-import { ThemeToggle } from "./components/component-library";
+import { ThemeToggle } from './components/component-library';
 import {
   QueryProvider,
   ThemeRegistry,
   WorkoutFormProvider,
-} from "./components";
+} from './components';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "Workout Logger",
-  description: "Track your workouts and progress",
+  title: 'Workout Logger',
+  description: 'Track your workouts and progress',
 };
 
 export default function RootLayout({
@@ -39,7 +39,7 @@ export default function RootLayout({
         <ThemeRegistry>
           <QueryProvider>
             <WorkoutFormProvider>
-              <div className="min-h-screen bg-background text-foreground">
+              <div className="bg-background text-foreground min-h-screen">
                 <header className="border-b border-black/10 dark:border-white/10">
                   <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
                     <Link
@@ -53,7 +53,7 @@ export default function RootLayout({
                         History
                       </Link>
                       <Link
-                        className="rounded-md bg-foreground px-3 py-1.5 text-background hover:opacity-90"
+                        className="bg-foreground text-background rounded-md px-3 py-1.5 hover:opacity-90"
                         href="/"
                       >
                         New Workout

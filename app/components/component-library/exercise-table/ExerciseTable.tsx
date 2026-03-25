@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useMediaQuery, useTheme } from "@mui/material";
-import { SetRow } from "../../../types/types";
-import ExerciseTableDesktop from "./Desktop";
-import ExerciseTableMobile from "./Mobile";
+import { useMediaQuery, useTheme } from '@mui/material';
+import { SetRow } from '../../../types/types';
+import ExerciseTableDesktop from './Desktop';
+import ExerciseTableMobile from './Mobile';
 
 /**
  * ExerciseTable component — responsive wrapper for exercise set entry.
@@ -41,7 +41,7 @@ export default function ExerciseTable({
   onUpdateSet,
 }: ExerciseTableProps) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const props = { sets, onAddSet, onRemoveSet, onUpdateSet };
 

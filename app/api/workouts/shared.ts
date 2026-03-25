@@ -24,8 +24,9 @@ export interface WorkoutInput {
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
 export function parseReps(reps: unknown): number {
-  if (reps === "fail") return -1;
-  if (typeof reps === "number" && Number.isInteger(reps) && reps > 0) return reps;
+  if (reps === 'fail') return -1;
+  if (typeof reps === 'number' && Number.isInteger(reps) && reps > 0)
+    return reps;
   throw new Error("reps must be a positive integer or 'fail'");
 }
 
@@ -33,16 +34,16 @@ export function validateBody(body: WorkoutInput): string[] {
   const errors: string[] = [];
 
   if (!body.performedAt || isNaN(Date.parse(String(body.performedAt)))) {
-    errors.push("performedAt must be a valid date string");
+    errors.push('performedAt must be a valid date string');
   }
 
   if (!Array.isArray(body.exercises) || body.exercises.length === 0) {
-    errors.push("exercises must be a non-empty array");
+    errors.push('exercises must be a non-empty array');
     return errors;
   }
 
   (body.exercises as ExerciseInput[]).forEach((ex, ei) => {
-    if (!ex.exerciseId || typeof ex.exerciseId !== "string") {
+    if (!ex.exerciseId || typeof ex.exerciseId !== 'string') {
       errors.push(`exercises[${ei}].exerciseId is required`);
     }
 

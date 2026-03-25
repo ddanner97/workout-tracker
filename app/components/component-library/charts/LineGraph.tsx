@@ -17,9 +17,10 @@ import {
 import GraphTooltipContent, { GraphTooltipRow } from './GraphTooltipContent';
 
 interface LineGraphPoint {
-  workoutId: string;
   performedAt: string;
 }
+
+export type XAxisFormat = 'day' | 'month';
 
 interface LineGraphProps<TPoint extends LineGraphPoint> {
   title: string;
@@ -31,13 +32,25 @@ interface LineGraphProps<TPoint extends LineGraphPoint> {
   getPointValue: (point: TPoint) => number;
   getTooltipRows: (point: TPoint) => GraphTooltipRow[];
   lineColor?: string;
+  xAxisFormat?: XAxisFormat;
 }
 
-const axisDateFormatter = new Intl.DateTimeFormat(undefined, {
+const dayFormatter = new Intl.DateTimeFormat(undefined, {
   month: 'short',
   day: 'numeric',
   timeZone: 'UTC',
 });
+
+const monthFormatter = new Intl.DateTimeFormat(undefined, {
+  month: 'short',
+  year: '2-digit',
+  timeZone: 'UTC',
+});
+
+const axisFormatters: Record<XAxisFormat, Intl.DateTimeFormat> = {
+  day: dayFormatter,
+  month: monthFormatter,
+};
 
 function tooltipDateLabel(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString(undefined, {
@@ -66,6 +79,7 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
   getPointValue,
   getTooltipRows,
   lineColor,
+  xAxisFormat = 'day',
   filters,
 }: LineGraphProps<TPoint> & { filters?: React.ReactNode }) {
   const theme = useTheme();
@@ -193,12 +207,14 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
             data: points.map((point) => new Date(point.performedAt)),
             scaleType: 'time',
             valueFormatter: (value: Date) =>
-              value instanceof Date ? axisDateFormatter.format(value) : '',
+              value instanceof Date
+                ? axisFormatters[xAxisFormat].format(value)
+                : '',
           },
         ]}
         yAxis={[
           {
-            label: yAxisLabel,
+            label: isSmall ? undefined : yAxisLabel,
             valueFormatter: (value: number) =>
               typeof value === 'number' ? axisValueFormatter(value) : '',
           },
@@ -216,7 +232,12 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
         ]}
         slots={{ tooltip: Tooltip }}
         slotProps={{ tooltip: { trigger: 'item' } }}
-        margin={{ top: 16, right: 24, bottom: 24, left: 48 }}
+        margin={{
+          top: 16,
+          right: isSmall ? 8 : 24,
+          bottom: 24,
+          left: isSmall ? 36 : 48,
+        }}
       />
     </Box>
   );

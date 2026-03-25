@@ -1,8 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { HistoryGraphRange } from '../../types/types';
+import type {
+  GraphViewMode,
+  CustomDateRange,
+  HistoryGraphRange,
+} from '../../types/types';
 import { formatDate } from '../../utils/utils';
 import {
   fetchTags,
@@ -31,14 +35,26 @@ type HistoryViewMode = 'list' | 'graphs';
 
 // ─── WorkoutList component ───
 export default function WorkoutList() {
-  // State
+  const queryClient = useQueryClient();
+
+  //state
   const [viewMode, setViewMode] = useState<HistoryViewMode>('list');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
-  const [range, setRange] = useState<HistoryGraphRange>('all');
-
-  const queryClient = useQueryClient();
+  const [graphViewMode, setGraphViewMode] = useState<GraphViewMode>('workout');
+  const [customRange, setCustomRange] = useState<CustomDateRange | null>(null);
   const sortedSelectedTags = [...selectedTags].sort();
+  const isCustomReady =
+    graphViewMode !== 'custom' ||
+    (!!customRange?.start &&
+      !!customRange?.end &&
+      customRange.start <= customRange.end);
+
+  const apiRange: HistoryGraphRange = useMemo(() => {
+    if (graphViewMode === 'year') return '365';
+    if (graphViewMode === 'custom') return 'custom';
+    return '365';
+  }, [graphViewMode]);
 
   // Mutations and Queries
   const { mutate: handleDelete, isPending: isDeleting } = useMutation({
@@ -61,13 +77,24 @@ export default function WorkoutList() {
   });
 
   const { data: metrics, isPending: isLoadingMetrics } = useQuery({
-    queryKey: ['workoutMetrics', sortedSelectedTags, range],
+    queryKey:
+      apiRange === 'custom'
+        ? [
+            'workoutMetrics',
+            sortedSelectedTags,
+            apiRange,
+            customRange?.start,
+            customRange?.end,
+          ]
+        : ['workoutMetrics', sortedSelectedTags, apiRange],
     queryFn: () =>
       fetchWorkoutMetrics({
         tags: sortedSelectedTags,
-        range,
+        range: apiRange,
+        startDate: customRange?.start,
+        endDate: customRange?.end,
       }),
-    enabled: viewMode === 'graphs',
+    enabled: viewMode === 'graphs' && isCustomReady,
   });
 
   const filteredWorkouts =
@@ -126,8 +153,10 @@ export default function WorkoutList() {
         // TODO: Add loading state using isLoadingMetrics
         <GraphView
           metrics={metrics ?? { volumeSeries: [], exerciseMaxWeightSeries: [] }}
-          range={range}
-          setRange={setRange}
+          viewMode={graphViewMode}
+          onViewModeChange={setGraphViewMode}
+          customRange={customRange}
+          onCustomRangeChange={setCustomRange}
         />
       ) : (
         <section>

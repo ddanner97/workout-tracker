@@ -50,13 +50,27 @@ interface WorkoutFormInitialValues {
   tags: string[];
 }
 
-type HistoryGraphRange = "all" | "30" | "90" | "180";
+type HistoryGraphRange = 'all' | '30' | '90' | '180' | '365' | 'custom';
+
+type GraphViewMode = 'workout' | 'week' | 'month' | 'year' | 'custom';
+
+interface CustomDateRange {
+  start: string;
+  end: string;
+}
 
 interface WorkoutVolumePoint {
   workoutId: string;
   performedAt: string;
   volume: number;
   tags: string[];
+}
+
+interface AggregatedVolumePoint {
+  performedAt: string;
+  periodLabel: string;
+  volume: number;
+  workoutCount: number;
 }
 
 interface ExerciseMaxWeightPoint {
@@ -81,7 +95,10 @@ export type {
   SavedWorkout,
   WorkoutFormInitialValues,
   HistoryGraphRange,
+  GraphViewMode,
+  CustomDateRange,
   WorkoutVolumePoint,
+  AggregatedVolumePoint,
   ExerciseMaxWeightPoint,
   WorkoutMetricsResponse,
 };

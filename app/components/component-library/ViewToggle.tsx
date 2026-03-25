@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 interface ToggleOption<T extends string> {
   value: T;
@@ -34,7 +34,11 @@ export default function ViewToggle<T extends string>({
       }}
     >
       {options.map((option) => (
-        <ToggleButton key={option.value} value={option.value}>
+        <ToggleButton
+          key={option.value}
+          value={option.value}
+          sx={{ minWidth: 68 }}
+        >
           {option.label}
         </ToggleButton>
       ))}

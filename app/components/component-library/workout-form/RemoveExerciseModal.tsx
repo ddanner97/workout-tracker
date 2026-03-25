@@ -1,33 +1,29 @@
-import React, { useState } from "react";
-import { useWorkoutForm } from "../../contexts/WorkoutFormContext";
+import React, { useState } from 'react';
+import { useWorkoutForm } from '../../contexts/WorkoutFormContext';
 
 // ─── Components ───
-import { Modal, Box } from "@mui/material";
-import { Button } from "../../component-library";
+import { Modal, Box } from '@mui/material';
+import { Button } from '../../component-library';
 
 // ─── Styles ───
 const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid primary.main",
+  bgcolor: 'background.paper',
+  border: '2px solid primary.main',
   borderRadius: 2,
   boxShadow: 24,
   p: 4,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
 };
 
-const RemoveExerciseModal = ({
-  exerciseIndex,
-}: {
-  exerciseIndex: number;
-}) => {
+const RemoveExerciseModal = ({ exerciseIndex }: { exerciseIndex: number }) => {
   const { removeExercise } = useWorkoutForm();
 
   // --- component-level state ───
@@ -51,7 +47,7 @@ const RemoveExerciseModal = ({
             ...style,
           }}
         >
-          <p className="text-center mb-4">
+          <p className="mb-4 text-center">
             Are you sure you want to remove this exercise?
           </p>
           <Button

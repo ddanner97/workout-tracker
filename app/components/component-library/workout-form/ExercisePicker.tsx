@@ -1,15 +1,11 @@
-import React from "react";
-import { Exercise, ExerciseRow } from "../../../types/types";
-import { useQuery } from "@tanstack/react-query";
-import { fetchExercises } from "./info";
-import { useWorkoutForm } from "../../contexts/WorkoutFormContext";
+import React from 'react';
+import { Exercise, ExerciseRow } from '../../../types/types';
+import { useQuery } from '@tanstack/react-query';
+import { fetchExercises } from './info';
+import { useWorkoutForm } from '../../contexts/WorkoutFormContext';
 
 // ─── Components Imports ───
-import {
-  Autocomplete,
-  TextField,
-  createFilterOptions,
-} from "@mui/material";
+import { Autocomplete, TextField, createFilterOptions } from '@mui/material';
 
 // ─── Types ───
 interface ExerciseOption extends Exercise {
@@ -35,7 +31,7 @@ const ExercisePicker = ({
 
   // --- Queries & Mutations ───
   const { data: availableExercises = [] } = useQuery({
-    queryKey: ["exercises"],
+    queryKey: ['exercises'],
     queryFn: fetchExercises,
   });
 
@@ -44,12 +40,12 @@ const ExercisePicker = ({
       options={availableExercises as ExerciseOption[]}
       value={
         (availableExercises as ExerciseOption[]).find(
-          (e) => e.id === exercise.exerciseId,
+          (e) => e.id === exercise.exerciseId
         ) ?? null
       }
       onChange={(_, option) => {
         if (!option) {
-          updateExerciseId(exerciseIndex, "");
+          updateExerciseId(exerciseIndex, '');
           return;
         }
         if (option.inputValue) {
@@ -64,11 +60,11 @@ const ExercisePicker = ({
         const filtered = filter(options, params);
         const { inputValue } = params;
         const alreadyExists = options.some(
-          (o) => o.name.toLowerCase() === inputValue.toLowerCase(),
+          (o) => o.name.toLowerCase() === inputValue.toLowerCase()
         );
         if (inputValue && !alreadyExists) {
           filtered.push({
-            id: "",
+            id: '',
             name: `Add "${inputValue}"`,
             muscleGroup: null,
             inputValue,
@@ -77,7 +73,7 @@ const ExercisePicker = ({
         return filtered;
       }}
       getOptionLabel={(option) => {
-        if (typeof option === "string") return option;
+        if (typeof option === 'string') return option;
         if (option.inputValue) return option.inputValue;
         return option.muscleGroup
           ? `${option.name} (${option.muscleGroup})`

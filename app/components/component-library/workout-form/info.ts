@@ -1,4 +1,4 @@
-import { Exercise, SavedWorkout, Tag } from "../../../types/types";
+import { Exercise, SavedWorkout, Tag } from '../../../types/types';
 
 export async function fetchTags(): Promise<Tag[]> {
   const res = await fetch('/api/tags');
@@ -10,25 +10,25 @@ export async function postExercise(body: {
   name: string;
   muscleGroup: string;
 }): Promise<Exercise> {
-  const res = await fetch("/api/exercises", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  const res = await fetch('/api/exercises', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error("Failed to create exercise");
+  if (!res.ok) throw new Error('Failed to create exercise');
   return res.json();
 }
 
 export async function fetchExercises(): Promise<Exercise[]> {
-  const res = await fetch("/api/exercises");
-  if (!res.ok) throw new Error("Failed to fetch exercises");
+  const res = await fetch('/api/exercises');
+  if (!res.ok) throw new Error('Failed to fetch exercises');
   return res.json();
 }
 
 export async function postWorkout(body: unknown): Promise<SavedWorkout> {
-  const res = await fetch("/api/workouts", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  const res = await fetch('/api/workouts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
   if (!res.ok) {
@@ -40,14 +40,17 @@ export async function postWorkout(body: unknown): Promise<SavedWorkout> {
 
 export async function fetchWorkout(id: string): Promise<SavedWorkout> {
   const res = await fetch(`/api/workouts/${id}`);
-  if (!res.ok) throw new Error("Failed to fetch workout");
+  if (!res.ok) throw new Error('Failed to fetch workout');
   return res.json();
 }
 
-export async function putWorkout(id: string, body: unknown): Promise<SavedWorkout> {
+export async function putWorkout(
+  id: string,
+  body: unknown
+): Promise<SavedWorkout> {
   const res = await fetch(`/api/workouts/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
   if (!res.ok) {
