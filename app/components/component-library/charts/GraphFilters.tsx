@@ -56,34 +56,44 @@ export default function GraphFilters({
     </ToggleButtonGroup>
   );
 
+  const today = new Date().toISOString().split("T")[0];
+
   const dateInputs = viewMode === "custom" && (
     <Box sx={{ display: "flex", gap: 1, alignItems: "center", mt: { xs: 1, md: 0 } }}>
       <TextField
         type="date"
         size="small"
         label="Start"
+        required
         value={customRange?.start ?? ""}
-        onChange={(e) =>
-          onCustomRangeChange({
-            start: e.target.value,
-            end: customRange?.end ?? e.target.value,
-          })
-        }
-        slotProps={{ inputLabel: { shrink: true } }}
+        onChange={(e) => {
+          const start = e.target.value;
+          if (!start) return;
+          const end = customRange?.end && customRange.end >= start ? customRange.end : start;
+          onCustomRangeChange({ start, end });
+        }}
+        slotProps={{
+          inputLabel: { shrink: true },
+          htmlInput: { max: customRange?.end || today },
+        }}
         sx={{ width: 160 }}
       />
       <TextField
         type="date"
         size="small"
         label="End"
+        required
         value={customRange?.end ?? ""}
-        onChange={(e) =>
-          onCustomRangeChange({
-            start: customRange?.start ?? e.target.value,
-            end: e.target.value,
-          })
-        }
-        slotProps={{ inputLabel: { shrink: true } }}
+        onChange={(e) => {
+          const end = e.target.value;
+          if (!end) return;
+          const start = customRange?.start && customRange.start <= end ? customRange.start : end;
+          onCustomRangeChange({ start, end });
+        }}
+        slotProps={{
+          inputLabel: { shrink: true },
+          htmlInput: { min: customRange?.start || undefined, max: today },
+        }}
         sx={{ width: 160 }}
       />
     </Box>
