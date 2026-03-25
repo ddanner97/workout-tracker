@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { postExercise } from "./info";
-import { useWorkoutForm } from "../../contexts/WorkoutFormContext";
+import React, { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { postExercise } from './info';
+import { useWorkoutForm } from '../../contexts/WorkoutFormContext';
 
 // ─── Components ───
 import {
@@ -11,8 +11,8 @@ import {
   DialogTitle,
   Stack,
   TextField,
-} from "@mui/material";
-import { Button } from "../../component-library";
+} from '@mui/material';
+import { Button } from '../../component-library';
 
 const AddExerciseDialog = ({
   dialogOpen,
@@ -33,13 +33,13 @@ const AddExerciseDialog = ({
   const { updateExerciseId } = useWorkoutForm();
 
   // ─── Add-exercise dialog state (transient UI, no need to persist) ───
-  const [dialogMuscleGroup, setDialogMuscleGroup] = useState("");
+  const [dialogMuscleGroup, setDialogMuscleGroup] = useState('');
 
   // ─── Mutations ───
   const addExerciseMutation = useMutation({
     mutationFn: postExercise,
     onSuccess: (newExercise) => {
-      queryClient.invalidateQueries({ queryKey: ["exercises"] });
+      queryClient.invalidateQueries({ queryKey: ['exercises'] });
       if (pendingExerciseIndex !== null) {
         updateExerciseId(pendingExerciseIndex, newExercise.id);
       }
@@ -50,8 +50,8 @@ const AddExerciseDialog = ({
   // --- Event Handlers ───
   function handleDialogClose() {
     setDialogOpen(false);
-    setDialogExerciseName("");
-    setDialogMuscleGroup("");
+    setDialogExerciseName('');
+    setDialogMuscleGroup('');
     setPendingExerciseIndex(null);
   }
 
@@ -98,7 +98,7 @@ const AddExerciseDialog = ({
           />
           <Button
             type="button"
-            label={addExerciseMutation.isPending ? "Saving..." : "Save"}
+            label={addExerciseMutation.isPending ? 'Saving...' : 'Save'}
             onClick={handleDialogSave}
             disabled={
               !dialogExerciseName.trim() || addExerciseMutation.isPending

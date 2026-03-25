@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Paper, Stack, TextField, Typography } from "@mui/material";
-import { SetRow } from "../../../types/types";
-import { Button } from "../index";
-import { SET_FIELDS } from "./constants";
+import { Paper, Stack, TextField, Typography } from '@mui/material';
+import { SetRow } from '../../../types/types';
+import { Button } from '../index';
+import { SET_FIELDS } from './constants';
 
 interface ExerciseTableMobileProps {
   sets: SetRow[];
@@ -63,7 +63,7 @@ export default function ExerciseTableMobile({
                 value={set[field.fieldName]}
                 onChange={handleFieldChange(si, field.fieldName)}
                 placeholder={field.placeholder}
-                sx={field.fieldName === "rpe" ? { flex: 0.75 } : { flex: 1 }}
+                sx={field.fieldName === 'rpe' ? { flex: 0.75 } : { flex: 1 }}
               />
             ))}
           </Stack>

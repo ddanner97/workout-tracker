@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 import {
   Button as MaterialButton,
   ButtonProps as MaterialButtonProps,
-} from "@mui/material";
+} from '@mui/material';
 
 /**
  * Button component — a thin wrapper around MUI's MaterialButton

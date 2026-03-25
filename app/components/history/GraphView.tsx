@@ -12,14 +12,18 @@ import { aggregateVolume, autoGroupBy } from '../../utils/aggregateVolume';
 import { Box } from '@mui/material';
 import { GraphFilters, LineGraph } from '../component-library';
 
-function getXAxisFormat(viewMode: GraphViewMode, customRange: CustomDateRange | null): XAxisFormat {
+function getXAxisFormat(
+  viewMode: GraphViewMode,
+  customRange: CustomDateRange | null
+): XAxisFormat {
   if (viewMode === 'month') return 'month';
 
   if (viewMode === 'year') return 'month';
 
   if (viewMode === 'custom' && customRange) {
     const days =
-      (new Date(customRange.end).getTime() - new Date(customRange.start).getTime()) /
+      (new Date(customRange.end).getTime() -
+        new Date(customRange.start).getTime()) /
       (1000 * 60 * 60 * 24);
     return autoGroupBy(days) === 'month' ? 'month' : 'day';
   }
@@ -52,15 +56,22 @@ const GraphView = ({
     }
 
     if (viewMode === 'month') {
-      return { points: aggregateVolume(rawVolume, 'month'), isAggregated: true };
+      return {
+        points: aggregateVolume(rawVolume, 'month'),
+        isAggregated: true,
+      };
     }
 
     if (viewMode === 'custom' && customRange) {
       const days =
-        (new Date(customRange.end).getTime() - new Date(customRange.start).getTime()) /
+        (new Date(customRange.end).getTime() -
+          new Date(customRange.start).getTime()) /
         (1000 * 60 * 60 * 24);
       const groupBy = autoGroupBy(days);
-      return { points: aggregateVolume(rawVolume, groupBy), isAggregated: true };
+      return {
+        points: aggregateVolume(rawVolume, groupBy),
+        isAggregated: true,
+      };
     }
 
     return { points: rawVolume, isAggregated: false };

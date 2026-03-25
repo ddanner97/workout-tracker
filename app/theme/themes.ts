@@ -1,31 +1,31 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme } from '@mui/material/styles';
 
 export const lightTheme = createTheme({
   palette: {
-    mode: "light",
+    mode: 'light',
     primary: {
-      main: "#1565c0",
-      light: "#4a90d9",
-      dark: "#003c8f",
-      contrastText: "#ffffff",
+      main: '#1565c0',
+      light: '#4a90d9',
+      dark: '#003c8f',
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: "#0097a7",
-      light: "#4dd0e1",
-      dark: "#006064",
-      contrastText: "#ffffff",
+      main: '#0097a7',
+      light: '#4dd0e1',
+      dark: '#006064',
+      contrastText: '#ffffff',
     },
     background: {
-      default: "#f5f5f5",
-      paper: "#ffffff",
+      default: '#f5f5f5',
+      paper: '#ffffff',
     },
     text: {
-      primary: "#171717",
-      secondary: "#555555",
+      primary: '#171717',
+      secondary: '#555555',
     },
   },
   typography: {
-    fontFamily: "var(--font-geist-sans), sans-serif",
+    fontFamily: 'var(--font-geist-sans), sans-serif',
   },
   shape: {
     borderRadius: 8,
@@ -34,7 +34,7 @@ export const lightTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundImage: "none",
+          backgroundImage: 'none',
         },
       },
     },
@@ -43,30 +43,30 @@ export const lightTheme = createTheme({
 
 export const darkTheme = createTheme({
   palette: {
-    mode: "dark",
+    mode: 'dark',
     primary: {
-      main: "#90caf9",
-      light: "#c3e5fb",
-      dark: "#5b9bd5",
-      contrastText: "#0d1117",
+      main: '#90caf9',
+      light: '#c3e5fb',
+      dark: '#5b9bd5',
+      contrastText: '#0d1117',
     },
     secondary: {
-      main: "#4dd0e1",
-      light: "#88ffff",
-      dark: "#009faf",
-      contrastText: "#0d1117",
+      main: '#4dd0e1',
+      light: '#88ffff',
+      dark: '#009faf',
+      contrastText: '#0d1117',
     },
     background: {
-      default: "#0d1117",
-      paper: "#161b22",
+      default: '#0d1117',
+      paper: '#161b22',
     },
     text: {
-      primary: "#ededed",
-      secondary: "#aaaaaa",
+      primary: '#ededed',
+      secondary: '#aaaaaa',
     },
   },
   typography: {
-    fontFamily: "var(--font-geist-sans), sans-serif",
+    fontFamily: 'var(--font-geist-sans), sans-serif',
   },
   shape: {
     borderRadius: 8,
@@ -75,7 +75,7 @@ export const darkTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundImage: "none",
+          backgroundImage: 'none',
         },
       },
     },

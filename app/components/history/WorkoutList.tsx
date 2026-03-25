@@ -46,7 +46,9 @@ export default function WorkoutList() {
   const sortedSelectedTags = [...selectedTags].sort();
   const isCustomReady =
     graphViewMode !== 'custom' ||
-    (!!customRange?.start && !!customRange?.end && customRange.start <= customRange.end);
+    (!!customRange?.start &&
+      !!customRange?.end &&
+      customRange.start <= customRange.end);
 
   const apiRange: HistoryGraphRange = useMemo(() => {
     if (graphViewMode === 'year') return '365';

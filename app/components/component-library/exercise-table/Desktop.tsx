@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Paper,
@@ -10,10 +10,10 @@ import {
   TableHead,
   TableRow,
   TextField,
-} from "@mui/material";
-import { SetRow } from "../../../types/types";
-import { Button } from "../index";
-import { SET_FIELDS } from "./constants";
+} from '@mui/material';
+import { SetRow } from '../../../types/types';
+import { Button } from '../index';
+import { SET_FIELDS } from './constants';
 
 interface ExerciseTableDesktopProps {
   sets: SetRow[];

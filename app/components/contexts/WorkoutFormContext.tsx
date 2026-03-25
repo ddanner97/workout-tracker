@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from 'react';
 import {
   ExerciseRow,
   SetRow,
   WorkoutFormInitialValues,
-} from "../../types/types";
-import { emptyExercise, emptySet } from "../../utils/utils";
+} from '../../types/types';
+import { emptyExercise, emptySet } from '../../utils/utils';
 
 interface WorkoutFormContextType {
   date: string;
@@ -27,14 +27,12 @@ interface WorkoutFormContextType {
     ei: number,
     si: number,
     field: keyof SetRow,
-    value: string,
+    value: string
   ) => void;
   resetForm: () => void;
 }
 
-const WorkoutFormContext = createContext<WorkoutFormContextType | null>(
-  null,
-);
+const WorkoutFormContext = createContext<WorkoutFormContextType | null>(null);
 
 export function WorkoutFormProvider({
   children,
@@ -43,11 +41,11 @@ export function WorkoutFormProvider({
   children: React.ReactNode;
   initialValues?: WorkoutFormInitialValues;
 }) {
-  const [date, setDate] = useState(initialValues?.date || "");
-  const [notes, setNotes] = useState(initialValues?.notes || "");
+  const [date, setDate] = useState(initialValues?.date || '');
+  const [notes, setNotes] = useState(initialValues?.notes || '');
   const [tags, setTags] = useState<string[]>(initialValues?.tags || []);
   const [exercises, setExercises] = useState<ExerciseRow[]>(
-    initialValues?.exercises || [emptyExercise()],
+    initialValues?.exercises || [emptyExercise()]
   );
   const [formErrors, setFormErrors] = useState<string[]>([]);
 
@@ -56,31 +54,29 @@ export function WorkoutFormProvider({
   }
 
   function removeExercise(ei: number) {
-    console.log("Removing exercise", ei);
+    console.log('Removing exercise', ei);
     setExercises((prev) => prev.filter((_, i) => i !== ei));
   }
 
   function updateExerciseId(ei: number, exerciseId: string) {
     setExercises((prev) =>
-      prev.map((ex, i) => (i === ei ? { ...ex, exerciseId } : ex)),
+      prev.map((ex, i) => (i === ei ? { ...ex, exerciseId } : ex))
     );
   }
 
   function addSet(ei: number) {
     setExercises((prev) =>
       prev.map((ex, i) =>
-        i === ei ? { ...ex, sets: [...ex.sets, emptySet()] } : ex,
-      ),
+        i === ei ? { ...ex, sets: [...ex.sets, emptySet()] } : ex
+      )
     );
   }
 
   function removeSet(ei: number, si: number) {
     setExercises((prev) =>
       prev.map((ex, i) =>
-        i === ei
-          ? { ...ex, sets: ex.sets.filter((_, j) => j !== si) }
-          : ex,
-      ),
+        i === ei ? { ...ex, sets: ex.sets.filter((_, j) => j !== si) } : ex
+      )
     );
   }
 
@@ -88,7 +84,7 @@ export function WorkoutFormProvider({
     ei: number,
     si: number,
     field: keyof SetRow,
-    value: string,
+    value: string
   ) {
     setExercises((prev) =>
       prev.map((ex, i) =>
@@ -96,17 +92,17 @@ export function WorkoutFormProvider({
           ? {
               ...ex,
               sets: ex.sets.map((set, j) =>
-                j === si ? { ...set, [field]: value } : set,
+                j === si ? { ...set, [field]: value } : set
               ),
             }
-          : ex,
-      ),
+          : ex
+      )
     );
   }
 
   function resetForm() {
-    setDate("");
-    setNotes("");
+    setDate('');
+    setNotes('');
     setTags([]);
     setExercises([emptyExercise()]);
     setFormErrors([]);
@@ -141,9 +137,7 @@ export function WorkoutFormProvider({
 export function useWorkoutForm() {
   const ctx = useContext(WorkoutFormContext);
   if (!ctx) {
-    throw new Error(
-      "useWorkoutForm must be used within a WorkoutFormProvider",
-    );
+    throw new Error('useWorkoutForm must be used within a WorkoutFormProvider');
   }
   return ctx;
 }

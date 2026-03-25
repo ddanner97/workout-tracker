@@ -1,17 +1,17 @@
-import type { WorkoutVolumePoint, AggregatedVolumePoint } from "../types/types";
+import type { WorkoutVolumePoint, AggregatedVolumePoint } from '../types/types';
 
-type GroupBy = "week" | "month";
+type GroupBy = 'week' | 'month';
 
 const weekLabelFormatter = new Intl.DateTimeFormat(undefined, {
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
 });
 
 const monthLabelFormatter = new Intl.DateTimeFormat(undefined, {
-  month: "long",
-  year: "numeric",
-  timeZone: "UTC",
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
 });
 
 function getISOWeekStart(iso: string): string {
@@ -28,14 +28,14 @@ function getMonthKey(iso: string): string {
 }
 
 function buildWeekLabel(weekStart: string): string {
-  const start = new Date(weekStart + "T00:00:00Z");
+  const start = new Date(weekStart + 'T00:00:00Z');
   const end = new Date(start);
   end.setUTCDate(end.getUTCDate() + 6);
   return `${weekLabelFormatter.format(start)} – ${weekLabelFormatter.format(end)}`;
 }
 
 function buildMonthLabel(monthKey: string): string {
-  const date = new Date(monthKey + "-01T00:00:00Z");
+  const date = new Date(monthKey + '-01T00:00:00Z');
   return monthLabelFormatter.format(date);
 }
 
@@ -48,7 +48,7 @@ export function aggregateVolume(
 
   for (const point of points) {
     const key =
-      groupBy === "week"
+      groupBy === 'week'
         ? getISOWeekStart(point.performedAt)
         : getMonthKey(point.performedAt);
 
@@ -65,14 +65,14 @@ export function aggregateVolume(
   return bucketOrder.map((key) => {
     const { volume, workoutCount } = buckets.get(key)!;
     const performedAt =
-      groupBy === "week" ? `${key}T00:00:00.000Z` : `${key}-01T00:00:00.000Z`;
+      groupBy === 'week' ? `${key}T00:00:00.000Z` : `${key}-01T00:00:00.000Z`;
     const periodLabel =
-      groupBy === "week" ? buildWeekLabel(key) : buildMonthLabel(key);
+      groupBy === 'week' ? buildWeekLabel(key) : buildMonthLabel(key);
 
     return { performedAt, periodLabel, volume, workoutCount };
   });
 }
 
 export function autoGroupBy(daySpan: number): GroupBy {
-  return daySpan < 365 ? "week" : "month";
+  return daySpan < 365 ? 'week' : 'month';
 }

@@ -1,27 +1,27 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/src/lib/prisma";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/src/lib/prisma';
 import {
   ExerciseInput,
   SetInput,
   WorkoutInput,
   parseReps,
   validateBody,
-} from "./shared";
+} from './shared';
 
 /**
  * API route handlers for retrieving and creating multiple workouts.
-**/
+ **/
 
 export async function GET() {
   const workouts = await prisma.workout.findMany({
-    orderBy: { performedAt: "desc" },
+    orderBy: { performedAt: 'desc' },
     include: {
-      tags: { orderBy: { name: "asc" } },
+      tags: { orderBy: { name: 'asc' } },
       workoutExercises: {
-        orderBy: { order: "asc" },
+        orderBy: { order: 'asc' },
         include: {
           exercise: true,
-          sets: { orderBy: { setNumber: "asc" } },
+          sets: { orderBy: { setNumber: 'asc' } },
         },
       },
     },
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ errors: ["Invalid JSON"] }, { status: 400 });
+    return NextResponse.json({ errors: ['Invalid JSON'] }, { status: 400 });
   }
 
   const errors = validateBody(body);
@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
     ? [
         ...new Set(
           (body.tags as unknown[])
-            .filter((t) => typeof t === "string")
-            .map((t) => (t as string).replace(/^#/, "").trim().toLowerCase())
+            .filter((t) => typeof t === 'string')
+            .map((t) => (t as string).replace(/^#/, '').trim().toLowerCase())
             .filter(Boolean)
         ),
       ]
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       workoutExercises: {
         create: exercises.map((ex, idx) => ({
           exerciseId: String(ex.exerciseId),
-          order: typeof ex.order === "number" ? ex.order : idx,
+          order: typeof ex.order === 'number' ? ex.order : idx,
           sets: {
             create: (ex.sets as SetInput[]).map((set) => ({
               setNumber: Number(set.setNumber),
@@ -82,12 +82,12 @@ export async function POST(req: NextRequest) {
       },
     },
     include: {
-      tags: { orderBy: { name: "asc" } },
+      tags: { orderBy: { name: 'asc' } },
       workoutExercises: {
-        orderBy: { order: "asc" },
+        orderBy: { order: 'asc' },
         include: {
           exercise: true,
-          sets: { orderBy: { setNumber: "asc" } },
+          sets: { orderBy: { setNumber: 'asc' } },
         },
       },
     },

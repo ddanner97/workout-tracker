@@ -1,4 +1,4 @@
-import { WorkoutForm } from "./components";
+import { WorkoutForm } from './components';
 
 export default function HomePage() {
   return (

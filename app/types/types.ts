@@ -50,9 +50,9 @@ interface WorkoutFormInitialValues {
   tags: string[];
 }
 
-type HistoryGraphRange = "all" | "30" | "90" | "180" | "365" | "custom";
+type HistoryGraphRange = 'all' | '30' | '90' | '180' | '365' | 'custom';
 
-type GraphViewMode = "workout" | "week" | "month" | "year" | "custom";
+type GraphViewMode = 'workout' | 'week' | 'month' | 'year' | 'custom';
 
 interface CustomDateRange {
   start: string;

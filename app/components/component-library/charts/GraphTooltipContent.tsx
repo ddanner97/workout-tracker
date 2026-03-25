@@ -1,4 +1,4 @@
-import { Paper, Stack, Typography } from "@mui/material";
+import { Paper, Stack, Typography } from '@mui/material';
 
 interface GraphTooltipRow {
   label: string;
