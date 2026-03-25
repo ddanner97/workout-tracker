@@ -12,23 +12,11 @@ import { aggregateVolume, autoGroupBy } from '../../utils/aggregateVolume';
 import { Box } from '@mui/material';
 import { GraphFilters, LineGraph } from '../component-library';
 
-function getXAxisFormat(
-  viewMode: GraphViewMode,
-  customRange: CustomDateRange | null
-): XAxisFormat {
-  if (viewMode === 'month') return 'month';
-
-  if (viewMode === 'year') return 'month';
-
-  if (viewMode === 'custom' && customRange) {
-    const days =
-      (new Date(customRange.end).getTime() -
-        new Date(customRange.start).getTime()) /
-      (1000 * 60 * 60 * 24);
-    return autoGroupBy(days) === 'month' ? 'month' : 'day';
-  }
-
-  return 'day';
+function customRangeDays(range: CustomDateRange): number {
+  return (
+    (new Date(range.end).getTime() - new Date(range.start).getTime()) /
+    (1000 * 60 * 60 * 24)
+  );
 }
 
 const GraphView = ({
@@ -46,38 +34,50 @@ const GraphView = ({
 }) => {
   const rawVolume = metrics?.volumeSeries ?? [];
 
-  const { points, isAggregated } = useMemo(() => {
+  const { points, isAggregated, xAxisFormat } = useMemo<{
+    points: WorkoutVolumePoint[] | AggregatedVolumePoint[];
+    isAggregated: boolean;
+    xAxisFormat: XAxisFormat;
+  }>(() => {
     if (viewMode === 'workout') {
-      return { points: rawVolume, isAggregated: false };
+      return { points: rawVolume, isAggregated: false, xAxisFormat: 'day' };
     }
 
-    if (viewMode === 'week' || viewMode === 'year') {
-      return { points: aggregateVolume(rawVolume, 'week'), isAggregated: true };
+    if (viewMode === 'week') {
+      return {
+        points: aggregateVolume(rawVolume, 'week'),
+        isAggregated: true,
+        xAxisFormat: 'day',
+      };
+    }
+
+    if (viewMode === 'year') {
+      return {
+        points: aggregateVolume(rawVolume, 'week'),
+        isAggregated: true,
+        xAxisFormat: 'month',
+      };
     }
 
     if (viewMode === 'month') {
       return {
         points: aggregateVolume(rawVolume, 'month'),
         isAggregated: true,
+        xAxisFormat: 'month',
       };
     }
 
     if (viewMode === 'custom' && customRange) {
-      const days =
-        (new Date(customRange.end).getTime() -
-          new Date(customRange.start).getTime()) /
-        (1000 * 60 * 60 * 24);
-      const groupBy = autoGroupBy(days);
+      const groupBy = autoGroupBy(customRangeDays(customRange));
       return {
         points: aggregateVolume(rawVolume, groupBy),
         isAggregated: true,
+        xAxisFormat: groupBy === 'month' ? 'month' : 'day',
       };
     }
 
-    return { points: rawVolume, isAggregated: false };
+    return { points: rawVolume, isAggregated: false, xAxisFormat: 'day' };
   }, [rawVolume, viewMode, customRange]);
-
-  const xAxisFormat = getXAxisFormat(viewMode, customRange);
 
   const subtitle = isAggregated
     ? 'Total volume aggregated per period. Hover for details.'
