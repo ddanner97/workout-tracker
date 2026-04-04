@@ -8,6 +8,7 @@ import type {
   HistoryGraphRange,
 } from '../../types/types';
 import { formatDate } from '../../utils/utils';
+import { buildHeatmapData } from '../../utils/buildHeatmapData';
 import {
   fetchTags,
   fetchWorkoutMetrics,
@@ -18,6 +19,7 @@ import {
 // ─── Components ───
 import GraphView from './GraphView';
 import ExerciseTable from './ExerciseTable';
+import WorkoutHeatmap from './WorkoutHeatmap';
 import { Button, Container, ViewToggle } from '../component-library';
 import DeleteWorkoutDialog from './DeleteWorkoutDialog';
 import {
@@ -104,6 +106,11 @@ export default function WorkoutList() {
           selectedTags.every((tag) => w.tags.some((t) => t.name === tag))
         );
 
+  const heatmapData = useMemo(
+    () => buildHeatmapData(workouts),
+    [workouts]
+  );
+
   return (
     <>
       <h1 className="mb-5 text-center text-2xl font-bold">Saved Workouts</h1>
@@ -150,14 +157,16 @@ export default function WorkoutList() {
       )}
 
       {viewMode === 'graphs' ? (
-        // TODO: Add loading state using isLoadingMetrics
-        <GraphView
-          metrics={metrics ?? { volumeSeries: [], exerciseMaxWeightSeries: [] }}
-          viewMode={graphViewMode}
-          onViewModeChange={setGraphViewMode}
-          customRange={customRange}
-          onCustomRangeChange={setCustomRange}
-        />
+        <>
+          {workouts.length > 0 && <WorkoutHeatmap data={heatmapData} />}
+          <GraphView
+            metrics={metrics ?? { volumeSeries: [], exerciseMaxWeightSeries: [] }}
+            viewMode={graphViewMode}
+            onViewModeChange={setGraphViewMode}
+            customRange={customRange}
+            onCustomRangeChange={setCustomRange}
+          />
+        </>
       ) : (
         <section>
           {isLoadingWorkouts && <p>Loading...</p>}
