@@ -32,7 +32,7 @@ const GraphView = ({
   customRange: CustomDateRange | null;
   onCustomRangeChange: (range: CustomDateRange) => void;
 }) => {
-  const rawVolume = metrics?.volumeSeries ?? [];
+  const rawVolume = useMemo(() => metrics?.volumeSeries ?? [], [metrics]);
 
   const { points, isAggregated, xAxisFormat } = useMemo<{
     points: WorkoutVolumePoint[] | AggregatedVolumePoint[];

@@ -4,7 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
 // ─── Components ───
-import { ThemeToggle } from './components/component-library';
+import { NavMenu } from './components/component-library';
 import {
   QueryProvider,
   ThemeRegistry,
@@ -48,18 +48,7 @@ export default function RootLayout({
                     >
                       Workout Logger
                     </Link>
-                    <nav className="flex items-center gap-4 text-sm font-medium">
-                      <Link className="hover:underline" href="/history">
-                        History
-                      </Link>
-                      <Link
-                        className="bg-foreground text-background rounded-md px-3 py-1.5 hover:opacity-90"
-                        href="/"
-                      >
-                        New Workout
-                      </Link>
-                      <ThemeToggle />
-                    </nav>
+                    <NavMenu />
                   </div>
                 </header>
                 <main className="mx-auto w-full max-w-5xl px-6 py-8">
