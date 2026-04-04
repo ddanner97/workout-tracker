@@ -41,7 +41,7 @@ export default function WorkoutList() {
   const [viewMode, setViewMode] = useState<HistoryViewMode>('list');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
-  const [graphViewMode, setGraphViewMode] = useState<GraphViewMode>('workout');
+  const [graphViewMode, setGraphViewMode] = useState<GraphViewMode>('week');
   const [customRange, setCustomRange] = useState<CustomDateRange | null>(null);
   const sortedSelectedTags = [...selectedTags].sort();
   const isCustomReady =
