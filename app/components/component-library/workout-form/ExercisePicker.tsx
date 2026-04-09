@@ -90,7 +90,7 @@ const ExercisePicker = ({
               borderBottom: 'none',
             },
             '& .MuiInputBase-input': {
-              fontSize: 15,
+              fontSize: 16,
               fontWeight: 700,
               color: 'var(--color-heading)',
             },
@@ -102,7 +102,7 @@ const ExercisePicker = ({
         />
       )}
       sx={{
-        minWidth: 180,
+        minWidth: 240,
         flex: 1,
         '& .MuiAutocomplete-popupIndicator': {
           display: 'none',

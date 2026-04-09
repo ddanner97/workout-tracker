@@ -104,7 +104,7 @@ export default function ExerciseTableMobile({
               slotProps={{
                 htmlInput: {
                   ...field.htmlInputProps,
-                  style: { textAlign: 'center', fontSize: 11 },
+                  style: { textAlign: 'center', fontSize: 16 },
                 },
               }}
               value={
@@ -129,7 +129,7 @@ export default function ExerciseTableMobile({
                 '& .MuiOutlinedInput-root': {
                   backgroundColor: 'var(--color-input-bg)',
                   borderRadius: '10px',
-                  height: 39,
+                  height: 42,
                   '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'var(--color-border)',
                   },
@@ -137,7 +137,7 @@ export default function ExerciseTableMobile({
                 '& .MuiInputBase-input::placeholder': {
                   color: 'var(--color-placeholder)',
                   opacity: 1,
-                  fontSize: 11,
+                  fontSize: 16,
                 },
               }}
             />
