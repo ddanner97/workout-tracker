@@ -1,7 +1,8 @@
 'use client';
 
 import { TextField } from '@mui/material';
-import { SetRow } from '../../../types/types';
+import { SetRow, WeightUnit } from '../../../types/types';
+import { lbsToKgs, kgsToLbs } from '../../../utils/utils';
 import { SET_FIELDS } from './constants';
 
 interface ExerciseTableDesktopProps {
@@ -9,6 +10,8 @@ interface ExerciseTableDesktopProps {
   onAddSet: () => void;
   onRemoveSet: (si: number) => void;
   onUpdateSet: (si: number, field: keyof SetRow, value: string) => void;
+  weightUnit: WeightUnit;
+  onToggleWeightUnit: () => void;
 }
 
 export default function ExerciseTableDesktop({
@@ -16,7 +19,24 @@ export default function ExerciseTableDesktop({
   onAddSet,
   onRemoveSet,
   onUpdateSet,
+  weightUnit,
+  onToggleWeightUnit,
 }: ExerciseTableDesktopProps) {
+  const isKgs = weightUnit === 'kgs';
+
+  function displayWeight(lbsValue: string): string {
+    if (!lbsValue) return '';
+    return isKgs ? lbsToKgs(lbsValue) : lbsValue;
+  }
+
+  function handleWeightChange(
+    si: number,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const raw = e.target.value;
+    onUpdateSet(si, 'weight', isKgs ? kgsToLbs(raw) : raw);
+  }
+
   const handleFieldChange =
     (si: number, field: keyof SetRow) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -36,11 +56,27 @@ export default function ExerciseTableDesktop({
             className="text-center text-[9px] font-bold uppercase tracking-[1px]"
             style={{ color: 'var(--color-placeholder)' }}
           >
-            {field.fieldName === 'weight'
-              ? 'Weight'
-              : field.fieldName === 'reps'
-                ? 'Reps'
-                : 'RPE'}
+            {field.fieldName === 'weight' ? (
+              <button
+                type="button"
+                onClick={onToggleWeightUnit}
+                className="cursor-pointer text-[9px] font-bold uppercase tracking-[1px]"
+                style={{
+                  color: 'var(--color-accent)',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '2px',
+                }}
+              >
+                {weightUnit}
+              </button>
+            ) : field.fieldName === 'reps' ? (
+              'Reps'
+            ) : (
+              'RPE'
+            )}
           </div>
         ))}
         <div />
@@ -71,11 +107,20 @@ export default function ExerciseTableDesktop({
                   style: { textAlign: 'center', fontSize: 13 },
                 },
               }}
-              value={set[field.fieldName]}
-              onChange={handleFieldChange(si, field.fieldName)}
+              value={
+                field.fieldName === 'weight'
+                  ? displayWeight(set.weight)
+                  : set[field.fieldName]
+              }
+              onChange={
+                field.fieldName === 'weight'
+                  ? (e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleWeightChange(si, e)
+                  : handleFieldChange(si, field.fieldName)
+              }
               placeholder={
                 field.fieldName === 'weight'
-                  ? 'lbs'
+                  ? weightUnit
                   : field.fieldName === 'reps'
                     ? 'reps'
                     : 'RPE'

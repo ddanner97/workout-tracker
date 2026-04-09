@@ -27,6 +27,16 @@ export function formatDate(iso: string): string {
   });
 }
 
+export function lbsToKgs(lbs: string): string {
+  if (!lbs) return '';
+  return (Number(lbs) * 0.453592).toFixed(1);
+}
+
+export function kgsToLbs(kgs: string): string {
+  if (!kgs) return '';
+  return (Number(kgs) * 2.20462).toFixed(1);
+}
+
 export function savedWorkoutToFormValues(
   workout: SavedWorkout
 ): WorkoutFormInitialValues {

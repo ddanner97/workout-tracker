@@ -85,6 +85,8 @@ interface WorkoutMetricsResponse {
   exerciseMaxWeightSeries: ExerciseMaxWeightPoint[];
 }
 
+type WeightUnit = 'lbs' | 'kgs';
+
 export type {
   Tag,
   Exercise,
@@ -101,4 +103,5 @@ export type {
   AggregatedVolumePoint,
   ExerciseMaxWeightPoint,
   WorkoutMetricsResponse,
+  WeightUnit,
 };
