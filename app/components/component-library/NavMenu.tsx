@@ -123,7 +123,7 @@ export default function NavMenu() {
                 sx={{
                   '&.Mui-selected': {
                     backgroundColor: 'var(--color-badge-bg)',
-                    color: 'var(--color-accent)',
+                    color: 'var(--color-accent-light)',
                   },
                 }}
               >
