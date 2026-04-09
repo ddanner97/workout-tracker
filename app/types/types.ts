@@ -87,6 +87,23 @@ interface WorkoutMetricsResponse {
 
 type WeightUnit = 'lbs' | 'kgs';
 
+interface ExerciseHistorySet {
+  setNumber: number;
+  weight: number;
+  reps: number;
+  rpe: number | null;
+}
+
+interface ExerciseHistorySession {
+  workoutId: string;
+  performedAt: string;
+  sets: ExerciseHistorySet[];
+}
+
+interface ExerciseHistoryResponse {
+  sessions: ExerciseHistorySession[];
+}
+
 export type {
   Tag,
   Exercise,
@@ -104,4 +121,7 @@ export type {
   ExerciseMaxWeightPoint,
   WorkoutMetricsResponse,
   WeightUnit,
+  ExerciseHistorySet,
+  ExerciseHistorySession,
+  ExerciseHistoryResponse,
 };

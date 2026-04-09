@@ -1,4 +1,9 @@
-import { Exercise, SavedWorkout, Tag } from '../../../types/types';
+import {
+  Exercise,
+  ExerciseHistoryResponse,
+  SavedWorkout,
+  Tag,
+} from '../../../types/types';
 
 export async function fetchTags(): Promise<Tag[]> {
   const res = await fetch('/api/tags');
@@ -57,5 +62,13 @@ export async function putWorkout(
     const data = await res.json();
     throw data;
   }
+  return res.json();
+}
+
+export async function fetchExerciseHistory(
+  id: string
+): Promise<ExerciseHistoryResponse> {
+  const res = await fetch(`/api/exercises/${id}/history`);
+  if (!res.ok) throw new Error('Failed to fetch exercise history');
   return res.json();
 }
