@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { ExerciseRow } from '../../../types/types';
+import { ExerciseRow, WeightUnit } from '../../../types/types';
 import { useWorkoutForm } from '../../contexts/WorkoutFormContext';
 import { postWorkout, putWorkout } from './info';
 
@@ -38,6 +38,19 @@ export default function WorkoutForm({
     updateSet,
     resetForm,
   } = useWorkoutForm();
+
+  const [weightUnit, setWeightUnit] = useState<WeightUnit>(() => {
+    if (typeof window === 'undefined') return 'lbs';
+    return (localStorage.getItem('weightUnit') as WeightUnit) ?? 'lbs';
+  });
+
+  function handleToggleWeightUnit() {
+    setWeightUnit((prev) => {
+      const next = prev === 'lbs' ? 'kgs' : 'lbs';
+      localStorage.setItem('weightUnit', next);
+      return next;
+    });
+  }
 
   const [dialogExerciseName, setDialogExerciseName] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -285,6 +298,8 @@ export default function WorkoutForm({
                       onUpdateSet={(si, field, val) =>
                         updateSet(ei, si, field, val)
                       }
+                      weightUnit={weightUnit}
+                      onToggleWeightUnit={handleToggleWeightUnit}
                     />
                   </div>
                 </div>
@@ -317,19 +332,35 @@ export default function WorkoutForm({
             </Box>
           )}
 
-          {/* Save button */}
-          <button
-            type="submit"
-            disabled={workoutMutation.isPending}
-            className="w-full rounded-2xl py-4 text-[15px] font-bold tracking-[0.3px] text-white disabled:opacity-60"
-            style={{ backgroundColor: 'var(--color-accent)' }}
-          >
-            {workoutMutation.isPending
-              ? 'Saving...'
-              : isEditMode
-                ? 'Update Workout'
-                : 'Save Workout'}
-          </button>
+          {/* Action buttons */}
+          <div className={isEditMode ? 'flex gap-3' : ''}>
+            {isEditMode && (
+              <button
+                type="button"
+                onClick={() => router.push('/history')}
+                className="w-full rounded-2xl py-4 text-[15px] font-bold tracking-[0.3px]"
+                style={{
+                  border: '1px solid var(--color-border)',
+                  color: 'var(--color-muted)',
+                  backgroundColor: 'var(--color-surface)',
+                }}
+              >
+                Cancel
+              </button>
+            )}
+            <button
+              type="submit"
+              disabled={workoutMutation.isPending}
+              className="w-full rounded-2xl py-4 text-[15px] font-bold tracking-[0.3px] text-white disabled:opacity-60"
+              style={{ backgroundColor: 'var(--color-accent)' }}
+            >
+              {workoutMutation.isPending
+                ? 'Saving...'
+                : isEditMode
+                  ? 'Update Workout'
+                  : 'Save Workout'}
+            </button>
+          </div>
         </Stack>
       </Box>
 
