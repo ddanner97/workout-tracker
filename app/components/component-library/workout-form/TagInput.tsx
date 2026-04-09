@@ -42,7 +42,14 @@ export default function TagInput({ value, onChange }: TagInputProps) {
               label={`#${option}`}
               size="small"
               {...tagProps}
-              color="primary"
+              sx={{
+                backgroundColor: 'var(--color-badge-bg)',
+                color: 'var(--color-accent)',
+                fontWeight: 700,
+                '& .MuiChip-deleteIcon': {
+                  color: 'var(--color-accent-light)',
+                },
+              }}
             />
           );
         })
@@ -50,9 +57,22 @@ export default function TagInput({ value, onChange }: TagInputProps) {
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Tags (optional)"
-          placeholder="e.g. push-pull, upper-body"
+          placeholder="push, legs, PR day…"
           helperText="Press Enter to add a tag"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'var(--color-surface)',
+              borderRadius: '12px',
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--color-border)',
+              },
+            },
+            '& .MuiFormHelperText-root': {
+              color: 'var(--color-placeholder)',
+              fontSize: 11,
+            },
+            '& .MuiInputLabel-root': { display: 'none' },
+          }}
         />
       )}
     />

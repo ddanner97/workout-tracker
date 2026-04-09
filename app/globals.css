@@ -1,25 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5f5f5;
-  --foreground: #171717;
+  /* Purple Light (default) */
+  --color-bg: #F7F4EF;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #FDFBF8;
+  --color-border: #EDE8E0;
+  --color-accent-light: #A78BFA;
+  --color-accent: #7C3AED;
+  --color-badge-bg: #EDE8FF;
+  --color-heading: #1C1917;
+  --color-body: #2E2A24;
+  --color-muted: #B8AFA3;
+  --color-placeholder: #C9C3BB;
+  --color-input-bg: #F7F4EF;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-/* Applied by ThemeRegistry when dark mode is active */
-html.dark {
-  --background: #0d1117;
-  --foreground: #ededed;
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-body);
+  --color-surface: var(--color-surface);
+  --color-surface-alt: var(--color-surface-alt);
+  --color-border: var(--color-border);
+  --color-accent: var(--color-accent);
+  --color-accent-light: var(--color-accent-light);
+  --color-badge-bg: var(--color-badge-bg);
+  --color-heading: var(--color-heading);
+  --color-muted: var(--color-muted);
+  --color-placeholder: var(--color-placeholder);
+  --color-input-bg: var(--color-input-bg);
+  --font-sans: var(--font-nunito);
+  --font-serif: var(--font-fraunces);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-body);
+  font-family: var(--font-nunito), sans-serif;
 }

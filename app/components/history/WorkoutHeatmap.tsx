@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useEffect, useCallback } from 'react';
 import { Box, Tooltip, Typography } from '@mui/material';
-import { useColorMode } from '../contexts/ThemeRegistry';
+import { usePalette } from '../contexts/PaletteContext';
 import { formatDate } from '../../utils/utils';
 import type { HeatmapData } from '../../utils/buildHeatmapData';
 
@@ -82,8 +82,8 @@ function computeStats(data: HeatmapData, grid: Date[][]) {
 }
 
 export default function WorkoutHeatmap({ data }: { data: HeatmapData }) {
-  const { colorMode } = useColorMode();
-  const colors = colorMode === 'dark' ? DARK_COLORS : LIGHT_COLORS;
+  const { palette } = usePalette();
+  const colors = palette.isDark ? DARK_COLORS : LIGHT_COLORS;
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scrollToEnd = useCallback((node: HTMLDivElement | null) => {

@@ -4,10 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchExercises } from './info';
 import { useWorkoutForm } from '../../contexts/WorkoutFormContext';
 
-// ─── Components Imports ───
 import { Autocomplete, TextField, createFilterOptions } from '@mui/material';
 
-// ─── Types ───
 interface ExerciseOption extends Exercise {
   inputValue?: string;
 }
@@ -29,7 +27,6 @@ const ExercisePicker = ({
 }) => {
   const { updateExerciseId } = useWorkoutForm();
 
-  // --- Queries & Mutations ───
   const { data: availableExercises = [] } = useQuery({
     queryKey: ['exercises'],
     queryFn: fetchExercises,
@@ -83,11 +80,34 @@ const ExercisePicker = ({
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Exercise"
+          placeholder="Choose exercise…"
           required={!exercise.exerciseId}
+          variant="standard"
+          sx={{
+            '& .MuiInput-underline:before': { borderBottom: 'none' },
+            '& .MuiInput-underline:after': { borderBottom: 'none' },
+            '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+              borderBottom: 'none',
+            },
+            '& .MuiInputBase-input': {
+              fontSize: 15,
+              fontWeight: 700,
+              color: 'var(--color-heading)',
+            },
+            '& .MuiInputBase-input::placeholder': {
+              color: 'var(--color-heading)',
+              opacity: 1,
+            },
+          }}
         />
       )}
-      sx={{ minWidth: 220, flex: 1 }}
+      sx={{
+        minWidth: 180,
+        flex: 1,
+        '& .MuiAutocomplete-popupIndicator': {
+          display: 'none',
+        },
+      }}
     />
   );
 };

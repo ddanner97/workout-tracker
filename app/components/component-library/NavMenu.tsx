@@ -12,14 +12,24 @@ import {
   ListItemText,
   Divider,
 } from '@mui/material';
-import { Menu as MenuIcon, Close } from '@mui/icons-material';
-import ThemeToggle from './ThemeToggle';
+import { Close } from '@mui/icons-material';
+import PalettePicker from './PalettePicker';
 
 const NAV_LINKS = [
   { href: '/history', label: 'History' },
   { href: '/exercises', label: 'Exercises' },
   { href: '/', label: 'New Workout' },
 ] as const;
+
+function HamburgerIcon() {
+  return (
+    <svg width="22" height="18" viewBox="0 0 22 18" fill="none" aria-hidden>
+      <rect y="2" width="22" height="2" rx="1" fill="currentColor" />
+      <rect y="9" width="22" height="2" rx="1" fill="currentColor" />
+      <rect y="16" width="14" height="2" rx="1" fill="currentColor" />
+    </svg>
+  );
+}
 
 export default function NavMenu() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -33,18 +43,24 @@ export default function NavMenu() {
           href === '/' ? (
             <Link
               key={href}
-              className="bg-foreground text-background rounded-md px-3 py-1.5 hover:opacity-90"
+              className="rounded-xl px-3 py-1.5 text-white hover:opacity-90"
+              style={{ backgroundColor: 'var(--color-accent)' }}
               href={href}
             >
               {label}
             </Link>
           ) : (
-            <Link key={href} className="hover:underline" href={href}>
+            <Link
+              key={href}
+              className="hover:underline"
+              style={{ color: 'var(--color-body)' }}
+              href={href}
+            >
               {label}
             </Link>
           )
         )}
-        <ThemeToggle />
+        <PalettePicker />
       </nav>
 
       {/* Mobile hamburger */}
@@ -52,9 +68,9 @@ export default function NavMenu() {
         <IconButton
           onClick={() => setDrawerOpen(true)}
           aria-label="Open menu"
-          color="inherit"
+          sx={{ color: 'var(--color-heading)' }}
         >
-          <MenuIcon />
+          <HamburgerIcon />
         </IconButton>
       </Box>
 
@@ -63,8 +79,14 @@ export default function NavMenu() {
         anchor="right"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            backgroundColor: 'var(--color-surface)',
+            color: 'var(--color-body)',
+          },
+        }}
       >
-        <Box sx={{ width: 250 }} role="presentation">
+        <Box sx={{ width: 260 }} role="presentation">
           <Box
             sx={{
               display: 'flex',
@@ -74,16 +96,22 @@ export default function NavMenu() {
               py: 1.5,
             }}
           >
-            <span className="text-sm font-semibold">Menu</span>
+            <span
+              className="text-sm font-semibold"
+              style={{ color: 'var(--color-heading)' }}
+            >
+              Menu
+            </span>
             <IconButton
               onClick={() => setDrawerOpen(false)}
               aria-label="Close menu"
               size="small"
+              sx={{ color: 'var(--color-muted)' }}
             >
               <Close fontSize="small" />
             </IconButton>
           </Box>
-          <Divider />
+          <Divider sx={{ borderColor: 'var(--color-border)' }} />
           <List>
             {NAV_LINKS.map(({ href, label }) => (
               <ListItemButton
@@ -92,23 +120,20 @@ export default function NavMenu() {
                 href={href}
                 selected={pathname === href}
                 onClick={() => setDrawerOpen(false)}
+                sx={{
+                  '&.Mui-selected': {
+                    backgroundColor: 'var(--color-badge-bg)',
+                    color: 'var(--color-accent)',
+                  },
+                }}
               >
                 <ListItemText primary={label} />
               </ListItemButton>
             ))}
           </List>
-          <Divider />
-          <Box
-            sx={{
-              px: 2,
-              py: 1.5,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-            }}
-          >
-            <span className="text-sm">Theme</span>
-            <ThemeToggle />
+          <Divider sx={{ borderColor: 'var(--color-border)' }} />
+          <Box sx={{ px: 2, py: 2 }}>
+            <PalettePicker />
           </Box>
         </Box>
       </Drawer>

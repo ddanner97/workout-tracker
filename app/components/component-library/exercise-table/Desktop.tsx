@@ -1,18 +1,7 @@
 'use client';
 
-import {
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-} from '@mui/material';
+import { TextField } from '@mui/material';
 import { SetRow } from '../../../types/types';
-import { Button } from '../index';
 import { SET_FIELDS } from './constants';
 
 interface ExerciseTableDesktopProps {
@@ -34,65 +23,100 @@ export default function ExerciseTableDesktop({
       onUpdateSet(si, field, e.target.value);
 
   return (
-    <Stack spacing={1} mt={1}>
-      <TableContainer component={Paper} variant="outlined">
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell width={40}>Set</TableCell>
-              {SET_FIELDS.map((field) => (
-                <TableCell key={field.fieldName}>{field.label}</TableCell>
-              ))}
-              <TableCell width={60} />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sets.map((set, si) => (
-              <TableRow key={si}>
-                <TableCell>{si + 1}</TableCell>
-                {SET_FIELDS.map((field) => (
-                  <TableCell key={field.fieldName}>
-                    <TextField
-                      label={field.label}
-                      type={field.type}
-                      size={field.size}
-                      required={field.required}
-                      slotProps={{
-                        htmlInput: {
-                          ...field.htmlInputProps,
-                        },
-                      }}
-                      value={set[field.fieldName]}
-                      onChange={handleFieldChange(si, field.fieldName)}
-                      placeholder={field.placeholder}
-                      sx={{ width: 100 }}
-                    />
-                  </TableCell>
-                ))}
-                <TableCell>
-                  {sets.length > 1 && (
-                    <Button
-                      type="button"
-                      onClick={() => onRemoveSet(si)}
-                      label="x"
-                      variant="contained"
-                      color="error"
-                      size="small"
-                    />
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Button
-        label="+ Add Set"
+    <div className="flex flex-col gap-1.5">
+      {/* Column headers */}
+      <div
+        className="grid items-center gap-2"
+        style={{ gridTemplateColumns: '32px 1fr 1fr 1fr 32px' }}
+      >
+        <div />
+        {SET_FIELDS.map((field) => (
+          <div
+            key={field.fieldName}
+            className="text-center text-[9px] font-bold uppercase tracking-[1px]"
+            style={{ color: 'var(--color-placeholder)' }}
+          >
+            {field.fieldName === 'weight'
+              ? 'Weight'
+              : field.fieldName === 'reps'
+                ? 'Reps'
+                : 'RPE'}
+          </div>
+        ))}
+        <div />
+      </div>
+
+      {/* Set rows */}
+      {sets.map((set, si) => (
+        <div
+          key={si}
+          className="grid items-center gap-2"
+          style={{ gridTemplateColumns: '32px 1fr 1fr 1fr 32px' }}
+        >
+          <span
+            className="text-center text-[11px] font-bold"
+            style={{ color: 'var(--color-placeholder)' }}
+          >
+            {si + 1}
+          </span>
+          {SET_FIELDS.map((field) => (
+            <TextField
+              key={field.fieldName}
+              type={field.type}
+              size="small"
+              required={field.required}
+              slotProps={{
+                htmlInput: {
+                  ...field.htmlInputProps,
+                  style: { textAlign: 'center', fontSize: 13 },
+                },
+              }}
+              value={set[field.fieldName]}
+              onChange={handleFieldChange(si, field.fieldName)}
+              placeholder={
+                field.fieldName === 'weight'
+                  ? 'lbs'
+                  : field.fieldName === 'reps'
+                    ? 'reps'
+                    : 'RPE'
+              }
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: 'var(--color-input-bg)',
+                  borderRadius: '10px',
+                  height: 42,
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'var(--color-border)',
+                  },
+                },
+                '& .MuiInputBase-input::placeholder': {
+                  color: 'var(--color-placeholder)',
+                  opacity: 1,
+                },
+              }}
+            />
+          ))}
+          <button
+            type="button"
+            onClick={() => onRemoveSet(si)}
+            className="text-center text-[15px]"
+            style={{ color: 'var(--color-placeholder)' }}
+            aria-label={`Remove set ${si + 1}`}
+          >
+            {sets.length > 1 ? '\u00d7' : ''}
+          </button>
+        </div>
+      ))}
+
+      {/* Add set button */}
+      <button
         type="button"
         onClick={onAddSet}
-        variant="outlined"
-        size="small"
-      />
-    </Stack>
+        className="mt-1 w-full rounded-[10px] py-2.5 text-[13px] font-bold text-white"
+        style={{ backgroundColor: 'var(--color-accent)' }}
+      >
+        + Add set
+      </button>
+    </div>
   );
 }
