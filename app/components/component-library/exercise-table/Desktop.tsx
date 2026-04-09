@@ -104,7 +104,7 @@ export default function ExerciseTableDesktop({
               slotProps={{
                 htmlInput: {
                   ...field.htmlInputProps,
-                  style: { textAlign: 'center', fontSize: 13 },
+                  style: { textAlign: 'center', fontSize: 16 },
                 },
               }}
               value={
