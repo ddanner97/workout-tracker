@@ -102,7 +102,7 @@ const ExercisePicker = ({
         />
       )}
       sx={{
-        minWidth: 180,
+        minWidth: 240,
         flex: 1,
         '& .MuiAutocomplete-popupIndicator': {
           display: 'none',
