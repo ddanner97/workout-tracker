@@ -5,13 +5,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { ExerciseRow, WeightUnit } from '../../../types/types';
 import { useWorkoutForm } from '../../contexts/WorkoutFormContext';
-import { postWorkout, putWorkout } from './info';
+import { fetchExerciseHistory, postWorkout, putWorkout } from './info';
 
 import { ExerciseTable } from '..';
 import AddExerciseDialog from './AddExerciseDialog';
+import ExerciseHistoryModal from './ExerciseHistoryModal';
 import RemoveExerciseModal from './RemoveExerciseModal';
 import ExercisePicker from './ExercisePicker';
 import { Box, Stack, TextField } from '@mui/material';
+import HistoryOutlined from '@mui/icons-material/HistoryOutlined';
 import TagInput from './TagInput';
 import WorkoutStats from './WorkoutStats';
 
@@ -57,6 +59,10 @@ export default function WorkoutForm({
   const [pendingExerciseIndex, setPendingExerciseIndex] = useState<
     number | null
   >(null);
+
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [historyExerciseId, setHistoryExerciseId] = useState('');
+  const [historyExerciseName, setHistoryExerciseName] = useState('');
 
   const workoutMutation = useMutation({
     mutationFn: (body: unknown) =>
@@ -276,13 +282,53 @@ export default function WorkoutForm({
                       >
                         Exercise {ei + 1}
                       </span>
-                      <ExercisePicker
-                        setPendingExerciseIndex={setPendingExerciseIndex}
-                        setDialogExerciseName={setDialogExerciseName}
-                        setDialogOpen={setDialogOpen}
-                        exerciseIndex={ei}
-                        exercise={ex}
-                      />
+                      <div className="flex items-center gap-1">
+                        <ExercisePicker
+                          setPendingExerciseIndex={setPendingExerciseIndex}
+                          setDialogExerciseName={setDialogExerciseName}
+                          setDialogOpen={setDialogOpen}
+                          exerciseIndex={ei}
+                          exercise={ex}
+                        />
+                        {ex.exerciseId && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const exercises =
+                                queryClient.getQueryData<
+                                  { id: string; name: string }[]
+                                >(['exercises']);
+                              const name =
+                                exercises?.find(
+                                  (e) => e.id === ex.exerciseId
+                                )?.name ?? '';
+                              setHistoryExerciseId(ex.exerciseId);
+                              setHistoryExerciseName(name);
+                              setHistoryModalOpen(true);
+                            }}
+                            onMouseEnter={() =>
+                              queryClient.prefetchQuery({
+                                queryKey: [
+                                  'exerciseHistory',
+                                  ex.exerciseId,
+                                ],
+                                queryFn: () =>
+                                  fetchExerciseHistory(ex.exerciseId),
+                              })
+                            }
+                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+                            style={{
+                              backgroundColor: 'var(--color-input-bg)',
+                              color: 'var(--color-placeholder)',
+                            }}
+                            aria-label="View exercise history"
+                          >
+                            <HistoryOutlined
+                              sx={{ fontSize: 16 }}
+                            />
+                          </button>
+                        )}
+                      </div>
                     </div>
                     {exercises.length > 1 && (
                       <RemoveExerciseModal exerciseIndex={ei} />
@@ -371,6 +417,13 @@ export default function WorkoutForm({
         setDialogExerciseName={setDialogExerciseName}
         pendingExerciseIndex={pendingExerciseIndex}
         setPendingExerciseIndex={setPendingExerciseIndex}
+      />
+
+      <ExerciseHistoryModal
+        exerciseId={historyExerciseId}
+        exerciseName={historyExerciseName}
+        isOpen={historyModalOpen}
+        onClose={() => setHistoryModalOpen(false)}
       />
     </Box>
   );
