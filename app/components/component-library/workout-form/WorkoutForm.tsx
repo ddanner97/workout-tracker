@@ -7,12 +7,13 @@ import { ExerciseRow } from '../../../types/types';
 import { useWorkoutForm } from '../../contexts/WorkoutFormContext';
 import { postWorkout, putWorkout } from './info';
 
-import { Button, ExerciseTable } from '..';
+import { ExerciseTable } from '..';
 import AddExerciseDialog from './AddExerciseDialog';
 import RemoveExerciseModal from './RemoveExerciseModal';
 import ExercisePicker from './ExercisePicker';
-import { Box, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Box, Stack, TextField } from '@mui/material';
 import TagInput from './TagInput';
+import WorkoutStats from './WorkoutStats';
 
 export default function WorkoutForm({
   workoutId,
@@ -87,79 +88,227 @@ export default function WorkoutForm({
 
   return (
     <Box component="section">
-      <Typography variant="h5" gutterBottom>
+      {/* Eyebrow + Heading */}
+      <p
+        className="text-[11px] font-bold uppercase tracking-[2px]"
+        style={{ color: 'var(--color-accent-light)' }}
+      >
+        {isEditMode ? 'Edit session' : 'New session'}
+      </p>
+      <h1
+        className="mt-1 font-serif text-[34px] font-semibold leading-[37.4px] tracking-[-0.5px]"
+        style={{ color: 'var(--color-heading)' }}
+      >
         {isEditMode ? 'Edit Workout' : 'Log a Workout'}
-      </Typography>
-      <Box component="form" onSubmit={handleSubmit}>
-        <Stack spacing={3}>
-          <TextField
-            id="date"
-            label="Date"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-            slotProps={{ inputLabel: { shrink: true } }}
-            sx={{ maxWidth: 220 }}
+      </h1>
+
+      {/* Stats row */}
+      <div className="mt-6">
+        <WorkoutStats />
+      </div>
+
+      {/* Form */}
+      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4 }}>
+        <Stack spacing={2.5}>
+          {/* Date + Time row */}
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="date"
+                className="text-[11px] font-bold uppercase tracking-[1px]"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                Date
+              </label>
+              <TextField
+                id="date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+                size="small"
+                slotProps={{ inputLabel: { shrink: true } }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'var(--color-surface)',
+                    borderRadius: '12px',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--color-border)',
+                    },
+                  },
+                  '& .MuiInputLabel-root': { display: 'none' },
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="time"
+                className="text-[11px] font-bold uppercase tracking-[1px]"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                Time
+              </label>
+              <TextField
+                id="time"
+                type="time"
+                size="small"
+                defaultValue={new Date().toLocaleTimeString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                })}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'var(--color-surface)',
+                    borderRadius: '12px',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--color-border)',
+                    },
+                  },
+                  '& .MuiInputLabel-root': { display: 'none' },
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-col gap-1">
+            <label
+              className="text-[11px] font-bold uppercase tracking-[1px]"
+              style={{ color: 'var(--color-muted)' }}
+            >
+              Tags
+            </label>
+            <TagInput value={tags} onChange={setTags} />
+          </div>
+
+          {/* Notes */}
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="notes"
+              className="text-[11px] font-bold uppercase tracking-[1px]"
+              style={{ color: 'var(--color-muted)' }}
+            >
+              Notes
+            </label>
+            <TextField
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              multiline
+              minRows={2}
+              fullWidth
+              placeholder="How are you feeling today?"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: 'var(--color-surface)',
+                  borderRadius: '12px',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'var(--color-border)',
+                  },
+                },
+                '& .MuiInputLabel-root': { display: 'none' },
+              }}
+            />
+          </div>
+
+          {/* Divider */}
+          <div
+            className="h-px"
+            style={{ backgroundColor: 'var(--color-border)' }}
           />
 
-          <TagInput value={tags} onChange={setTags} />
+          {/* Exercises section */}
+          <div>
+            <div className="flex items-center justify-between">
+              <h2
+                className="font-serif text-[20px] font-semibold tracking-[-0.2px]"
+                style={{ color: 'var(--color-heading)' }}
+              >
+                Exercises
+              </h2>
+              <span
+                className="rounded-full px-3 py-1 text-[11px] font-bold"
+                style={{
+                  backgroundColor: 'var(--color-badge-bg)',
+                  color: 'var(--color-accent)',
+                }}
+              >
+                {exercises.length} exercise{exercises.length !== 1 ? 's' : ''}
+              </span>
+            </div>
 
-          <TextField
-            id="notes"
-            label="Notes (optional)"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            multiline
-            fullWidth
-          />
-
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Exercises
-            </Typography>
-            <Stack spacing={2}>
+            <Stack spacing={2} sx={{ mt: 2 }}>
               {exercises.map((ex: ExerciseRow, ei: number) => (
-                <Paper key={ei} variant="outlined" sx={{ p: 2 }}>
-                  <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
-                    spacing={1}
-                    alignItems={{ sm: 'center' }}
-                    mb={2}
+                <div
+                  key={ei}
+                  className="overflow-hidden rounded-2xl"
+                  style={{
+                    backgroundColor: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                  }}
+                >
+                  {/* Card header */}
+                  <div
+                    className="flex items-center justify-between px-4 py-3"
+                    style={{
+                      backgroundColor: 'var(--color-surface-alt)',
+                      borderBottom: '1px solid var(--color-border)',
+                    }}
                   >
-                    <ExercisePicker
-                      setPendingExerciseIndex={setPendingExerciseIndex}
-                      setDialogExerciseName={setDialogExerciseName}
-                      setDialogOpen={setDialogOpen}
-                      exerciseIndex={ei}
-                      exercise={ex}
-                    />
+                    <div className="flex flex-col gap-1">
+                      <span
+                        className="text-[10px] font-bold uppercase tracking-[1.5px]"
+                        style={{ color: 'var(--color-accent-light)' }}
+                      >
+                        Exercise {ei + 1}
+                      </span>
+                      <ExercisePicker
+                        setPendingExerciseIndex={setPendingExerciseIndex}
+                        setDialogExerciseName={setDialogExerciseName}
+                        setDialogOpen={setDialogOpen}
+                        exerciseIndex={ei}
+                        exercise={ex}
+                      />
+                    </div>
                     {exercises.length > 1 && (
                       <RemoveExerciseModal exerciseIndex={ei} />
                     )}
-                  </Stack>
+                  </div>
 
-                  <ExerciseTable
-                    sets={ex.sets}
-                    onAddSet={() => addSet(ei)}
-                    onRemoveSet={(si) => removeSet(ei, si)}
-                    onUpdateSet={(si, field, val) =>
-                      updateSet(ei, si, field, val)
-                    }
-                  />
-                </Paper>
+                  {/* Sets */}
+                  <div className="px-4 py-3">
+                    <ExerciseTable
+                      sets={ex.sets}
+                      onAddSet={() => addSet(ei)}
+                      onRemoveSet={(si) => removeSet(ei, si)}
+                      onUpdateSet={(si, field, val) =>
+                        updateSet(ei, si, field, val)
+                      }
+                    />
+                  </div>
+                </div>
               ))}
-              <Box>
-                <Button
-                  label="+ Add Exercise"
-                  type="button"
-                  onClick={addExercise}
-                  variant="outlined"
-                />
-              </Box>
-            </Stack>
-          </Box>
 
+              {/* Add exercise button */}
+              <button
+                type="button"
+                onClick={addExercise}
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-[14px] font-bold text-white"
+                style={{ backgroundColor: 'var(--color-accent)' }}
+              >
+                <span
+                  className="flex h-6 w-6 items-center justify-center rounded-xl text-[16px] text-white"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+                >
+                  +
+                </span>
+                Add exercise
+              </button>
+            </Stack>
+          </div>
+
+          {/* Error messages */}
           {formErrors.length > 0 && (
             <Box component="ul" sx={{ color: 'error.main', pl: 2, m: 0 }}>
               {formErrors.map((err, i) => (
@@ -168,23 +317,22 @@ export default function WorkoutForm({
             </Box>
           )}
 
-          <Box>
-            <Button
-              type="submit"
-              label={
-                workoutMutation.isPending
-                  ? 'Saving...'
-                  : isEditMode
-                    ? 'Update Workout'
-                    : 'Save Workout'
-              }
-              disabled={workoutMutation.isPending}
-              variant="contained"
-              sx={{ backgroundColor: 'primary.main' }}
-            />
-          </Box>
+          {/* Save button */}
+          <button
+            type="submit"
+            disabled={workoutMutation.isPending}
+            className="w-full rounded-2xl py-4 text-[15px] font-bold tracking-[0.3px] text-white disabled:opacity-60"
+            style={{ backgroundColor: 'var(--color-accent)' }}
+          >
+            {workoutMutation.isPending
+              ? 'Saving...'
+              : isEditMode
+                ? 'Update Workout'
+                : 'Save Workout'}
+          </button>
         </Stack>
       </Box>
+
       <AddExerciseDialog
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
