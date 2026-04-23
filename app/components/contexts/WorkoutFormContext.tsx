@@ -54,7 +54,6 @@ export function WorkoutFormProvider({
   }
 
   function removeExercise(ei: number) {
-    console.log('Removing exercise', ei);
     setExercises((prev) => prev.filter((_, i) => i !== ei));
   }
 
