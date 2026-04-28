@@ -17,7 +17,7 @@ const AuthOptionButton = ({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-4 rounded-2xl px-4 py-3.5 text-left"
+      className="flex w-[75%] items-center gap-4 rounded-2xl px-4 py-3.5 text-left"
       style={{
         backgroundColor: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
@@ -39,10 +39,7 @@ const AuthOptionButton = ({
         >
           {title}
         </span>
-        <span
-          className="text-[13px]"
-          style={{ color: 'var(--color-muted)' }}
-        >
+        <span className="text-[13px]" style={{ color: 'var(--color-muted)' }}>
           {subtitle}
         </span>
       </div>
