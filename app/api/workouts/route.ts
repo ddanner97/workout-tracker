@@ -13,8 +13,8 @@ import {
  * API route handlers for retrieving and creating multiple workouts.
  **/
 
-export async function GET(req: NextRequest) {
-  const userId = getUserId(req);
+export async function GET() {
+  const userId = await getUserId();
   if (!userId) return unauthorized();
 
   const workouts = await prisma.workout.findMany({
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const userId = getUserId(req);
+  const userId = await getUserId();
   if (!userId) return unauthorized();
 
   let body: WorkoutInput;

@@ -42,7 +42,7 @@ export default function RegisterDialog({
       setError(error.message ?? 'Sign up failed');
       setLoading(false);
     } else {
-      router.push('/');
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     }
   }
 

@@ -32,6 +32,13 @@ export default function LoginDialog({
       password,
     });
     if (error) {
+      // better-auth re-sends the verification email automatically when an
+      // unverified user attempts to log in, so we just send them to the
+      // "check your email" screen.
+      if (error.code === 'EMAIL_NOT_VERIFIED' || error.status === 403) {
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+        return;
+      }
       setError(error.message ?? 'Sign in failed');
       setLoading(false);
     } else {

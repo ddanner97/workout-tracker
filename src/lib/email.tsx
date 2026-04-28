@@ -2,6 +2,11 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Override per environment. Default is Resend's sandbox sender, which only
+// delivers to the email tied to your Resend account. Set EMAIL_FROM to
+// `noreply@<your-verified-domain>` once a domain is verified in Resend.
+const FROM = process.env.EMAIL_FROM ?? 'onboarding@resend.dev';
+
 interface EmailTemplateProps {
   email: string;
   subject: string;
@@ -23,7 +28,7 @@ export async function sendEmail({
   text,
 }: EmailTemplateProps): Promise<{ id: string }> {
   const { data, error } = await resend.emails.send({
-    from: 'workout-logger@resend.dev',
+    from: FROM,
     to: email,
     subject,
     react: <EmailTemplate email={email} text={text} />,

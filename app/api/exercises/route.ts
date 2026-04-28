@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/src/lib/prisma';
 import { getUserId, unauthorized } from '@/src/lib/session';
 
-export async function GET(req: NextRequest) {
-  const userId = getUserId(req);
+export async function GET() {
+  const userId = await getUserId();
   if (!userId) return unauthorized();
 
   const exercises = await prisma.exercise.findMany({
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const userId = getUserId(req);
+  const userId = await getUserId();
   if (!userId) return unauthorized();
 
   const { name, muscleGroup } = await req.json();
