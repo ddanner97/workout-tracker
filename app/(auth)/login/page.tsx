@@ -46,7 +46,7 @@ function LoginPage() {
         <Container
           column
           gap={12}
-          className="absolute inset-x-0 bottom-[-100px] items-center px-6 pb-8"
+          className="absolute inset-x-0 bottom-[-75px] items-center px-6 pb-8"
         >
           <AuthOptionButton
             icon={<LoginOutlined />}
