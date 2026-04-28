@@ -7,12 +7,12 @@ import { ExerciseRow, WeightUnit } from '../../../types/types';
 import { useWorkoutForm } from '../../contexts/WorkoutFormContext';
 import { fetchExerciseHistory, postWorkout, putWorkout } from './info';
 
-import { ExerciseTable } from '..';
+import { ExerciseTable, TextField } from '..';
 import AddExerciseDialog from './AddExerciseDialog';
 import ExerciseHistoryModal from './ExerciseHistoryModal';
 import RemoveExerciseModal from './RemoveExerciseModal';
 import ExercisePicker from './ExercisePicker';
-import { Box, Stack, TextField } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import HistoryOutlined from '@mui/icons-material/HistoryOutlined';
 import TagInput from './TagInput';
 import WorkoutStats from './WorkoutStats';
@@ -109,13 +109,13 @@ export default function WorkoutForm({
     <Box component="section">
       {/* Eyebrow + Heading */}
       <p
-        className="text-[11px] font-bold uppercase tracking-[2px]"
+        className="text-[11px] font-bold tracking-[2px] uppercase"
         style={{ color: 'var(--color-accent-light)' }}
       >
         {isEditMode ? 'Edit session' : 'New session'}
       </p>
       <h1
-        className="mt-1 font-serif text-[34px] font-semibold leading-[37.4px] tracking-[-0.5px]"
+        className="mt-1 font-serif text-[34px] leading-[37.4px] font-semibold tracking-[-0.5px]"
         style={{ color: 'var(--color-heading)' }}
       >
         {isEditMode ? 'Edit Workout' : 'Log a Workout'}
@@ -131,69 +131,30 @@ export default function WorkoutForm({
         <Stack spacing={2.5}>
           {/* Date + Time row */}
           <div className="grid grid-cols-2 gap-2.5">
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="date"
-                className="text-[11px] font-bold uppercase tracking-[1px]"
-                style={{ color: 'var(--color-muted)' }}
-              >
-                Date
-              </label>
-              <TextField
-                id="date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-                size="small"
-                slotProps={{ inputLabel: { shrink: true } }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'var(--color-surface)',
-                    borderRadius: '12px',
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'var(--color-border)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': { display: 'none' },
-                }}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="time"
-                className="text-[11px] font-bold uppercase tracking-[1px]"
-                style={{ color: 'var(--color-muted)' }}
-              >
-                Time
-              </label>
-              <TextField
-                id="time"
-                type="time"
-                size="small"
-                defaultValue={new Date().toLocaleTimeString('en-US', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: false,
-                })}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'var(--color-surface)',
-                    borderRadius: '12px',
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'var(--color-border)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': { display: 'none' },
-                }}
-              />
-            </div>
+            <TextField
+              id="date"
+              label="Date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+            <TextField
+              id="time"
+              label="Time"
+              type="time"
+              defaultValue={new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+              })}
+            />
           </div>
 
           {/* Tags */}
           <div className="flex flex-col gap-1">
             <label
-              className="text-[11px] font-bold uppercase tracking-[1px]"
+              className="text-[11px] font-bold tracking-[1px] uppercase"
               style={{ color: 'var(--color-muted)' }}
             >
               Tags
@@ -202,34 +163,16 @@ export default function WorkoutForm({
           </div>
 
           {/* Notes */}
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="notes"
-              className="text-[11px] font-bold uppercase tracking-[1px]"
-              style={{ color: 'var(--color-muted)' }}
-            >
-              Notes
-            </label>
-            <TextField
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              multiline
-              minRows={2}
-              fullWidth
-              placeholder="How are you feeling today?"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: 'var(--color-surface)',
-                  borderRadius: '12px',
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'var(--color-border)',
-                  },
-                },
-                '& .MuiInputLabel-root': { display: 'none' },
-              }}
-            />
-          </div>
+          <TextField
+            id="notes"
+            label="Notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            multiline
+            minRows={2}
+            fullWidth
+            placeholder="How are you feeling today?"
+          />
 
           {/* Divider */}
           <div
@@ -277,7 +220,7 @@ export default function WorkoutForm({
                   >
                     <div className="flex flex-col gap-1">
                       <span
-                        className="text-[10px] font-bold uppercase tracking-[1.5px]"
+                        className="text-[10px] font-bold tracking-[1.5px] uppercase"
                         style={{ color: 'var(--color-accent-light)' }}
                       >
                         Exercise {ei + 1}
@@ -294,24 +237,19 @@ export default function WorkoutForm({
                           <button
                             type="button"
                             onClick={() => {
-                              const exercises =
-                                queryClient.getQueryData<
-                                  { id: string; name: string }[]
-                                >(['exercises']);
+                              const exercises = queryClient.getQueryData<
+                                { id: string; name: string }[]
+                              >(['exercises']);
                               const name =
-                                exercises?.find(
-                                  (e) => e.id === ex.exerciseId
-                                )?.name ?? '';
+                                exercises?.find((e) => e.id === ex.exerciseId)
+                                  ?.name ?? '';
                               setHistoryExerciseId(ex.exerciseId);
                               setHistoryExerciseName(name);
                               setHistoryModalOpen(true);
                             }}
                             onMouseEnter={() =>
                               queryClient.prefetchQuery({
-                                queryKey: [
-                                  'exerciseHistory',
-                                  ex.exerciseId,
-                                ],
+                                queryKey: ['exerciseHistory', ex.exerciseId],
                                 queryFn: () =>
                                   fetchExerciseHistory(ex.exerciseId),
                               })
@@ -323,9 +261,7 @@ export default function WorkoutForm({
                             }}
                             aria-label="View exercise history"
                           >
-                            <HistoryOutlined
-                              sx={{ fontSize: 16 }}
-                            />
+                            <HistoryOutlined sx={{ fontSize: 16 }} />
                           </button>
                         )}
                       </div>
