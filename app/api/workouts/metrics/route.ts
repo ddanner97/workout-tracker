@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/src/lib/prisma';
+import { getUserId, unauthorized } from '@/src/lib/session';
 import { Prisma } from '@prisma/client';
 import type { HistoryGraphRange } from '@/app/types/types';
 
@@ -71,6 +72,9 @@ function getDateFilter(
 }
 
 export async function GET(req: NextRequest) {
+  const userId = getUserId(req);
+  if (!userId) return unauthorized();
+
   const tags = parseTags(req.nextUrl.searchParams);
   const range = parseRange(req.nextUrl.searchParams.get('range'));
 
@@ -85,18 +89,17 @@ export async function GET(req: NextRequest) {
 
   const dateFilter = getDateFilter(range, customRange);
 
-  const andFilters: Prisma.WorkoutWhereInput[] = tags.map((name) => ({
-    tags: {
-      some: { name },
-    },
-  }));
+  const andFilters: Prisma.WorkoutWhereInput[] = [
+    { userId },
+    ...tags.map((name) => ({ tags: { some: { name } } })),
+  ];
 
   if (dateFilter) {
     andFilters.push({ performedAt: dateFilter });
   }
 
   const workouts = await prisma.workout.findMany({
-    where: andFilters.length > 0 ? { AND: andFilters } : undefined,
+    where: { AND: andFilters },
     orderBy: { performedAt: 'asc' },
     include: {
       tags: { orderBy: { name: 'asc' } },

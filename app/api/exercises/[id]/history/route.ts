@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/src/lib/prisma';
+import { getUserId, unauthorized } from '@/src/lib/session';
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = getUserId(req);
+  if (!userId) return unauthorized();
+
   const { id } = await params;
 
   const exercise = await prisma.exercise.findUnique({ where: { id } });
@@ -16,7 +20,7 @@ export async function GET(
   }
 
   const workoutExercises = await prisma.workoutExercise.findMany({
-    where: { exerciseId: id },
+    where: { exerciseId: id, workout: { userId } },
     orderBy: { workout: { performedAt: 'desc' } },
     take: 10,
     include: {

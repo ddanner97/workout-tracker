@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/src/lib/prisma';
+import { getUserId, unauthorized } from '@/src/lib/session';
 import {
   ExerciseInput,
   SetInput,
@@ -12,8 +13,12 @@ import {
  * API route handlers for retrieving and creating multiple workouts.
  **/
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const userId = getUserId(req);
+  if (!userId) return unauthorized();
+
   const workouts = await prisma.workout.findMany({
+    where: { userId },
     orderBy: { performedAt: 'desc' },
     include: {
       tags: { orderBy: { name: 'asc' } },
@@ -30,6 +35,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const userId = getUserId(req);
+  if (!userId) return unauthorized();
+
   let body: WorkoutInput;
   try {
     body = await req.json();
@@ -57,6 +65,7 @@ export async function POST(req: NextRequest) {
 
   const workout = await prisma.workout.create({
     data: {
+      userId,
       performedAt: new Date(String(body.performedAt)),
       notes: body.notes ? String(body.notes) : null,
       tags: {

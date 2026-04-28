@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/src/lib/prisma';
+import { getUserId, unauthorized } from '@/src/lib/session';
 import {
   ExerciseInput,
   SetInput,
@@ -14,9 +15,12 @@ import {
  **/
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = getUserId(req);
+  if (!userId) return unauthorized();
+
   const { id } = await params;
 
   const workout = await prisma.workout.findUnique({
@@ -37,6 +41,10 @@ export async function GET(
     return NextResponse.json({ error: 'Workout not found' }, { status: 404 });
   }
 
+  if (workout.userId !== userId) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   return NextResponse.json(workout);
 }
 
@@ -44,11 +52,17 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = getUserId(req);
+  if (!userId) return unauthorized();
+
   const { id } = await params;
 
   const existing = await prisma.workout.findUnique({ where: { id } });
   if (!existing) {
     return NextResponse.json({ error: 'Workout not found' }, { status: 404 });
+  }
+  if (existing.userId !== userId) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   let body: WorkoutInput;
@@ -129,14 +143,20 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = getUserId(req);
+  if (!userId) return unauthorized();
+
   const { id } = await params;
 
   const existing = await prisma.workout.findUnique({ where: { id } });
   if (!existing) {
     return NextResponse.json({ error: 'Workout not found' }, { status: 404 });
+  }
+  if (existing.userId !== userId) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   await prisma.$transaction(async (tx) => {
