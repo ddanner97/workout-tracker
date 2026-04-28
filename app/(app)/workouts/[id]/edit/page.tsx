@@ -3,10 +3,10 @@
 import { use } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { CircularProgress, Box, Typography } from '@mui/material';
-import { WorkoutFormProvider } from '../../../components/contexts/WorkoutFormContext';
-import WorkoutForm from '../../../components/component-library/workout-form/WorkoutForm';
-import { fetchWorkout } from '../../../components/component-library/workout-form/info';
-import { savedWorkoutToFormValues } from '../../../utils/utils';
+import { WorkoutFormProvider } from '../../../../components/contexts/WorkoutFormContext';
+import WorkoutForm from '../../../../components/component-library/workout-form/WorkoutForm';
+import { fetchWorkout } from '../../../../components/component-library/workout-form/info';
+import { savedWorkoutToFormValues } from '../../../../utils/utils';
 
 export default function EditWorkoutPage({
   params,

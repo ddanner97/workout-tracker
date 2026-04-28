@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/src/lib/prisma';
+import { getUserId, unauthorized } from '@/src/lib/session';
 import { Prisma } from '@prisma/client';
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = getUserId(req);
+  if (!userId) return unauthorized();
+
   const { id } = await params;
 
   const existing = await prisma.exercise.findUnique({ where: { id } });
@@ -62,9 +66,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = getUserId(req);
+  if (!userId) return unauthorized();
+
   const { id } = await params;
 
   const existing = await prisma.exercise.findUnique({ where: { id } });

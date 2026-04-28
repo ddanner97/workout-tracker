@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchExercises, postExercise, putExercise, deleteExercise } from './info';
-import type { Exercise } from '../types/types';
+import type { Exercise } from '../../types/types';
 
 import {
   Box,
@@ -27,7 +27,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import { Edit, Delete, Check, Close, Add } from '@mui/icons-material';
-import { Button } from '../components/component-library';
+import { Button } from '../../components/component-library';
 
 const MUSCLE_GROUPS = [
   'Chest',

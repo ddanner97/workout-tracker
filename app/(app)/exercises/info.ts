@@ -1,4 +1,4 @@
-import type { Exercise } from '../types/types';
+import type { Exercise } from '../../types/types';
 
 export async function fetchExercises(): Promise<Exercise[]> {
   const res = await fetch('/api/exercises');
