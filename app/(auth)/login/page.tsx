@@ -40,13 +40,13 @@ function LoginPage() {
         </div>
 
         {/* bottom fade */}
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[var(--color-background)] to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-[var(--color-background)] to-transparent" />
 
         {/* buttons pinned to bottom */}
         <Container
           column
           gap={12}
-          className="absolute inset-x-0 bottom-[-160px] items-center px-6 pb-8"
+          className="absolute inset-x-0 bottom-[-100px] items-center px-6 pb-8"
         >
           <AuthOptionButton
             icon={<LoginOutlined />}
