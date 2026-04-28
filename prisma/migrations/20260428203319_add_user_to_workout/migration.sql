@@ -1,17 +1,7 @@
-/*
-  Warnings:
-
-  - Added the required column `userId` to the `Workout` table without a default value. This is not possible if the table is not empty.
-
-*/
--- Truncate existing workout data (dev only) so the non-nullable userId column can be added
-TRUNCATE TABLE "Set", "WorkoutExercise", "Workout" CASCADE;
-
 -- AlterTable
-ALTER TABLE "Workout" ADD COLUMN     "userId" TEXT NOT NULL;
+-- Add `userId` as nullable so existing workout rows are preserved.
+-- A follow-up migration backfills, then sets the column NOT NULL and adds the FK.
+ALTER TABLE "Workout" ADD COLUMN     "userId" TEXT;
 
 -- CreateIndex
 CREATE INDEX "Workout_userId_idx" ON "Workout"("userId");
-
--- AddForeignKey
-ALTER TABLE "Workout" ADD CONSTRAINT "Workout_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

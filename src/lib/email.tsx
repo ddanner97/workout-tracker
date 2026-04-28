@@ -17,21 +17,22 @@ function EmailTemplate({ email, text }: { email: string; text: string }) {
   );
 }
 
-export async function sendEmail({ email, subject, text }: EmailTemplateProps) {
-  try {
-    const { data, error } = await resend.emails.send({
-      from: 'workout-logger@resend.dev',
-      to: email,
-      subject: subject,
-      react: <EmailTemplate email={email} text={text} />,
-    });
+export async function sendEmail({
+  email,
+  subject,
+  text,
+}: EmailTemplateProps): Promise<{ id: string }> {
+  const { data, error } = await resend.emails.send({
+    from: 'workout-logger@resend.dev',
+    to: email,
+    subject,
+    react: <EmailTemplate email={email} text={text} />,
+  });
 
-    if (error) {
-      return Response.json({ error }, { status: 500 });
-    }
-
-    return Response.json(data);
-  } catch (error) {
-    return Response.json({ error }, { status: 500 });
+  if (error || !data) {
+    console.error('Failed to send email via Resend', error);
+    throw new Error('Failed to send email', { cause: error ?? undefined });
   }
+
+  return { id: data.id };
 }

@@ -1,37 +1,51 @@
 import { auth } from '@/src/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
-// The default session cookie name used by better-auth
 const SESSION_COOKIE = 'better-auth.session_token';
 
+function unauthorizedJson() {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+}
+
 export async function proxy(request: NextRequest) {
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/login');
+  const { pathname } = request.nextUrl;
+  const isAuthRoute = pathname.startsWith('/login');
+  const isApiRoute = pathname.startsWith('/api');
+
+  // Strip any client-supplied x-user-id; only the proxy is allowed to set it.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.delete('x-user-id');
+
   const hasCookie = request.cookies.has(SESSION_COOKIE);
 
-  if (!hasCookie && !isAuthRoute) {
+  if (!hasCookie) {
+    if (isAuthRoute) {
+      return NextResponse.next({ request: { headers: requestHeaders } });
+    }
+    if (isApiRoute) {
+      return unauthorizedJson();
+    }
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (hasCookie && isAuthRoute) {
+  const session = await auth.api.getSession({ headers: request.headers });
+
+  if (!session) {
+    if (isAuthRoute) {
+      return NextResponse.next({ request: { headers: requestHeaders } });
+    }
+    if (isApiRoute) {
+      return unauthorizedJson();
+    }
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  if (isAuthRoute) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  if (hasCookie) {
-    const session = await auth.api.getSession({ headers: request.headers });
-    if (!session) {
-      // Cookie exists but session is invalid/expired
-      if (!isAuthRoute) {
-        return NextResponse.redirect(new URL('/login', request.url));
-      }
-      return NextResponse.next();
-    }
-    // Forward the verified userId so API routes don't need a second DB hit
-    const response = NextResponse.next();
-    response.headers.set('x-user-id', session.user.id);
-    return response;
-  }
-
-  return NextResponse.next();
+  requestHeaders.set('x-user-id', session.user.id);
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {
