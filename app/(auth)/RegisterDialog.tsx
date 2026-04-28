@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { authClient } from '@/src/lib/auth-client';
 
 import { Dialog } from '@mui/material';
@@ -17,6 +18,7 @@ export default function RegisterDialog({
   onClose,
   onSwitchToLogin,
 }: RegisterDialogProps) {
+  const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,11 +37,12 @@ export default function RegisterDialog({
       name,
       email,
       password,
-      callbackURL: '/',
     });
     if (error) {
       setError(error.message ?? 'Sign up failed');
       setLoading(false);
+    } else {
+      router.push('/');
     }
   }
 
