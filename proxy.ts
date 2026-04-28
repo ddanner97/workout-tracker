@@ -4,7 +4,8 @@ const SESSION_COOKIE = 'better-auth.session_token';
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isAuthRoute = pathname.startsWith('/login');
+  const isAuthRoute =
+    pathname.startsWith('/login') || pathname.startsWith('/verify-email');
   const hasCookie = request.cookies.has(SESSION_COOKIE);
 
   if (!hasCookie && !isAuthRoute) {
