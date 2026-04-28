@@ -3,10 +3,10 @@ import { prisma } from '@/src/lib/prisma';
 import { getUserId, unauthorized } from '@/src/lib/session';
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = getUserId(req);
+  const userId = await getUserId();
   if (!userId) return unauthorized();
 
   const { id } = await params;

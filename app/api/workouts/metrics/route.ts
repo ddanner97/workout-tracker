@@ -72,7 +72,7 @@ function getDateFilter(
 }
 
 export async function GET(req: NextRequest) {
-  const userId = getUserId(req);
+  const userId = await getUserId();
   if (!userId) return unauthorized();
 
   const tags = parseTags(req.nextUrl.searchParams);

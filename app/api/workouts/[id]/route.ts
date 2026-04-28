@@ -15,10 +15,10 @@ import {
  **/
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = getUserId(req);
+  const userId = await getUserId();
   if (!userId) return unauthorized();
 
   const { id } = await params;
@@ -52,7 +52,7 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = getUserId(req);
+  const userId = await getUserId();
   if (!userId) return unauthorized();
 
   const { id } = await params;
@@ -143,10 +143,10 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = getUserId(req);
+  const userId = await getUserId();
   if (!userId) return unauthorized();
 
   const { id } = await params;
