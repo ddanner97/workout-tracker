@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { authClient } from '@/src/lib/auth-client';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Drawer,
@@ -14,6 +16,7 @@ import {
 } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import PalettePicker from './PalettePicker';
+import Button from './Button';
 
 const NAV_LINKS = [
   { href: '/history', label: 'History' },
@@ -34,6 +37,13 @@ function HamburgerIcon() {
 export default function NavMenu() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function handleLogout() {
+    const { error } = await authClient.signOut();
+    if (error) console.error(error);
+    router.push('/login');
+  }
 
   return (
     <>
@@ -136,6 +146,12 @@ export default function NavMenu() {
             <PalettePicker />
           </Box>
         </Box>
+        <Button
+          variant="contained"
+          color="primary"
+          label="Logout"
+          onClick={handleLogout}
+        />
       </Drawer>
     </>
   );
