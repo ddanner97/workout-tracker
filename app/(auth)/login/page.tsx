@@ -20,15 +20,6 @@ function LoginPage() {
 
   return (
     <Box className="h-screen">
-      <div>
-        <h1
-          className="font-serif text-[22px] leading-none font-semibold tracking-[-0.5px]"
-          style={{ color: 'var(--color-heading)' }}
-        >
-          Workout.
-        </h1>
-      </div>
-
       <Container column gap={18} className="m-10 h-full md:m-18 lg:m-24">
         <LoginContent />
 
