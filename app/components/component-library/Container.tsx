@@ -17,12 +17,16 @@ import styled from '@emotion/styled';
 type ContainerProps = {
   column?: boolean;
   gap?: number;
+  className?: string;
 };
 
-const Container = styled('div')<ContainerProps>(({ column, gap }) => ({
-  display: 'flex',
-  flexDirection: column ? 'column' : 'row',
-  gap: gap ? `${gap}px` : '0',
-}));
+const Container = styled('div')<ContainerProps>(
+  ({ column, gap, className }) => ({
+    display: 'flex',
+    flexDirection: column ? 'column' : 'row',
+    gap: gap ? `${gap}px` : '0',
+    className,
+  })
+);
 
 export default Container;

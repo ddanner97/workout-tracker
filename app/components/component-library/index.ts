@@ -9,6 +9,7 @@ import ViewToggle from './ViewToggle';
 import GraphFilters from './charts/GraphFilters';
 import LineGraph from './charts/LineGraph';
 import TextField from './TextFieldComponent';
+import IconDisplay from './IconDisplay';
 import WorkoutForm from './workout-form/WorkoutForm';
 
 export {
@@ -23,4 +24,5 @@ export {
   ViewToggle,
   TextField,
   WorkoutForm,
+  IconDisplay,
 };

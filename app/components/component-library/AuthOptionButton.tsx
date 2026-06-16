@@ -1,10 +1,12 @@
 import React from 'react';
+import IconDisplay from './IconDisplay';
 
 type AuthOptionButtonProps = {
   icon: React.ReactNode;
   title: string;
   subtitle: string;
   onClick: () => void;
+  className?: string;
 };
 
 const AuthOptionButton = ({
@@ -12,26 +14,19 @@ const AuthOptionButton = ({
   title,
   subtitle,
   onClick,
+  className,
 }: AuthOptionButtonProps) => {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex w-[75%] items-center gap-4 rounded-2xl px-4 py-3.5 text-left"
+      className={`flex items-center gap-4 rounded-2xl px-4 py-3.5 text-left ${className}`}
       style={{
         backgroundColor: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
       }}
     >
-      <span
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-        style={{
-          backgroundColor: 'var(--color-badge-bg)',
-          color: 'var(--color-accent)',
-        }}
-      >
-        {icon}
-      </span>
+      <IconDisplay icon={icon} />
       <div className="flex flex-col gap-0.5">
         <span
           className="text-[17px] font-semibold tracking-[-0.2px]"
