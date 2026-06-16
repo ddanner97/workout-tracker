@@ -3,6 +3,15 @@ import type { Palette } from './palettes';
 
 export function createThemeFromPalette(palette: Palette) {
   return createTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 640,
+        md: 768,
+        lg: 1024,
+        xl: 1280,
+      },
+    },
     palette: {
       mode: palette.isDark ? 'dark' : 'light',
       primary: {

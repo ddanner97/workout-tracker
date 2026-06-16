@@ -1,7 +1,6 @@
 'use client';
 import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Image from 'next/image';
 
 import { Box } from '@mui/material';
 import LoginOutlined from '@mui/icons-material/LoginOutlined';
@@ -10,6 +9,7 @@ import {
   AuthOptionButton,
   Container,
 } from '../../components/component-library';
+import LoginContent from '../LoginContent';
 import LoginDialog from '../LoginDialog';
 import RegisterDialog from '../RegisterDialog';
 
@@ -19,61 +19,48 @@ function LoginPage() {
   const view = searchParams.get('view');
 
   return (
-    <Box>
-      <div className="relative">
-        <Image
-          src="/landing-page-mobile.png"
-          alt="Workout App Hero"
-          width={600}
-          height={600}
-          className="w-full"
-        />
-
-        {/* header overlay — top left */}
-        <div className="absolute top-0 left-0 p-6">
-          <h1
-            className="font-serif text-[22px] leading-none font-semibold tracking-[-0.5px]"
-            style={{ color: 'var(--color-heading)' }}
-          >
-            Workout.
-          </h1>
-        </div>
-
-        {/* bottom fade */}
-        <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-[var(--color-background)] to-transparent" />
-
-        {/* buttons pinned to bottom */}
-        <Container
-          column
-          gap={12}
-          className="absolute inset-x-0 bottom-[-75px] items-center px-6 pb-8"
+    <Box className="h-screen">
+      <div>
+        <h1
+          className="font-serif text-[22px] leading-none font-semibold tracking-[-0.5px]"
+          style={{ color: 'var(--color-heading)' }}
         >
+          Workout.
+        </h1>
+      </div>
+
+      <Container column gap={18} className="m-10 h-full md:m-18 lg:m-24">
+        <LoginContent />
+
+        <Container column gap={12} className="grow flex-col justify-center">
           <AuthOptionButton
             icon={<LoginOutlined />}
             title="Log in"
             subtitle="Welcome back"
             onClick={() => router.push('?view=login')}
+            className="w-[100%] max-w-[400px] lg:max-w-[500px]"
           />
           <AuthOptionButton
             icon={<PersonAddOutlined />}
             title="Create account"
             subtitle="Start your journey"
             onClick={() => router.push('?view=register')}
+            className="w-[100%] max-w-[400px] lg:max-w-[500px]"
           />
         </Container>
-      </div>
 
-      <LoginDialog
-        open={view === 'login'}
-        onClose={() => router.back()}
-        onSwitchToRegister={() => router.push('?view=register')}
-      />
+        <LoginDialog
+          open={view === 'login'}
+          onClose={() => router.back()}
+          onSwitchToRegister={() => router.push('?view=register')}
+        />
 
-      <RegisterDialog
-        open={view === 'register'}
-        onClose={() => router.back()}
-        onSwitchToLogin={() => router.push('?view=login')}
-      />
+        <RegisterDialog
+          open={view === 'register'}
+          onClose={() => router.back()}
+          onSwitchToLogin={() => router.push('?view=login')}
+        />
+      </Container>
     </Box>
   );
 }
