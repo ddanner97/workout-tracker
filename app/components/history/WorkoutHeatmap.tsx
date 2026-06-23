@@ -81,9 +81,8 @@ function computeStats(data: HeatmapData, grid: Date[][]) {
 
 export default function WorkoutHeatmap({ data }: { data: HeatmapData }) {
   const { palette } = usePalette();
-  const colors = palette.isDark
-    ? [palette.surfaceAlt, palette.badgeBg, palette.accentLight + 'A0', palette.accentLight, palette.accent]
-    : [palette.border, palette.badgeBg, palette.accentLight + 'A0', palette.accentLight, palette.accent];
+  const emptyColor = palette.isDark ? '#2A2A2A' : palette.id === 'pink' ? '#FFFFFF' : '#E5E7EB';
+  const colors = [emptyColor, palette.badgeBg, palette.accentLight + '60', palette.accentLight + 'A0', palette.accentLight];
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scrollToEnd = useCallback((node: HTMLDivElement | null) => {
