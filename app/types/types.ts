@@ -97,6 +97,7 @@ interface ExerciseHistorySet {
 interface ExerciseHistorySession {
   workoutId: string;
   performedAt: string;
+  order: number;
   sets: ExerciseHistorySet[];
 }
 

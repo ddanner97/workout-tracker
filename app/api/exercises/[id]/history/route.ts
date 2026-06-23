@@ -13,10 +13,7 @@ export async function GET(
 
   const exercise = await prisma.exercise.findUnique({ where: { id } });
   if (!exercise) {
-    return NextResponse.json(
-      { error: 'Exercise not found' },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: 'Exercise not found' }, { status: 404 });
   }
 
   const workoutExercises = await prisma.workoutExercise.findMany({
@@ -24,7 +21,12 @@ export async function GET(
     orderBy: { workout: { performedAt: 'desc' } },
     take: 10,
     include: {
-      workout: { select: { id: true, performedAt: true } },
+      workout: {
+        select: {
+          id: true,
+          performedAt: true,
+        },
+      },
       sets: {
         orderBy: { setNumber: 'asc' },
         select: { setNumber: true, weight: true, reps: true, rpe: true },
@@ -35,6 +37,7 @@ export async function GET(
   const sessions = workoutExercises.map((we) => ({
     workoutId: we.workout.id,
     performedAt: we.workout.performedAt.toISOString(),
+    order: we.order,
     sets: we.sets,
   }));
 
