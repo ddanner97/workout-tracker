@@ -29,11 +29,19 @@ function formatSessionDate(iso: string): string {
 }
 
 function formattedOrder(order: number): string {
-  const formattedOrder = Math.abs(order) + 1;
-  if (formattedOrder === 1) return '1st exercise in the workout';
-  if (formattedOrder === 2) return '2nd exercise in the workout';
-  if (formattedOrder === 3) return '3rd exercise in the workout';
-  return `${formattedOrder}th exercise in the workout`;
+  const position = order + 1;
+  const mod100 = position % 100;
+  const suffix =
+    mod100 >= 11 && mod100 <= 13
+      ? 'th'
+      : position % 10 === 1
+        ? 'st'
+        : position % 10 === 2
+          ? 'nd'
+          : position % 10 === 3
+            ? 'rd'
+            : 'th';
+  return `${position}${suffix} exercise in the workout`;
 }
 
 export default function SessionCarousel({
