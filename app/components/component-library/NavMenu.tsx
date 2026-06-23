@@ -96,7 +96,15 @@ export default function NavMenu() {
           },
         }}
       >
-        <Box sx={{ width: 260 }} role="presentation">
+        <Box
+          sx={{
+            width: 260,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+          role="presentation"
+        >
           <Box
             sx={{
               display: 'flex',
@@ -145,13 +153,24 @@ export default function NavMenu() {
           <Box sx={{ px: 2, py: 2 }}>
             <PalettePicker />
           </Box>
+          <Box
+            sx={{
+              mt: 'auto',
+              px: 2,
+              py: 2,
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              label="Logout"
+              onClick={handleLogout}
+              className="w-full text-center"
+            />
+          </Box>
         </Box>
-        <Button
-          variant="contained"
-          color="primary"
-          label="Logout"
-          onClick={handleLogout}
-        />
       </Drawer>
     </>
   );
