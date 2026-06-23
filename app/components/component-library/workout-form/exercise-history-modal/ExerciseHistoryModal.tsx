@@ -19,9 +19,6 @@ interface ExerciseHistoryModalProps {
   onClose: () => void;
 }
 
-const LBS_TO_KG = 0.453592;
-
-// components
 interface RoundedButtonProps {
   children: React.ReactNode;
   onClick: () => void;
@@ -30,6 +27,9 @@ interface RoundedButtonProps {
   color: string;
 }
 
+const LBS_TO_KG = 0.453592;
+
+// components
 function RoundedButton({
   children,
   onClick,
@@ -125,7 +125,13 @@ export default function ExerciseHistoryModal({
     sessions[currentIndex];
 
   return (
-    <Modal open={isOpen} onClose={onClose}>
+    <Modal
+      open={isOpen}
+      onClose={() => {
+        setCurrentIndex(0);
+        onClose();
+      }}
+    >
       <Box
         sx={{
           position: 'absolute',
@@ -163,7 +169,10 @@ export default function ExerciseHistoryModal({
             )}
           </div>
           <RoundedButton
-            onClick={onClose}
+            onClick={() => {
+              setCurrentIndex(0);
+              onClose();
+            }}
             disabled={false}
             ariaLabel="Close"
             color="var(--color-placeholder)"
