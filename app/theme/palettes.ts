@@ -85,6 +85,23 @@ export const PALETTES: Record<string, Palette> = {
     placeholder: '#3D3550',
     inputBg: '#221E2E',
   },
+  pink: {
+    id: 'pink',
+    name: 'Rose Pink',
+    isDark: false,
+    bg: '#FFF5F7',
+    surface: '#FFFFFF',
+    surfaceAlt: '#FFF9FA',
+    border: '#FFD6E0',
+    accentLight: '#FFFFFF',
+    accent: '#FFC5D3',
+    badgeBg: '#FFE4EC',
+    heading: '#1C1917',
+    bodyText: '#2E2A24',
+    muted: '#C4A0AA',
+    placeholder: '#D4B8C0',
+    inputBg: '#FFF5F7',
+  },
 };
 
 export const DEFAULT_PALETTE_ID = 'purple';
