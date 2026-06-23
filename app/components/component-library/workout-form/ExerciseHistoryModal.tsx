@@ -37,10 +37,15 @@ function formatSessionDate(iso: string): string {
   });
 }
 
-function sessionVolume(
-  sets: ExerciseHistorySet[],
-  unit: WeightUnit
-): number {
+function formattedOrder(order: number): string {
+  const formattedOrder = Math.abs(order) + 1;
+  if (formattedOrder === 1) return '1st exercise in the workout';
+  if (formattedOrder === 2) return '2nd exercise in the workout';
+  if (formattedOrder === 3) return '3rd exercise in the workout';
+  return `${formattedOrder}th exercise in the workout`;
+}
+
+function sessionVolume(sets: ExerciseHistorySet[], unit: WeightUnit): number {
   const raw = sets.reduce((sum, s) => {
     if (s.reps <= 0) return sum;
     return sum + s.weight * s.reps;
@@ -98,7 +103,7 @@ export default function ExerciseHistoryModal({
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: '100%',
+          width: '95%',
           maxWidth: 480,
           maxHeight: '85vh',
           overflowY: 'auto',
@@ -113,7 +118,7 @@ export default function ExerciseHistoryModal({
         <div className="flex items-start justify-between">
           <div>
             <h2
-              className="font-serif text-[22px] font-semibold leading-tight"
+              className="font-serif text-[22px] leading-tight font-semibold"
               style={{ color: 'var(--color-heading)' }}
             >
               {exerciseName}
@@ -173,7 +178,7 @@ export default function ExerciseHistoryModal({
                     key={u}
                     type="button"
                     onClick={() => handleUnitToggle(u)}
-                    className="px-4 py-1.5 text-[11px] font-bold uppercase tracking-[1px]"
+                    className="px-4 py-1.5 text-[11px] font-bold tracking-[1px] uppercase"
                     style={{
                       backgroundColor:
                         unit === u
@@ -193,7 +198,7 @@ export default function ExerciseHistoryModal({
             {chartData.dates.length > 1 && (
               <div>
                 <p
-                  className="mb-1 text-[10px] font-bold uppercase tracking-[1px]"
+                  className="mb-1 text-[10px] font-bold tracking-[1px] uppercase"
                   style={{ color: 'var(--color-muted)' }}
                 >
                   Volume trend
@@ -244,9 +249,7 @@ export default function ExerciseHistoryModal({
                 <div className="flex items-center justify-between">
                   <button
                     type="button"
-                    onClick={() =>
-                      setCurrentIndex((i) => Math.max(0, i - 1))
-                    }
+                    onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
                     disabled={currentIndex === 0}
                     className="flex h-7 w-7 items-center justify-center rounded-full text-[14px] font-bold disabled:opacity-30"
                     style={{
@@ -269,7 +272,9 @@ export default function ExerciseHistoryModal({
                       style={{ color: 'var(--color-muted)' }}
                     >
                       {currentSession.sets.length} set
-                      {currentSession.sets.length !== 1 ? 's' : ''} logged
+                      {currentSession.sets.length !== 1 ? 's' : ''} logged -
+                      {currentSession.order != null &&
+                        `- ${formattedOrder(currentSession.order)}`}
                     </p>
                   </div>
                   <button
@@ -298,7 +303,7 @@ export default function ExerciseHistoryModal({
                 >
                   {/* Table header */}
                   <div
-                    className="grid grid-cols-4 px-3 py-2 text-[10px] font-bold uppercase tracking-[1px]"
+                    className="grid grid-cols-4 px-3 py-2 text-[10px] font-bold tracking-[1px] uppercase"
                     style={{
                       backgroundColor: 'var(--color-surface-alt)',
                       color: 'var(--color-muted)',
