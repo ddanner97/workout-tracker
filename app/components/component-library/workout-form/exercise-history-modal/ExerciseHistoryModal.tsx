@@ -9,8 +9,11 @@ import {
   ExerciseHistorySet,
   WeightUnit,
 } from '../../../../types/types';
-import { lbsToKgs } from '../../../../utils/utils';
 import { fetchExerciseHistory } from '../info';
+
+// components
+import RoundedButton from './RoundedButton';
+import SessionCarousel from './SessionCarousel';
 
 interface ExerciseHistoryModalProps {
   exerciseId: string;
@@ -19,40 +22,7 @@ interface ExerciseHistoryModalProps {
   onClose: () => void;
 }
 
-interface RoundedButtonProps {
-  children: React.ReactNode;
-  onClick: () => void;
-  disabled: boolean;
-  ariaLabel: string;
-  color: string;
-}
-
 const LBS_TO_KG = 0.453592;
-
-// components
-function RoundedButton({
-  children,
-  onClick,
-  disabled,
-  ariaLabel,
-  color,
-}: RoundedButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="flex h-7 w-7 items-center justify-center rounded-full text-[18px] font-bold disabled:opacity-30"
-      aria-label={ariaLabel}
-      style={{
-        color: color,
-        backgroundColor: 'var(--color-surface-alt)',
-      }}
-    >
-      {children}
-    </button>
-  );
-}
 
 const dateAxisFormatter = new Intl.DateTimeFormat(undefined, {
   month: 'short',
@@ -60,35 +30,12 @@ const dateAxisFormatter = new Intl.DateTimeFormat(undefined, {
   timeZone: 'UTC',
 });
 
-function formatSessionDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    timeZone: 'UTC',
-  });
-}
-
-function formattedOrder(order: number): string {
-  const formattedOrder = Math.abs(order) + 1;
-  if (formattedOrder === 1) return '1st exercise in the workout';
-  if (formattedOrder === 2) return '2nd exercise in the workout';
-  if (formattedOrder === 3) return '3rd exercise in the workout';
-  return `${formattedOrder}th exercise in the workout`;
-}
-
 function sessionVolume(sets: ExerciseHistorySet[], unit: WeightUnit): number {
   const raw = sets.reduce((sum, s) => {
     if (s.reps <= 0) return sum;
     return sum + s.weight * s.reps;
   }, 0);
   return unit === 'kgs' ? raw * LBS_TO_KG : raw;
-}
-
-function displayWeight(weight: number, unit: WeightUnit): string {
-  if (unit === 'kgs') return lbsToKgs(String(weight));
-  return String(weight);
 }
 
 export default function ExerciseHistoryModal({
@@ -278,115 +225,13 @@ export default function ExerciseHistoryModal({
 
             {/* Session carousel */}
             {currentSession && (
-              <div>
-                {/* Navigation */}
-                <div className="flex items-center justify-between">
-                  <RoundedButton
-                    onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-                    disabled={currentIndex === 0}
-                    ariaLabel="Previous session"
-                    color="var(--color-heading)"
-                  >
-                    &#8592;
-                  </RoundedButton>
-                  <div className="text-center">
-                    <p
-                      className="text-[13px] font-bold"
-                      style={{ color: 'var(--color-heading)' }}
-                    >
-                      {formatSessionDate(currentSession.performedAt)}
-                    </p>
-                    <p
-                      className="text-[11px]"
-                      style={{ color: 'var(--color-muted)' }}
-                    >
-                      {currentSession.sets.length} set
-                      {currentSession.sets.length !== 1 ? 's' : ''} logged
-                      {currentSession.order != null &&
-                        ` - ${formattedOrder(currentSession.order)}`}
-                    </p>
-                  </div>
-                  <RoundedButton
-                    onClick={() =>
-                      setCurrentIndex((i) =>
-                        Math.min(sessions.length - 1, i + 1)
-                      )
-                    }
-                    disabled={currentIndex === sessions.length - 1}
-                    ariaLabel="Next session"
-                    color="var(--color-heading)"
-                  >
-                    &#8594;
-                  </RoundedButton>
-                </div>
-
-                {/* Sets table */}
-                <div
-                  className="mt-3 overflow-hidden rounded-xl"
-                  style={{ border: '1px solid var(--color-border)' }}
-                >
-                  {/* Table header */}
-                  <div
-                    className="grid grid-cols-4 px-3 py-2 text-[10px] font-bold tracking-[1px] uppercase"
-                    style={{
-                      backgroundColor: 'var(--color-surface-alt)',
-                      color: 'var(--color-muted)',
-                    }}
-                  >
-                    <span>Set</span>
-                    <span className="text-right">Weight</span>
-                    <span className="text-right">Reps</span>
-                    <span className="text-right">RPE</span>
-                  </div>
-
-                  {/* Table rows */}
-                  {currentSession.sets.map((set, idx) => (
-                    <div
-                      key={set.setNumber}
-                      className="grid grid-cols-4 px-3 py-2 text-[12px]"
-                      style={{
-                        backgroundColor:
-                          idx % 2 === 0
-                            ? 'var(--color-surface)'
-                            : 'var(--color-surface-alt)',
-                        color: 'var(--color-body)',
-                      }}
-                    >
-                      <span>{set.setNumber}</span>
-                      <span className="text-right">
-                        {displayWeight(set.weight, unit)}
-                      </span>
-                      <span className="text-right">
-                        {set.reps === -1 ? 'fail' : set.reps}
-                      </span>
-                      <span className="text-right">
-                        {set.rpe != null ? set.rpe : '—'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Carousel dots */}
-                {sessions.length > 1 && (
-                  <div className="mt-3 flex justify-center gap-1.5">
-                    {sessions.map((_, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setCurrentIndex(idx)}
-                        className="h-2 w-2 rounded-full"
-                        style={{
-                          backgroundColor:
-                            idx === currentIndex
-                              ? 'var(--color-accent)'
-                              : 'var(--color-border)',
-                        }}
-                        aria-label={`Go to session ${idx + 1}`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
+              <SessionCarousel
+                currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+                currentSession={currentSession}
+                unit={unit}
+                sessions={sessions}
+              />
             )}
           </div>
         )}
