@@ -9,7 +9,7 @@ import { fetchExerciseHistory, postWorkout, putWorkout } from './info';
 
 import { ExerciseTable, TextField } from '..';
 import AddExerciseDialog from './AddExerciseDialog';
-import ExerciseHistoryModal from './ExerciseHistoryModal';
+import ExerciseHistoryModal from './exercise-history-modal/ExerciseHistoryModal';
 import RemoveExerciseModal from './RemoveExerciseModal';
 import ExercisePicker from './ExercisePicker';
 import { Box, Stack } from '@mui/material';

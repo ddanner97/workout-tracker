@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Modal, Box, CircularProgress } from '@mui/material';
 import { LineChart } from '@mui/x-charts';
@@ -8,9 +8,9 @@ import {
   ExerciseHistorySession,
   ExerciseHistorySet,
   WeightUnit,
-} from '../../../types/types';
-import { lbsToKgs } from '../../../utils/utils';
-import { fetchExerciseHistory } from './info';
+} from '../../../../types/types';
+import { lbsToKgs } from '../../../../utils/utils';
+import { fetchExerciseHistory } from '../info';
 
 interface ExerciseHistoryModalProps {
   exerciseId: string;
@@ -20,6 +20,39 @@ interface ExerciseHistoryModalProps {
 }
 
 const LBS_TO_KG = 0.453592;
+
+// components
+interface RoundedButtonProps {
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled: boolean;
+  ariaLabel: string;
+  color: string;
+}
+
+function RoundedButton({
+  children,
+  onClick,
+  disabled,
+  ariaLabel,
+  color,
+}: RoundedButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="flex h-7 w-7 items-center justify-center rounded-full text-[18px] font-bold disabled:opacity-30"
+      aria-label={ariaLabel}
+      style={{
+        color: color,
+        backgroundColor: 'var(--color-surface-alt)',
+      }}
+    >
+      {children}
+    </button>
+  );
+}
 
 const dateAxisFormatter = new Intl.DateTimeFormat(undefined, {
   month: 'short',
@@ -91,10 +124,6 @@ export default function ExerciseHistoryModal({
   const currentSession: ExerciseHistorySession | undefined =
     sessions[currentIndex];
 
-  function handleUnitToggle(next: WeightUnit) {
-    setUnit(next);
-  }
-
   return (
     <Modal open={isOpen} onClose={onClose}>
       <Box
@@ -133,18 +162,14 @@ export default function ExerciseHistoryModal({
               </p>
             )}
           </div>
-          <button
-            type="button"
+          <RoundedButton
             onClick={onClose}
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[18px]"
-            style={{
-              color: 'var(--color-placeholder)',
-              backgroundColor: 'var(--color-surface-alt)',
-            }}
-            aria-label="Close"
+            disabled={false}
+            ariaLabel="Close"
+            color="var(--color-placeholder)"
           >
             &times;
-          </button>
+          </RoundedButton>
         </div>
 
         {/* Loading */}
@@ -177,7 +202,7 @@ export default function ExerciseHistoryModal({
                   <button
                     key={u}
                     type="button"
-                    onClick={() => handleUnitToggle(u)}
+                    onClick={() => setUnit(u)}
                     className="px-4 py-1.5 text-[11px] font-bold tracking-[1px] uppercase"
                     style={{
                       backgroundColor:
@@ -247,19 +272,14 @@ export default function ExerciseHistoryModal({
               <div>
                 {/* Navigation */}
                 <div className="flex items-center justify-between">
-                  <button
-                    type="button"
+                  <RoundedButton
                     onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
                     disabled={currentIndex === 0}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-[14px] font-bold disabled:opacity-30"
-                    style={{
-                      backgroundColor: 'var(--color-surface-alt)',
-                      color: 'var(--color-heading)',
-                    }}
-                    aria-label="Previous session"
+                    ariaLabel="Previous session"
+                    color="var(--color-heading)"
                   >
                     &#8592;
-                  </button>
+                  </RoundedButton>
                   <div className="text-center">
                     <p
                       className="text-[13px] font-bold"
@@ -272,28 +292,23 @@ export default function ExerciseHistoryModal({
                       style={{ color: 'var(--color-muted)' }}
                     >
                       {currentSession.sets.length} set
-                      {currentSession.sets.length !== 1 ? 's' : ''} logged -
+                      {currentSession.sets.length !== 1 ? 's' : ''} logged
                       {currentSession.order != null &&
-                        `- ${formattedOrder(currentSession.order)}`}
+                        ` - ${formattedOrder(currentSession.order)}`}
                     </p>
                   </div>
-                  <button
-                    type="button"
+                  <RoundedButton
                     onClick={() =>
                       setCurrentIndex((i) =>
                         Math.min(sessions.length - 1, i + 1)
                       )
                     }
                     disabled={currentIndex === sessions.length - 1}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-[14px] font-bold disabled:opacity-30"
-                    style={{
-                      backgroundColor: 'var(--color-surface-alt)',
-                      color: 'var(--color-heading)',
-                    }}
-                    aria-label="Next session"
+                    ariaLabel="Next session"
+                    color="var(--color-heading)"
                   >
                     &#8594;
-                  </button>
+                  </RoundedButton>
                 </div>
 
                 {/* Sets table */}
