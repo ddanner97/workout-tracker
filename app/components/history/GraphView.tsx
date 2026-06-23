@@ -120,7 +120,6 @@ const GraphView = ({
                 onCustomRangeChange={onCustomRangeChange}
               />
             }
-            lineColor="#2563eb"
           />
         ) : (
           <LineGraph<WorkoutVolumePoint>
@@ -155,7 +154,6 @@ const GraphView = ({
                 onCustomRangeChange={onCustomRangeChange}
               />
             }
-            lineColor="#2563eb"
           />
         )}
       </Box>

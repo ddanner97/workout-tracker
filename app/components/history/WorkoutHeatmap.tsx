@@ -14,8 +14,6 @@ const DAYS_IN_WEEK = 7;
 const LEFT_LABEL_WIDTH = 28;
 const TOP_LABEL_HEIGHT = 20;
 
-const LIGHT_COLORS = ['#e8e6df', '#9fe1cb', '#5dcaa5', '#1d9e75', '#0f6e56'];
-const DARK_COLORS = ['#2c2c2a', '#1d503a', '#1d9e75', '#5dcaa5', '#9fe1cb'];
 
 const DAY_LABELS: [number, string][] = [
   [1, 'M'],
@@ -83,7 +81,9 @@ function computeStats(data: HeatmapData, grid: Date[][]) {
 
 export default function WorkoutHeatmap({ data }: { data: HeatmapData }) {
   const { palette } = usePalette();
-  const colors = palette.isDark ? DARK_COLORS : LIGHT_COLORS;
+  const colors = palette.isDark
+    ? [palette.surfaceAlt, palette.badgeBg, palette.accentLight + 'A0', palette.accentLight, palette.accent]
+    : [palette.border, palette.badgeBg, palette.accentLight + 'A0', palette.accentLight, palette.accent];
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scrollToEnd = useCallback((node: HTMLDivElement | null) => {

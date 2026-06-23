@@ -78,7 +78,7 @@ export default function LineGraph<TPoint extends LineGraphPoint>({
   formatValue,
   getPointValue,
   getTooltipRows,
-  lineColor,
+  lineColor = 'var(--color-accent)',
   xAxisFormat = 'day',
   filters,
 }: LineGraphProps<TPoint> & { filters?: React.ReactNode }) {
